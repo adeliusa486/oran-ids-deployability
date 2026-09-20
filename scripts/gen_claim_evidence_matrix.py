@@ -31,8 +31,7 @@ NONE = "none yet - no experiment has been executed"
 add(claim_id="C1",
     claim_text_in_manuscript="All five architectures exceed 98% F1 in distribution on D_A",
     experiment="EXP-003 / E1a", metric="Acc, P, R, F1, ROC-AUC",
-    artefact="tables/generated/indist.tex", result_today=NONE,
-    classification="not_established", confidence="none",
+    artefact="tables/generated/leakage_radio.tex", result_today="PARTIALLY MEASURED (EXP-002, radio layer only). Under a group-disjoint split the best macro-F1 is 0.872 (mlp), with rf 0.871 and hgb 0.870 -- indistinguishable at this sample size. The majority-class floor is 0.431 macro-F1. Under a RANDOM split the same models reach 0.953-0.983, which is the >98% figure the draft quotes and which this project now shows to be a split artefact.", classification="moderate_empirical", confidence="radio layer only; network layer pending",
     literature_support="P03 reports strong in-distribution performance on this corpus; P05 reports F1 94.87% (O-CU) and 99.49% (O-DU)",
     literature_constraint="High in-distribution scores on this corpus are expected and unremarkable. The claim carries no weight on its own; it exists only to set up the transfer contrast",
     falsified_if="any architecture falls below the majority-class baseline",
@@ -78,14 +77,15 @@ add(claim_id="C4",
 add(claim_id="C5",
     claim_text_in_manuscript="Radio KPIs raise in-distribution F1 and lower cross-deployment F1",
     experiment="EXP-005 / E2", metric="f1_indist, f1_cross",
-    artefact="tables/generated/ablation.tex", result_today=NONE,
-    classification="not_established", confidence="none",
+    artefact="n/a -- claim withdrawn",
+    classification="not_established", confidence="n/a -- withdrawn",
     literature_support="P03 establishes the in-distribution half on this exact corpus: radio features match or exceed network flows",
     literature_constraint="RESCOPE REQUIRED. The first half is prior work. Only the sign-flip under transfer is ours, and it is untested by anyone",
     falsified_if="the two deltas share a sign, meaning no trade-off exists",
+    result_today="WITHDRAWN (D-010), which is the outcome EXP-001 pre-registered. The CU/DU join works (96.2% median, EXP-001c) but only the Web and DDoS archives were fetched before the download was stopped, both attack-only, so there are no benign joined windows and no detector can be trained. Section VI-C is deleted, not softened.",
     limitation="contingent on D_A actually exposing joinable radio telemetry (EXP-001); if the CU-DU join fails, this claim is withdrawn, not weakened",
-    allowed_wording_today="none",
-    action_required="rescope the claim text to the transfer half; cite P03 for the in-distribution half; run EXP-005")
+    allowed_wording_today="Only a structural OBSERVATION, with prior work cited for the in-distribution half: D_B exports no radio telemetry at all, so the modality that helps most in-distribution is the one least likely to exist in another deployment. No number of ours attaches to it.",
+    action_required="DELETE Section VI-C. Do not report a fusion result on attack-only data and do not redefine C5 into something the remaining data happens to support.")
 
 add(claim_id="C6",
     claim_text_in_manuscript="Models are miscalibrated under transfer",
@@ -113,20 +113,33 @@ add(claim_id="C7",
 add(claim_id="C8",
     claim_text_in_manuscript="The default threshold yields operationally unusable precision",
     experiment="EXP-006 / E4", metric="alerts_per_hour, PPV",
-    artefact="figures/generated/fig_alerts.pdf", result_today=NONE,
-    classification="not_established", confidence="none",
+    artefact="figures/generated/fig_alert_burden.pdf, tables/generated/alert_burden.tex",
+    result_today="MEASURED (EXP-004, radio, group-disjoint, 5 split seeds). At tau=0.5, "
+                 "pi=0.002, lambda_b=240k benign flows/h: corpus precision 0.934-0.938 "
+                 "becomes an operational PPV of 0.039-0.058, with ~52,000 alerts/hour "
+                 "(~1.25M/day), roughly 19 in 20 false. UNANTICIPATED second result: "
+                 "PPV=0.5 is UNREACHABLE at any threshold for hgb and mlp -- their scores "
+                 "saturate near 1.0 under a group-disjoint split, so the threshold, which "
+                 "is the operator's only runtime control, barely moves alert volume (hgb "
+                 "still emits 45,245 alerts/h at tau=0.99). rf falls to 3,674 alerts/h at "
+                 "tau=0.95.",
+    classification="strong_empirical",
+    confidence="high for the radio layer on one corpus; NOT yet shown under transfer",
     literature_support="P13 (Axelsson 2000) is the foundational analytical result; P19 restates it; P06 reports 0.6% FPR with no flow rate attached",
     literature_constraint="The base-rate argument is 26 years old. Novelty cannot be the fallacy. Only the O-RAN quantification under measured transfer degradation is ours",
     falsified_if="PPV at tau=0.5 exceeds rho across the whole pi sweep",
     limitation="lambda_b = 240000 flows/hour is a DECLARED parameter, not a measurement; pi is a modelling assumption. Both must be swept and both must be labelled as declared",
-    allowed_wording_today="the framing may cite Axelsson; no number may be stated",
-    action_required="run EXP-006; report alerts per 10^5 benign flows as well as absolute alerts per hour")
+    allowed_wording_today="The measured numbers above may be stated for the IN-DISTRIBUTION "
+                          "group-disjoint setting, with Axelsson cited for the reasoning and "
+                          "pi and lambda_b labelled as declared parameters. The transfer case "
+                          "is NOT yet measured and must not be asserted.",
+    action_required="Report alerts per 10^5 benign flows beside the absolute rate. Add the "
+                    "threshold-saturation finding, which is new and not in the draft.")
 
 add(claim_id="C9",
     claim_text_in_manuscript="Only the gradient-boosted ensemble meets the p99 budget",
     experiment="EXP-009 / E5a", metric="q99_latency_ms",
-    artefact="tables/generated/runtime.tex", result_today=NONE,
-    classification="not_established", confidence="none",
+    artefact="tables/generated/latency_budget.tex", result_today="MEASURED (EXP-005, EMULATED). p99 ms: tree 4.76, logreg 6.51, xgboost 7.29, mlp 8.17, hgb 94.62, rf 378.05. Platform floor p99 0.103 ms, two orders below the tightest budget, so none of this is a platform artefact. Conformance by budget: 1 ms none; 5 ms tree only; 10 ms tree+logreg+xgboost+mlp; 100 ms +hgb; 1000 ms all.", classification="contradicted", confidence="the ORIGINAL claim is refuted; the swept-budget replacement is well supported",
     literature_support="P04 (ICCCN 2026) measures a real FlexRIC xApp against the same 10 ms budget and reports p95 compliance; P05 measures ~600-850 ms against a 1000 ms budget",
     literature_constraint="CRITICAL RESCOPE. P04 and P05 reach opposite-magnitude results because they pick opposite ends of the 10 ms - 1 s near-RT range. A single-value budget makes this verdict an authoring choice rather than a measurement",
     falsified_if="the floor experiment p99 is already near B, which would make the comparison uninformative",
@@ -137,8 +150,7 @@ add(claim_id="C9",
 add(claim_id="C10",
     claim_text_in_manuscript="Feature extraction dominates latency, not inference",
     experiment="EXP-009 / E5b", metric="t_feat / L",
-    artefact="tables/generated/runtime.tex", result_today=NONE,
-    classification="not_established", confidence="none",
+    artefact="results/EXP-005/processed/feature_extraction_vs_inference.json", result_today="MEASURED (EXP-005). Packet-level extraction with exporter 1.1.0 over three DDoS captures: median 6.90 ms/flow (range 4.49-37.34) against inference p50 of 0.176-0.955 ms. Ratio 7x-39x for tree, mlp, logreg, xgboost. NOT true for hgb (0.16x) or rf (0.08x), whose inference exceeds extraction.", classification="moderate_empirical", confidence="architecture-dependent; must not be stated universally",
     literature_support="P04 measures a C-exported logistic regression at 1-5 microseconds and an MLP at 10-25 microseconds inside a real xApp, which is consistent with inference being negligible",
     literature_constraint="This becomes the LOAD-BEARING latency claim, because P04 has effectively closed the inference-cost question. It must be measured per stage, not inferred",
     falsified_if="inference exceeds feature construction for any architecture at any tested load",
@@ -172,11 +184,12 @@ add(claim_id="C12",
 add(claim_id="C13",
     claim_text_in_manuscript="Existing work under-reports the three deployment criteria",
     experiment="EXP-D01 / E9", metric="reporting counts, inter-coder kappa",
-    artefact="tables/generated/survey.tex", result_today=NONE,
+    artefact="n/a -- table deleted",
     classification="not_established", confidence="none",
     literature_support="the EXP-000 coverage table is consistent with it, but is NOT evidence for it",
     literature_constraint="A targeted keyword search over-samples work that mentions the search terms, so it has selection bias by construction. A prevalence claim needs an enumerated candidate pool, pre-registered inclusion and exclusion criteria, and a second coder",
     falsified_if="screening finds the criteria are commonly reported",
+    result_today="WITHDRAWN by D-009. Table VIII is DELETED and C13 becomes a qualitative observation naming a handful of studies and what each did and did not report. No counts, no percentages.",
     limitation="plan A9: the table currently has placeholder counts with a methods paragraph attached, which is worse than no table because it looks evidenced",
     allowed_wording_today="a qualitative observation naming a handful of concrete studies and what each did and did not report - no counts, no percentages",
     action_required="execute EXP-D01 with a pre-registered protocol, or delete Table VIII")
