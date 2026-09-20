@@ -93,6 +93,11 @@ EXEMPT = re.compile(
     r"|CONTRADICTED|contradicted"
     r"|was an artefact|artefact of averaging|did not survive"
     r"|not supportable|is not a split|an earlier version"
+    # A sentence DENYING a retired claim must not trip the guard. "We make
+    # no near-real-time conformance claim" is the correct disclosure, and an
+    # earlier version of this exemption list flagged it as the offence.
+    r"|support no |supports no |make no |makes no |we do not claim"
+    r"|not a near|no near-real-time|no conformance|never claimed"
     r"|no longer|we do not report|never ran|were never run"
     r"|cannot be made|cannot attribute|must not be reused|do not report")
 

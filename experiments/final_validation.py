@@ -358,7 +358,11 @@ def check_manuscript():
     if not main.exists():
         return check("MANUSCRIPT", FAIL, "no manuscript")
     t = main.read_text(encoding="utf-8")
-    syn = t.count("\\syn{")
+    # Count real uses only. The macro is DEFINED in a comment block in the
+    # preamble, and counting those two lines kept the manuscript BLOCKED
+    # after every synthetic value had already been replaced.
+    syn = sum(ln.count("\\syn{") for ln in t.splitlines()
+              if not ln.lstrip().startswith("%"))
     if "\\synthdrafttrue" in t and syn:
         return check("MANUSCRIPT", BLOCKED,
                      f"{syn} synthetic value(s) remain; draft banner correctly up")

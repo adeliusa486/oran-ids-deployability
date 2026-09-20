@@ -224,6 +224,38 @@ def table_transfer():
                r"95\,\% CI & Target PR-AUC " + BS)
 
 
+def table_per_category():
+    """Per-category detection on the target, which macro-F1 hides.
+
+    Replaces the manuscript's synthetic confusion matrix. A single aggregate
+    number cannot show that one architecture keeps 98% benign specificity while
+    another calls 88% of benign traffic an attack, nor that categories absent
+    from the training corpus are essentially undetected.
+    """
+    for direction, label in (("a_to_b", "d_b"), ("b_to_a", "d_a")):
+        src = RES / "EXP-026" / "processed" / f"per_category_recall__{direction}.csv"
+        if not src.exists():
+            print(f"  skip per-category table ({direction})"); continue
+        df = pd.read_csv(src)
+        cats = [c for c in df.columns
+                if not c.endswith("__n")
+                and c not in ("direction", "model", "split_seed")]
+        g = df.groupby("model")[cats].mean()
+        order = [m for m in ["logreg", "tree", "rf", "xgboost", "hgb", "mlp"]
+                 if m in g.index]
+        # benign first (it is specificity, not recall), then the attack classes
+        cols = (["benign"] if "benign" in cats else []) + \
+               sorted(c for c in cats if c != "benign")
+        rows = []
+        for m in order:
+            vals = " & ".join(f"{g.loc[m, c]:.3f}" for c in cols)
+            rows.append(f"{_esc(m)} & {vals} {BS}")
+        head = " & ".join(_esc(c) for c in cols)
+        _write(f"per_category_{label}", rows, str(src),
+               "l" + "c" * len(cols),
+               f"Model & {head} " + BS)
+
+
 def table_prevalence():
     """PPV against the base rate, pooled. The '6x' clause died here (D-018)."""
     src = RES / "EXP-027" / "processed" / "ppv_spread_vs_prevalence.csv"
@@ -282,6 +314,7 @@ def main() -> int:
     table_ppv_crossings()
     table_shared_space()
     table_transfer()
+    table_per_category()
     table_prevalence()
     table_estimator_bug()
     table_extraction()
