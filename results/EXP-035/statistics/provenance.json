@@ -1,0 +1,32 @@
+{
+  "experiment": "EXP-035",
+  "axes_used": [
+    "source_f1",
+    "target_f1",
+    "target_above_floor",
+    "ppv_deploy_target",
+    "false_alerts_per_hour",
+    "brier_target",
+    "p99_latency_ms",
+    "drift_delta"
+  ],
+  "axes_partial": [
+    "worst_case_f1_drop"
+  ],
+  "axes_absent": [],
+  "axes_not_measured": [
+    "cpu_under_load",
+    "ram_under_load",
+    "integration_complexity"
+  ],
+  "no_composite_score": "deliberate: collapsing these onto one number needs weights, the weights are unmeasurable, and whoever picks them picks the winner",
+  "pareto_efficient": [
+    "logreg",
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp"
+  ],
+  "latency_caveat": "p99 is EMULATED; no real RIC measurement exists (EXP-031)"
+}
