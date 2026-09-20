@@ -1,0 +1,9 @@
+{
+  "experiment": "EXP-029",
+  "n_null_replicates": 50,
+  "subsample": 300000,
+  "seeds": 5,
+  "part": "c",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0"
+}
