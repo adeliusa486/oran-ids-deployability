@@ -1,0 +1,226 @@
+{
+  "experiment": "EXP-001",
+  "params": {
+    "session_gap_s": 300,
+    "window_records": 16,
+    "min_folds": 5,
+    "join_tolerance_s": 1.0
+  },
+  "provenance": {
+    "Lower_Layer_Data.db": {
+      "status": "present",
+      "bytes": 5402624,
+      "sha256": "d76fe7df11379223948e624d0f19bcd5caf744a2b6ce20d1ee2143644199ab64",
+      "source": "https://zenodo.org/api/records/18923275"
+    },
+    "Network_Dataset.csv": {
+      "status": "present",
+      "bytes": 227184406,
+      "sha256": "656ff0fe4a5b2a4234a6916d2a24e57ba96a1302fb01f5ea3d32aea3090420f9",
+      "source": "https://zenodo.org/api/records/18923275"
+    }
+  },
+  "radio": {
+    "name": "lower_layer_data",
+    "n_rows": 45244,
+    "n_cols": 25,
+    "columns": {
+      "dlBytes": "int64",
+      "dlMcs": "int64",
+      "dlBler": "float64",
+      "ulBytes": "int64",
+      "ulMcs": "int64",
+      "ulBler": "float64",
+      "ri": "int64",
+      "phr": "int64",
+      "pcmax": "int64",
+      "rsrq": "float64",
+      "sinr": "float64",
+      "rsrp": "int64",
+      "rssi": "float64",
+      "cqi": "int64",
+      "pucchSnr": "float64",
+      "puschSnr": "float64",
+      "ue_id": "float64",
+      "timestamp": "float64",
+      "cellid": "float64",
+      "in_sync": "float64",
+      "rnti": "object",
+      "pmi": "object",
+      "traffic_type": "int64",
+      "attack_category": "object",
+      "attack_subcategory": "object"
+    },
+    "null_rate_pct": {
+      "rnti": 3.4038
+    },
+    "exact_duplicate_rows": 0,
+    "exact_duplicate_pct": 0.0,
+    "time": {
+      "epoch_unit": "milliseconds",
+      "start": "2025-05-09 14:05:06.701000",
+      "end": "2025-07-01 13:09:17.835000",
+      "span_days": 52.96,
+      "inter_record_gap_s": {
+        "median": 1.0,
+        "p95": 1.0,
+        "p99": 1.001,
+        "max": 3538789.3
+      },
+      "implied_sampling_hz": 1.0
+    },
+    "labels": {
+      "traffic_type": {
+        "1": 34580,
+        "0": 10664
+      },
+      "attack_category": {
+        "DDoS": 15084,
+        "Benign": 10664,
+        "Probe": 8445,
+        "DoS": 4721,
+        "Web Attacks": 3273,
+        "BruteForce": 3057
+      },
+      "attack_subcategory_n": 19,
+      "attack_prevalence_pct": 76.43
+    },
+    "sessions": {
+      "gap_threshold_s": 300,
+      "n_sessions": 30,
+      "label_pure": 30,
+      "label_pure_pct": 100.0,
+      "records_per_session": {
+        "median": 1009.5,
+        "min": 47,
+        "max": 5727
+      },
+      "sessions_per_category": {
+        "Benign": 10,
+        "BruteForce": 3,
+        "DDoS": 6,
+        "DoS": 3,
+        "Probe": 3,
+        "Web Attacks": 5
+      },
+      "sensitivity": {
+        "30": 48,
+        "60": 46,
+        "300": 30,
+        "900": 21
+      }
+    },
+    "group_keys": [
+      {
+        "key": "ue_id",
+        "n_groups": 9,
+        "null_pct": 0.0,
+        "largest_group_share": 0.6079,
+        "verdict": "TIGHT"
+      },
+      {
+        "key": "cellid",
+        "n_groups": 1,
+        "null_pct": 0.0,
+        "largest_group_share": 1.0,
+        "verdict": "TOO FEW"
+      },
+      {
+        "key": "rnti",
+        "n_groups": 45,
+        "null_pct": 3.404,
+        "largest_group_share": 0.1086,
+        "verdict": "OK"
+      },
+      {
+        "key": "attack_subcategory",
+        "n_groups": 19,
+        "null_pct": 0.0,
+        "largest_group_share": 0.2357,
+        "verdict": "OK"
+      },
+      {
+        "key": "session",
+        "n_groups": 30,
+        "null_pct": 0.0,
+        "largest_group_share": 0.1266,
+        "verdict": "OK"
+      }
+    ],
+    "windowing_A12": {
+      "policy": "min_records=16, short_flow_policy=drop",
+      "grouping": "(session, ue_id)",
+      "n_groups": 48,
+      "groups_with_enough_records": 48,
+      "complete_windows": 2808,
+      "records_dropped_by_policy": 316,
+      "drop_rate_pct": 0.7
+    }
+  },
+  "network": {
+    "name": "Network_Dataset.csv",
+    "n_rows": 1723817,
+    "n_cols": 26,
+    "columns": {
+      "uid": "object",
+      "src_ip": "object",
+      "src_port": "int64",
+      "dst_ip": "object",
+      "dst_port": "int64",
+      "proto": "object",
+      "service": "object",
+      "duration": "float64",
+      "src_bytes": "float64",
+      "dst_bytes": "float64",
+      "conn_state": "object",
+      "missed_bytes": "int64",
+      "history": "object",
+      "src_pkts": "int64",
+      "src_ip_bytes": "int64",
+      "dst_pkts": "int64",
+      "dst_ip_bytes": "int64",
+      "ip_proto": "int64",
+      "http_trans_depth": "int64",
+      "attack_category": "object",
+      "attack_type": "object",
+      "files_total_bytes": "float64",
+      "is_GET_mthd": "int64",
+      "http_status_error": "int64",
+      "is_file_transfered": "int64",
+      "traffic_type": "int64"
+    },
+    "null_rate_pct": {},
+    "exact_duplicate_rows": 83635,
+    "exact_duplicate_pct": 4.8517,
+    "labels": {
+      "attack_category": {
+        "dos": 632507,
+        "ddos": 420282,
+        "web": 288304,
+        "probe": 183293,
+        "benign": 170865,
+        "bruteforce": 28566
+      },
+      "traffic_type": {
+        "1": 1552952,
+        "0": 170865
+      }
+    },
+    "group_keys": [
+      {
+        "key": "uid",
+        "n_groups": 1604266,
+        "null_pct": 0.0,
+        "largest_group_share": 0.0188,
+        "verdict": "OK"
+      },
+      {
+        "key": "src_ip",
+        "n_groups": 318,
+        "null_pct": 0.0,
+        "largest_group_share": 0.3383,
+        "verdict": "OK"
+      }
+    ]
+  }
+}

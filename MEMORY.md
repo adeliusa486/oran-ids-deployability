@@ -8,20 +8,31 @@
 
 ## Current Phase
 
-Phase 0 complete. **Phase 1 (dataset discovery and source corpus verification) is next.**
+Phase 1 in progress. EXP-000 and EXP-001 complete. **Phase 2 is blocked** on the
+claim-C5 route decision (D-008), which also revisits D-004.
 
 ## Current Experiment
 
-EXP-000 complete. **EXP-001 is next**: download and verify NetsLab-5GORAN-IDD at the
-artefact level.
+EXP-001 complete (`PASS_WITH_LIMITATIONS`). **Next: D-008 must be settled**, then
+either EXP-001c (re-extract from the raw archives) or EXP-002 (pipeline) depending on
+the route chosen. Unblocked work meanwhile: B-007 dedup policy, B-008 label map,
+B-010 split-protocol change, and reading P03/P04/P05 in full.
 
 ## Overall Status
 
-The repository is a planning artefact with 0 lines of research code and four live,
-correctly failing guards. The manuscript is structurally complete with every numeric
-value synthetic and machine-detectably marked. The project's declared blocker (gate A1,
-unidentified source corpus) is **provisionally resolved**; the binding constraint is now
-artefact-level verification, not corpus discovery.
+The repository is a planning artefact with 0 lines of research *pipeline* code (two
+verification scripts now exist) and four live, correctly failing guards. The manuscript
+is structurally complete with every numeric value synthetic and machine-detectably
+marked.
+
+Gate A1 is **closed**: `D_A` is NetsLab-5GORAN-IDD, downloaded, checksummed and
+profiled. The corpus is real and usable for RQ1, RQ2 and RQ3.
+
+The binding constraint is now **claim C5**. The CU flow records and the DU radio
+telemetry **cannot be joined at record level** from the published summary artefacts:
+the network CSV carries no time column and shares no identifier with the radio layer.
+C5's pre-registered failure criterion fired. Three routes exist (EXP-001 §5); the
+recommended one reverses D-004 and costs a 16.4 GB download.
 
 ---
 
@@ -55,6 +66,59 @@ artefact-level verification, not corpus discovery.
 - **Files:** see `reports/experiments/EXP-000.md`
 - **Git commit:** see Git Commit History below
 - **Next step:** EXP-001
+
+### EXP-001 — Artefact-level verification of `D_A`
+
+- **Date:** 2026-09-20 | **Phase:** 1 | **Gate:** G1 -> `PASS_WITH_LIMITATIONS`
+- **Research question:** does NetsLab-5GORAN-IDD contain what its descriptor implies,
+  at the granularity our split design (A4) and windowing (A12) require?
+- **Hypothesis (pre-registered):** H0-data -- the corpus exposes a device or run
+  identifier, a usable timestamp, and CU-DU alignment sufficient to join the layers.
+  **PARTIALLY FALSIFIED.** First two hold, third does not.
+- **Baseline:** n/a (verification)
+- **Method:** download from the Zenodo REST API, SHA-256, schema and label profiling,
+  group-key feasibility, session recovery from the time axis, a four-level join test.
+  Re-runnable: `scripts/exp001_profile_corpus.py`, `scripts/exp001_join_analysis.py`
+- **Dataset:** `Lower_Layer_Data.db` (5.4 MB) and `Network_Dataset.csv` (227.2 MB)
+- **Seeds:** n/a. Pre-registered parameters: session gap 300 s, window 16 records,
+  5 folds, join tolerance 1.0 s
+- **Main result:**
+  1. **Radio layer:** 45,244 records, 25 cols, 0 exact duplicates, **1.0 Hz sampling**,
+     span **52.96 days** (2025-05-09 to 2025-07-01), attack prevalence 76.43%
+  2. **Network layer:** 1,723,817 flows, 26 cols, Zeek-derived, attack prevalence
+     **90.09%**, **4.85% exact duplicate rows**, **6.94% duplicate Zeek uids**,
+     and **no time column at all**
+  3. **Run identifier recovered:** segmenting the radio time axis at a 300 s idle gap
+     gives **30 sessions, 100% label-pure**. This is the group key
+  4. **Device-disjoint splitting is NOT supportable**: `ue_id` has 9 values and one
+     holds 60.8%; `cellid` is constant; `rnti` is reassigned. The manuscript's stated
+     protocol must change to **run-disjoint**
+  5. **CU/DU record-level join is IMPOSSIBLE** from these artefacts (L0 no shared
+     identifier, L1 no shared time axis). Only an L2/L3 run- or category-level
+     association via a hand-written mapping, with **zero exact string overlap**
+     between the 19 radio subcategories and the 15 network attack types
+  6. **A12 resolved cleanly:** 2,808 complete 16-record windows, **0.70% drop rate**
+  7. **EXP-000's ~1.5 TB size figure was WRONG.** The whole record is **16.85 GB**
+- **Statistical result:** none. Class-balance divergence between layers is large
+  (dos differs by 26.3 pp, benign by 13.7 pp), so the layers are not aligned samples
+  of the same events
+- **Unexpected:** (a) a clean 53-day 1 Hz time axis, which upgrades Phase 12 drift
+  analysis from speculative to grounded; (b) sessions are 100% label-pure; (c) a 600x
+  asymmetry between the modalities (2,808 windows against 1.7 M flows); (d) Probe is
+  labelled in both summaries but **no `Probe.zip` is published**
+- **Bugs:** B-007 (duplicates and non-unique uids), B-008 (label vocabularies differ
+  across layers), B-009 (Probe labelled but no raw capture), B-010 (manuscript's
+  device-disjoint protocol is not supportable)
+- **Interpretation:** "multi-modal" in this corpus means the layers were captured in
+  parallel, not that they correspond record by record. The descriptor never claimed
+  correspondence; we assumed it. That assumption was ours and it was wrong, which is
+  precisely what the gate was written to catch
+- **Effect on manuscript:** C5 held open pending D-008; split protocol changes to
+  run-disjoint; window must be described as 16 seconds; the Probe discrepancy and the
+  duplicate rates must appear in the data section
+- **Files:** see `reports/experiments/EXP-001.md`
+- **Git commit:** see Git Commit History below
+- **Next step:** settle D-008
 
 ---
 
@@ -111,13 +175,16 @@ Added by EXP-000: **I13**, a non-learned cross-layer consistency baseline (from 
 
 | Role | Corpus | Status |
 |---|---|---|
-| Source `D_A` | **NetsLab-5GORAN-IDD** | **candidate, unverified.** DOI `10.1109/IEEEDATA.2025.3614167`; Zenodo 18923275; Kaggle `10.34740/kaggle/ds/7416931`; CC-BY-4.0. Raw `.pcap` at O-CU + 22 PHY/MAC radio metrics from O-DU over E2 + Zeek logs. 6 classes. OAI testbed at UCD: 1 O-CU, 2 O-DU, 1 O-RU, Dell Precision 7920, 2 physical UEs. **~1.5 TB total**; `Network_Dataset.csv` 227 MB, `Lower_Layer_Data.db` 5.4 MB |
+| Source `D_A` | **NetsLab-5GORAN-IDD** | **VERIFIED (partial) by EXP-001.** Downloaded, checksummed, profiled. Radio: 45,244 records, 1 Hz, 53-day span, group key `session` (n=30, 100% label-pure), 2,808 windows at 0.70% drop. Network: 1,723,817 Zeek flows, **no time column**, 4.85% duplicate rows, 6.94% duplicate uids, `src_ip` n=318. **CU/DU record-level join impossible.** Whole Zenodo record is **16.85 GB**, not 1.5 TB. Original landing-page notes: DOI `10.1109/IEEEDATA.2025.3614167`; Zenodo 18923275; Kaggle `10.34740/kaggle/ds/7416931`; CC-BY-4.0. Raw `.pcap` at O-CU + 22 PHY/MAC radio metrics from O-DU over E2 + Zeek logs. 6 classes. OAI testbed at UCD: 1 O-CU, 2 O-DU, 1 O-RU, Dell Precision 7920, 2 physical UEs. **~1.5 TB total**; `Network_Dataset.csv` 227 MB, `Lower_Layer_Data.db` 5.4 MB |
 | Target `D_B` | **5G-NIDD** | resolved, not downloaded. DOI `10.21227/xtep-hv36`. Raw pcapng published (BS1 2.2 GB, BS2 1.45 GB) — this is what makes the A3 single-exporter control feasible. No radio KPIs. `group_key: src_ip`. `role: transfer_only` |
 | External | **O-RAN E2SM-KPM DoS dataset** | candidate for Phase 13. `10.5281/zenodo.21198102`, MIT, 69.8 MB, University of Regina. Zenodo record has no description; feature overlap unknown |
 
-**Unknown for `D_A`, and all of it blocks split design:** record counts, label column
-names, per-record timestamps, device/run identifiers, CU–DU synchronisation tolerance,
-class balance, duplicate rate.
+**Resolved by EXP-001:** record counts, label columns, timestamps, run identifiers,
+class balance and duplicate rates are all now measured and recorded in
+`configs/corpora/d_a.yaml`.
+
+**Still unknown:** whether an L1 time join is recoverable from the raw per-category
+archives (EXP-001c), and the exact Zeek/Argus feature intersection with `D_B`.
 
 ---
 
@@ -176,6 +243,10 @@ baseline; **I14** per-stage latency breakdown; **I15** widen or bound the threat
 | B-004 | environment | xgboost, onnx, onnxruntime, scapy, hypothesis not installed | 3 |
 | B-005 | environment | no conda on PATH; `environment.yml` assumes it | 3 |
 | B-006 | fixed | registry YAML parse error (unquoted `x: 0.0`) | closed 2026-09-20 |
+| B-007 | data | `Network_Dataset.csv`: 83,635 exact duplicate rows (4.85%) and 119,551 duplicate Zeek `uid`s (6.94%). Dedup and uid-namespacing policy must be declared **before** splits are drawn, or one connection can land in both train and test | 2 |
+| B-008 | data | Label vocabularies differ across layers (`dos`/`DoS`, `web`/`Web Attacks`). Commit a canonical mapping table | 2 |
+| B-009 | provenance | Probe is labelled in both summaries (8,445 radio, 183,293 network) but no `Probe.zip` is published. Probe features cannot be re-extracted from raw packets | report in the paper |
+| B-010 | methodology | The manuscript states device-disjoint splitting for `D_A`; the corpus cannot support it at 5 folds. Change to run-disjoint | 2 |
 
 ---
 
@@ -202,10 +273,13 @@ baseline; **I14** per-stage latency breakdown; **I15** widen or bound the threat
 
 ## Open Questions
 
-1. Does `D_A` expose a usable per-record device or run identifier? *(blocks A4)*
-2. Can CU flow records be joined to DU radio telemetry, and at what time-alignment
-   error? *(blocks C5 entirely — if not, C5 is withdrawn, not weakened)*
-3. What is `D_A`'s true class balance and duplicate rate?
+1. ~~Does `D_A` expose a usable per-record device or run identifier?~~ **ANSWERED
+   (EXP-001):** not a device one, but `session` (n=30, 100% label-pure) works.
+2. ~~Can CU flow records be joined to DU radio telemetry?~~ **ANSWERED (EXP-001): NO**,
+   not from the published summary artefacts. Open follow-up: can an L1 time join be
+   recovered from the raw per-category archives? *(EXP-001c, blocks C5)*
+3. ~~What is `D_A`'s class balance and duplicate rate?~~ **ANSWERED (EXP-001):** radio
+   76.43% attack with 0 duplicates; network 90.09% attack with 4.85% duplicate rows.
 4. What windowing did P03 use, and does ours reproduce their 27–46% DoS→Benign confusion?
 5. Does the `Δ_F1` ordering across architectures survive a change of evaluation protocol?
    *(I12, raised by P14)*
@@ -295,8 +369,16 @@ withdrawn, not weakened.
 - **Do not build an inference-cost latency story.** P04 measured 1–5 µs in a real xApp.
 - **Do not describe an emulated measurement as a real deployment.**
 - **Do not select a baseline, threshold, seed or split after seeing target results.**
-- **Do not re-search gate A1 as though it were open.** It is provisionally closed;
-  the open item is verification.
+- **Do not re-search gate A1 as though it were open.** It is **closed** — `D_A` is
+  verified at artefact level.
+- **Do not describe `D_A` as record-level multi-modal.** The layers were captured in
+  parallel; they do not correspond row by row, and from the published summaries they
+  cannot be joined at all.
+- **Do not state device-disjoint splitting for `D_A`.** It is not supportable (B-010).
+  The protocol is run-disjoint, on the recovered `session` key.
+- **Do not quote the ~1.5 TB corpus size.** It was wrong. The record is 16.85 GB.
+- **Do not draw a split on the network layer before the dedup and uid-namespacing
+  policy is declared** (B-007) — 6.94% of Zeek `uid`s are duplicated.
 
 ---
 
@@ -343,8 +425,9 @@ withdrawn, not weakened.
 - Adopting the corpus means **inheriting prior work on it** (Fard et al., IEEE CSR 2026)
   and giving up half of claim C5. The plan's decision table did not anticipate this cost
   of the cheap option.
-- The A3 single-exporter control collides with reality: `D_A` raw is ~1.5 TB against
-  `D_B`'s ~3.65 GB.
+- The A3 single-exporter control was believed to collide with reality: `D_A` raw at
+  ~1.5 TB against `D_B`'s ~3.65 GB. **CORRECTION 2026-09-20 (EXP-001): the ~1.5 TB figure recorded by EXP-000 was WRONG. It came from a page summary, not from the record. The Zenodo API gives the whole record as 16.85 GB: five pcap zips totalling 16.40 GB (Benign 5.94, DoS 3.47, DDOS 3.09, BruteForce 3.32, Web 0.59) plus 0.44 GB of summary artefacts.** `D_A` raw is ~4.5x `D_B`, not
+  ~400x. Appended rather than rewritten, per this file's own rule.
 
 ## What Failed Technically
 

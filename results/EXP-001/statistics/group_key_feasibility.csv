@@ -1,0 +1,6 @@
+key,n_groups,null_pct,largest_group_share,verdict
+ue_id,9,0.0,0.6079,TIGHT
+cellid,1,0.0,1.0,TOO FEW
+rnti,45,3.404,0.1086,OK
+attack_subcategory,19,0.0,0.2357,OK
+session,30,0.0,0.1266,OK

@@ -78,7 +78,7 @@ what EXP-000 established.
 |---|---|---|---|
 | A1 | `D_A` is not a citable artefact | 🔴 BLOCKER | **Provisionally resolved** via option A1-b — see §6 |
 | A2 | Per-corpus normalisation leaks target information | 🔴 | Unresolved; mitigation is designed (`normalisation_modes` in `configs/base.yaml`) but unimplemented |
-| A3 | Extractor confound | 🔴 | Unresolved, and **newly complicated**: `D_A` raw pcaps total ~1.5 TB (see §6) |
+| A3 | Extractor confound | 🔴 | Unresolved. *(Size figure in §6 corrected by EXP-001: 16.85 GB, not 1.5 TB.)* |
 | A4 | Grouping key undefined for `D_B` | 🟠 | Partially addressed in config (`group_key: src_ip`); `D_A` key still `null` |
 | A5 | Five seeds measure the wrong variance | 🟠 | Addressed in config (5 split × 3 model seeds); unimplemented |
 | A6 | π and λ_b unsourced | 🟠 | Addressed in config (declared parameter + sweep); unimplemented |
@@ -141,7 +141,10 @@ and it means the radio-KPI ablation (C5) does not have to be abandoned.
    resolved, not resolved.
 
 2. **It creates a new problem for A3.** The plan's non-negotiable is one exporter over
-   both corpora from raw packet captures. `D_A`'s raw captures total ~1.5 TB; `D_B`'s
+   both corpora from raw packet captures. `D_A`'s raw captures were recorded here as
+   ~1.5 TB. **CORRECTION 2026-09-20 (EXP-001): the ~1.5 TB figure recorded by EXP-000 was WRONG. It came from a page summary, not from the record. The Zenodo API gives the whole record as 16.85 GB: five pcap zips totalling 16.40 GB (Benign 5.94, DoS 3.47, DDOS 3.09, BruteForce 3.32, Web 0.59) plus 0.44 GB of summary artefacts.** The sentence below is retained as written, with this
+   correction attached, because the record is appended to rather than rewritten.
+   `D_A`'s raw captures total ~1.5 TB; `D_B`'s
    are ~3.65 GB. Running one exporter over both at full scale is not feasible on the
    hardware available. A documented, pre-registered subsampling policy for `D_A` is now
    required, or the A3 control must be explicitly weakened and the confound measured

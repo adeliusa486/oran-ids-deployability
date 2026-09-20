@@ -1,0 +1,14 @@
+{
+  "Lower_Layer_Data.db": {
+    "status": "present",
+    "bytes": 5402624,
+    "sha256": "d76fe7df11379223948e624d0f19bcd5caf744a2b6ce20d1ee2143644199ab64",
+    "source": "https://zenodo.org/api/records/18923275"
+  },
+  "Network_Dataset.csv": {
+    "status": "present",
+    "bytes": 227184406,
+    "sha256": "656ff0fe4a5b2a4234a6916d2a24e57ba96a1302fb01f5ea3d32aea3090420f9",
+    "source": "https://zenodo.org/api/records/18923275"
+  }
+}

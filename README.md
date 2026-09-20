@@ -23,7 +23,10 @@ Two structural decisions were taken on 2026-09-20 (`configs/decisions.md`):
 
 - **D-004** — published features are used on **both** sides (`D_A` Zeek/CSV,
   `D_B` Argus CSV). The A3 single-exporter control is **not** applied, because
-  `D_A`'s raw captures total ~1.5 TB. Consequence: `Δ_F1` conflates deployment
+  `D_A`'s raw captures were believed to total ~1.5 TB. **That figure was wrong**
+  (actual: 16.85 GB — see `reports/experiments/EXP-001.md`), so the premise of
+  this decision no longer holds and it is flagged for revisit. Consequence while
+  it stands: `Δ_F1` conflates deployment
   shift with exporter differences and is an **upper bound**, not an estimate.
   Mitigations M1 (measure the exporter-only `Δ_F1` on `D_B`, where deployment
   shift is zero by construction — EXP-001b) and M2 (feature-intersection

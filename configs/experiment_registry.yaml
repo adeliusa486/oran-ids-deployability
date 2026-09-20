@@ -48,8 +48,13 @@ gates:
       - CU-DU synchronisation tolerance established
       - licence permits redistribution of derived features
       - the Zeek/Argus semantically-comparable feature intersection is ENUMERATED and its size reported
-    status: BLOCKED
-    blocked_on: artefact not yet downloaded
+    status: PASS_WITH_LIMITATIONS
+    closed: 2026-09-20
+    limitation: >
+      Passes for RQ1/RQ2/RQ3, which need only the network layer plus D_B. Does NOT pass
+      for claim C5: the CU/DU record-level join is impossible from the published summary
+      artefacts (no time column in the network CSV, no shared identifier), so C5's
+      pre-registered failure criterion fired. C5 is held open pending a route decision.
     note: >
       D-004 decided 2026-09-20 in favour of published features on both sides, so the A3
       single-exporter control is not applied. Mitigations M1 and M2 are mandatory and
@@ -135,7 +140,42 @@ experiments:
       - no usable group key  -> D-001 reverses, fall back to plan option A1-c
       - CU-DU join impossible -> claim C5 is withdrawn, not weakened
     decisions_required: []
+    outcome: >
+      Group key FOUND: 'session', 30 recovered capture runs, 100 pct label-pure, from a
+      53-day 1 Hz time axis. Device-disjoint splitting is NOT supportable (ue_id has 9
+      values, one holding 60.8 pct), so the manuscript's stated protocol must change to
+      run-disjoint. CU/DU record-level join NOT possible -- the network CSV carries no
+      time column and shares no identifier with the radio layer. C5's failure criterion
+      fired. EXP-000's ~1.5 TB size figure was wrong; the record is 16.85 GB.
+    bugs_opened: [B-007, B-008, B-009, B-010]
+    report: reports/experiments/EXP-001.md
     gate: G1
+
+  EXP-001c:
+    title: "Cross-layer re-extraction from raw archives (route (a) for claim C5)"
+    phase: 1
+    claims: [C5]
+    status: planned_pending_decision
+    depends_on: [EXP-001]
+    blocked_on: "D-008, the C5 route decision, which also revisits D-004"
+    research_question: >
+      Can an L1 time-axis join between CU flow records and DU radio telemetry be
+      recovered from the raw per-category archives?
+    method:
+      - download the five per-category zips (16.40 GB)
+      - extract .pcap (network_layer/) and .txt (lower_layer/) per category
+      - run one pinned exporter over the pcaps, RETAINING the Zeek ts field
+      - join flow records to radio records on time within a stated tolerance
+      - report the joined fraction and the alignment-error distribution
+    success_criteria:
+      - a stated fraction of flows joins to radio telemetry within a stated tolerance
+      - the joined fraction is reported per attack category, not only in aggregate
+    failure_criteria:
+      - "join fraction too low to support an ablation -> C5 is withdrawn, not weakened"
+    note: >
+      Prior work (Fard et al., IEEE CSR 2026) fuses these modalities, which is evidence
+      this route is achievable. Running it also reinstates the A3 single-exporter control
+      on the D_A side, so it resolves the C5 route and the D-004 premise correction at once.
 
   EXP-001b:
     title: "Exporter-confound bound (mitigation M1 for D-004)"

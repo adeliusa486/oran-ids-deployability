@@ -1,0 +1,125 @@
+{
+  "experiment": "EXP-001",
+  "question": "CU/DU join feasibility",
+  "shared_columns": [
+    "attack_category",
+    "traffic_type"
+  ],
+  "L0_record_id": {
+    "radio_identifiers": [
+      "cellid",
+      "rnti",
+      "ue_id"
+    ],
+    "network_identifiers": [
+      "dst_ip",
+      "dst_port",
+      "src_ip",
+      "src_port",
+      "uid"
+    ],
+    "shared": [],
+    "possible": false
+  },
+  "L1_time": {
+    "radio_time_columns": [
+      "timestamp"
+    ],
+    "network_time_columns": [],
+    "possible": false,
+    "tolerance_s": 1.0,
+    "note": "Network_Dataset.csv carries no time field. Zeek's conn.log 'ts' was dropped when the summary CSV was built, so there is no axis to join on."
+  },
+  "L2_run": {
+    "radio_subcategories": {
+      "n": 19,
+      "values": [
+        "Benign",
+        "BruteForce_FTP",
+        "BruteForce_SSH",
+        "DDoS_ACK",
+        "DDoS_ICMP",
+        "DDoS_SYN",
+        "DDoS_Slowloris",
+        "DDoS_UDP",
+        "DoS_ACK",
+        "DoS_ICMP",
+        "DoS_SYN",
+        "DoS_Slowloris",
+        "DoS_UDP",
+        "Probe_OsFingerprinting",
+        "Probe_PortScan",
+        "Web_Directory_Bruteforce",
+        "Web_HTTP_Bruteforce",
+        "Web_SQL_Injection",
+        "Web_XSS"
+      ]
+    },
+    "network_attack_types": {
+      "n": 15,
+      "values": [
+        "benign",
+        "dir_bruteforce",
+        "ftp",
+        "http_flood",
+        "icmp",
+        "os_fingerprinting",
+        "portscan_tcp",
+        "portscan_udp",
+        "slowloris",
+        "sql_injection",
+        "ssh",
+        "syn",
+        "tcp_ack",
+        "udp",
+        "xss"
+      ]
+    },
+    "exact_string_overlap": [],
+    "unmapped_radio_categories": [],
+    "unmapped_network_categories": [],
+    "possible_at_category_level": true,
+    "note": "Subcategory vocabularies differ in both spelling and granularity (radio 19 values, network 15). A run-level join needs a hand-written, auditable mapping table, not a string match."
+  },
+  "class_balance_divergence": {
+    "benign": {
+      "radio_pct": 23.57,
+      "network_pct": 9.91,
+      "abs_diff": 13.66
+    },
+    "bruteforce": {
+      "radio_pct": 6.76,
+      "network_pct": 1.66,
+      "abs_diff": 5.1
+    },
+    "ddos": {
+      "radio_pct": 33.34,
+      "network_pct": 24.38,
+      "abs_diff": 8.96
+    },
+    "dos": {
+      "radio_pct": 10.43,
+      "network_pct": 36.69,
+      "abs_diff": 26.26
+    },
+    "probe": {
+      "radio_pct": 18.67,
+      "network_pct": 10.63,
+      "abs_diff": 8.04
+    },
+    "web": {
+      "radio_pct": 7.23,
+      "network_pct": 16.72,
+      "abs_diff": 9.49
+    }
+  },
+  "attack_prevalence_pct": {
+    "radio": 76.43,
+    "network": 90.09
+  },
+  "verdict": {
+    "level": "L2/L3",
+    "description": "run- or category-level join only, via a hand-written mapping"
+  },
+  "consequence_for_C5": "A record-level join is NOT possible from the published summary artefacts. The network CSV has no time field and no UE identifier; the radio DB has no flow or IP identifier. Claim C5 as written requires a joined feature vector, so from these artefacts alone it cannot be evaluated. Three routes remain: (a) re-extract from the raw per-category archives, whose .pcap and .txt files both carry timestamps, which means downloading the 16.4 GB and reversing decision D-004; (b) restrict C5 to run-level late fusion, which is a weaker and different claim and must be renamed; (c) withdraw C5. Note that prior work (Fard et al., IEEE CSR 2026) does fuse these modalities, which is evidence that route (a) is achievable."
+}

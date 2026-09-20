@@ -74,6 +74,25 @@ spread pre-empts the A2 criticism rather than hiding from it.
 **Option (b): use `D_A`'s published Zeek/CSV features and `D_B`'s published Argus CSV.**
 The A3 single-exporter control is **not** applied.
 
+> ### ⚠ PREMISE CORRECTION — 2026-09-20, EXP-001
+>
+> **The size figure this decision rested on was wrong.** EXP-000 recorded `D_A` raw
+> captures as ~1.5 TB, taken from a page summary rather than from the record. The
+> Zenodo REST API gives the **entire record as 16.85 GB**: five pcap zips totalling
+> 16.40 GB (Benign 5.94, DoS 3.47, DDOS 3.09, BruteForce 3.32, Web 0.59) plus 0.44 GB
+> of summary artefacts.
+>
+> `D_A` raw is therefore about **4.5x** `D_B` raw, not about **400x**. Option (a) —
+> a stratified pcap subsample with one exporter over both corpora — is affordable, and
+> so in fact is option (d), running one exporter over *everything*, at roughly 17 GB of
+> download and ordinary single-machine compute.
+>
+> **The infeasibility premise behind this decision does not hold.** The decision stands
+> only because it was taken by the owner; it is flagged for revisit and the mitigations
+> below remain mandatory while it stands. If it is revisited and reversed, `I1` is
+> reinstated, `M1` becomes the full two-corpus T-A3 agreement study, and claim C2 can be
+> stated as deployment shift rather than as deployment-shift-plus-exporter.
+
 ### Consequences, stated plainly
 
 This is the option the plan called non-negotiable-against. The owner was shown the
@@ -263,3 +282,58 @@ result than a pass/fail table, and it directly answers the question an operator 
 
 Equation (7) in the manuscript should be re-expressed as a function of `B`, with the
 `B = 10 ms` case reported as the strict instance rather than as the definition.
+
+---
+
+## D-008 — Route for claim C5 after the CU/DU join failed
+
+- **Phase:** 1 (raised by EXP-001)
+- **Status:** `OPEN — BLOCKING for Phase 2 and for claim C5`
+- **Raised by:** EXP-001, 2026-09-20
+
+### What happened
+
+EXP-001's pre-registered failure criterion fired:
+
+> *"CU–DU join impossible → claim C5 is withdrawn, not weakened."*
+
+Measured, from the artefacts (`results/EXP-001/statistics/join_analysis.json`):
+
+| Join level | Result |
+|---|---|
+| L0, shared record identifier | **impossible.** Radio has `ue_id`, `rnti`, `cellid`; network has `uid`, `src_ip`, `dst_ip`, ports. Intersection empty |
+| L1, shared time axis | **impossible.** The radio DB has `timestamp`; `Network_Dataset.csv` has **no time column** — Zeek's `ts` was dropped when the summary was built |
+| L2/L3, run or category level | possible, but only through a hand-written mapping: 19 radio subcategories against 15 network attack types, **zero exact string overlap** |
+
+The two layers also differ sharply in composition (dos 10.4% radio against 36.7%
+network; attack prevalence 76.4% against 90.1%), so even a category-level join
+associates populations that are not the same sample.
+
+### Options
+
+| Route | Cost | Consequence for C5 |
+|---|---|---|
+| **(a) Re-extract from the raw per-category archives** — `.pcap` and the per-category radio `.txt` both carry timestamps, so an L1 time join is recoverable | 16.4 GB download, one exporter run, build and validate the join (EXP-001c) | **C5 survives intact.** Also reinstates the A3 single-exporter control on the `D_A` side, so it resolves the D-004 premise correction at the same time |
+| **(b) Restrict C5 to run-level late fusion** | cheap | A **different, weaker claim**. Run-level fusion cannot show that radio features are deployment-specific *within* a flow. It must be **renamed**, not relabelled |
+| **(c) Withdraw C5** | free | The pre-registered outcome. The paper survives on RQ1–RQ3; the gap matrix's G6 is dropped |
+
+### Recommendation
+
+**Route (a).** Three reasons, none of them "we want the claim to survive":
+
+1. The cost premise that ruled it out has already been corrected — 16.4 GB, not 1.5 TB.
+2. Prior work on this corpus (Fard et al., IEEE CSR 2026) fuses these modalities, so
+   the join demonstrably exists in the raw data. Route (a) is not speculative.
+3. It fixes two problems with one action: C5 becomes evaluable, and the A3 control is
+   restored on the `D_A` side, which upgrades `Δ_F1` from an upper bound to an estimate.
+
+If route (a) is chosen, EXP-001c runs next and D-004 is formally reversed for `D_A`.
+If route (b) or (c) is chosen, C5's text changes in the manuscript before any
+experiment is run, not after.
+
+### Guard against the wrong kind of reasoning
+
+Route (a) must be judged on whether the join *exists*, not on whether it rescues the
+claim. EXP-001c has its own pre-registered failure criterion: if the joined fraction is
+too low to support an ablation, **C5 is withdrawn**, and route (a) having been attempted
+is not a reason to weaken that.

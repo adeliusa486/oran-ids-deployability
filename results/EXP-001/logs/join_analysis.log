@@ -1,0 +1,28 @@
+=== CU / DU JOIN ANALYSIS ===
+shared columns between the two layers: ['attack_category', 'traffic_type']
+L0 record-level identifier : NOT POSSIBLE
+     radio ids  : ['cellid', 'rnti', 'ue_id']
+     network ids: ['dst_ip', 'dst_port', 'src_ip', 'src_port', 'uid']
+L1 time-axis join          : NOT POSSIBLE
+     radio time cols  : ['timestamp']
+     network time cols: NONE
+L2 run-level join          : POSSIBLE via mapping
+     radio subcategories: 19
+     network attack_types: 15
+     exact string overlap: NONE
+
+VERDICT: L2/L3 - run- or category-level join only, via a hand-written mapping
+
+attack prevalence: radio 76.43%  network 90.09%
+
+class balance divergence (percentage points):
+            radio_pct  network_pct  abs_diff
+cat_n                                       
+benign          23.57         9.91     13.66
+bruteforce       6.76         1.66      5.10
+ddos            33.34        24.38      8.96
+dos             10.43        36.69     26.26
+probe           18.67        10.63      8.04
+web              7.23        16.72      9.49
+
+written -> results\EXP-001\statistics\join_analysis.json

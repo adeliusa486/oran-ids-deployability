@@ -1,21 +1,23 @@
-# A1 CANDIDATE -- identified by EXP-000 (2026-09-20), NOT yet verified.
+# D_A -- VERIFIED AT ARTEFACT LEVEL by EXP-001 on 2026-09-20.
 #
 # Gate A1 asked for a corpus with (i) packet-level traces, (ii) synchronised radio
-# KPIs and (iii) labelled attack traffic, from a real O-RAN deployment. The landing
-# pages for this corpus state all three. That is not the same as having checked.
+# KPIs and (iii) labelled attack traffic, from a real O-RAN deployment. EXP-001
+# downloaded the summary artefacts and checked. Findings, in short:
 #
-# status stays 'candidate_unverified' until EXP-001 has, at artefact level:
-#   - downloaded the files and recorded SHA-256 in data/provenance/
-#   - identified the label column and its value set
-#   - identified a group key with enough distinct values for 5 disjoint splits
-#   - demonstrated the CU flow <-> DU radio join and quantified its time-alignment error
-#   - measured class balance and duplicate rate
-# Every null below is null because it is genuinely unknown. Do not guess any of them.
-# See configs/decisions.md D-001 and D-004.
+#   (i)   packet-level flow features  CONFIRMED (1,723,817 Zeek-derived records)
+#   (ii)  radio KPIs                  CONFIRMED (45,244 records, 22 PHY/MAC metrics, 1 Hz)
+#   (iii) attack labels               CONFIRMED (6 categories, both layers)
+#   SYNCHRONISED between (i) and (ii) NOT CONFIRMED -- and not possible from these
+#         artefacts. The network CSV has no time column and shares no identifier with
+#         the radio layer. See cu_du_join below. Claim C5's pre-registered failure
+#         criterion fired.
+#
+# Full report: reports/experiments/EXP-001.md
+# See configs/decisions.md D-001, D-004 and D-008.
 
 id: d_a_netslab_5goran_idd
-status: candidate_unverified
-resolved_by: EXP-001            # gate G1
+status: verified_partial        # usable for RQ1/RQ2/RQ3; NOT usable for C5 as published
+resolved_by: EXP-001            # gate G1, PASS_WITH_LIMITATIONS
 
 source_doi: "10.1109/IEEEDATA.2025.3614167"     # descriptor, IEEE Data Descriptions 2025
 source_url: "https://zenodo.org/records/18923275"
@@ -23,33 +25,169 @@ mirror_urls:
   - "https://doi.org/10.34740/kaggle/ds/7416931"
   - "https://netslab.ucd.ie/netslab-5g-oran-idd/"
 licence: "CC-BY-4.0"
-source_sha256: null             # fill per file from the download, then commit
+# SHA-256 of what was actually downloaded. Authoritative record:
+# data/provenance/d_a_files.json
+source_sha256:
+  Lower_Layer_Data.db: "d76fe7df11379223948e624d0f19bcd5caf744a2b6ce20d1ee2143644199ab64"
+  Network_Dataset.csv: "656ff0fe4a5b2a4234a6916d2a24e57ba96a1302fb01f5ea3d32aea3090420f9"
 
 # Provenance, as stated on the landing pages (retrieved 2026-09-20).
 testbed: "physical 5G O-RAN testbed, University College Dublin"
 oran_stack: "OpenAirInterface; 1 O-CU, 2 O-DU, 1 O-RU; Dell Precision 7920 O-Cloud edge server; 2 physical UEs"
 attack_classes: [benign, dos, ddos, probe, brute_force, web]
 
-# A3: which artefact we extract from. The whole point of the control is that ONE
-# exporter processes both corpora from raw captures. D-004 decides whether that is
-# affordable here -- D_A raw is ~1.5 TB against D_B's ~3.65 GB.
-use_artefact: pcap
+# A3: which artefact we extract from. D-004 (2026-09-20) decided to use the PUBLISHED
+# features on both sides, so the single-exporter control is not applied. That decision
+# was taken on a size estimate that EXP-001 has since corrected -- see size_correction.
+use_artefact: published_features      # D-004 option (b); was 'pcap'
 artefact_inventory:
-  raw_pcap_zips: {benign_gb: 5.9, dos_gb: 3.5, ddos_gb: 3.1, bruteforce_gb: 3.3, web_gb: 0.594}
-  total_uncompressed_tb: 1.5
-  network_dataset_csv_mb: 227.2
-  lower_layer_data_db_mb: 5.4
-  network_dataset_db_mb: 210.7
-  network_layer_tooling: "Zeek (conn.log, http.log, files.log), captured at the O-CU"
-  radio_layer: "22 PHY/MAC metrics per record, from the O-DU over E2, .txt"
+  # Exact sizes from the Zenodo REST API, 2026-09-20. Authoritative.
+  source: "https://zenodo.org/api/records/18923275"
+  total_record_gb: 16.85
+  raw_pcap_zips_gb: {benign: 5.936, dos: 3.465, ddos: 3.086, bruteforce: 3.321, web: 0.594}
+  raw_pcap_zips_total_gb: 16.40
+  network_dataset_csv_mb: 227.18
+  network_dataset_db_mb: 210.69
+  lower_layer_data_db_mb: 5.40
+  md5:
+    Network_Dataset.csv: "68d0a0c964a1134aca5bd1a287170315"
+    Network_Dataset.db: "03a235bd089cc2e7c01f96f82b14f065"
+    Lower_Layer_Data.db: "c3af05f535b12c547a4dbaf858a25458"
+    Benign.zip: "3739c67aab617d0937629ac29633992b"
+    DoS.zip: "820fe83843ada0ce75360aa2df8ec586"
+    DDOS.zip: "04e0cf80eb5513a98853806a9c35d6a4"
+    BruteForce.zip: "655ef2932b4939871b19de0a4e3ef9cc"
+    Web.zip: "a625b34f04f794f6ed7873b75a88a267"
+size_correction:
+  date: 2026-09-20
+  by: EXP-001
+  was: "~1.5 TB (recorded by EXP-000 from a page summary)"
+  is: "16.85 GB total; 16.40 GB of pcap zips"
+  consequence: >
+    D_A raw is about 4.5x D_B raw, not about 400x. The infeasibility premise behind
+    D-004 does not hold. D-004 is flagged for revisit.
+known_gaps:
+  probe_archive_missing: >
+    The Zenodo description lists six categories (Benign, DoS, DDoS, Probe, BruteForce,
+    Web) but only five zips are published. There is no Probe.zip. CONFIRMED by EXP-001:
+    Probe records ARE present in both summaries (8,445 radio records, 183,293 network
+    flows), so the label set and the published raw captures disagree. Probe features
+    cannot be re-extracted from raw packets. This must be stated in the paper's data
+    section. Bug B-009.
+  versions: >
+    Two versions exist. Kaggle hosts v1 (flooding attacks, limited tool diversity).
+    Zenodo hosts v2 (adds Probe, Brute Force, Web; multiple tools per subcategory).
+    We use v2. Do not mix the two.
 
-has_radio_kpis: true            # STATED by the descriptor; the join is UNVERIFIED
+tooling:
+  network_layer: "Wireshark capture at the O-CU (.pcap); flow features extracted with Zeek (conn.log, http.log, files.log)"
+  radio_layer: "OAIbox at the O-DU over the E2 interface (.txt); 22 PHY/MAC metrics per record"
+  example_network_features: [src_bytes, protocol, duration, http_status_error, is_file_transferred]
+  example_radio_features: [RSRP, CQI, RSSI, SINR, MCS, BLER]
+
+attack_tools:
+  dos_ddos: [nping, hping3, slowloris]
+  probe: [nmap, masscan, xprobe2]
+  brute_force: [hydra, medusa]
+  web: [gobuster, sqlmap, dvwa, xsstrike]
+
+benign_traffic: "YouTube streaming, file downloads, browsing, system updates, controlled TCP/UDP via iPerf3"
+
+# Filenames in the raw archives encode attack type and tool, e.g. DoS_SYN_nping3.pcap.
+# EXP-001 did not need them: a run identifier was recovered from the radio time axis
+# instead (see session_recovery). The filename route remains available for EXP-001c,
+# where the raw archives are opened.
+run_id_hypothesis: "SUPERSEDED -- run id recovered from the time axis; see session_recovery"
+
+has_radio_kpis: true            # CONFIRMED: 22 PHY/MAC metrics, 45,244 records
 radio_kpi_count: 22
 
-label_column: null              # A4/EXP-001
-group_key: null                 # A4/EXP-001 -- must exist and is asserted at load
-time_column: null               # EXP-001
-cu_du_join_key: null            # EXP-001 -- if this cannot be established, claim C5 is WITHDRAWN
+# ---- VERIFIED BY EXP-001, 2026-09-20 ---------------------------------------
+verified_by: EXP-001
+verified_on: 2026-09-20
+
+radio_layer:
+  file: Lower_Layer_Data.db
+  table: lower_layer_data
+  n_rows: 45244
+  n_cols: 25
+  exact_duplicate_rows: 0
+  label_column: traffic_type             # 1 = attack, 0 = benign
+  category_column: attack_category       # 6 values
+  subcategory_column: attack_subcategory # 19 values
+  time_column: timestamp                 # epoch MILLISECONDS
+  sampling_hz: 1.0                       # median inter-record gap 1.000 s
+  span: "2025-05-09T14:05:06Z .. 2025-07-01T13:09:17Z (52.96 days)"
+  attack_prevalence_pct: 76.43
+  # A4: device-disjoint splitting is NOT supportable. ue_id has 9 values and one
+  # holds 60.8% of records; cellid is constant; rnti is reassigned, not an identity.
+  group_key: session                     # recovered, see session_recovery
+  group_key_n: 30
+  rejected_group_keys:
+    ue_id: "9 distinct, largest holds 60.8 pct -- folds would be wildly unbalanced"
+    cellid: "1 distinct -- single cell"
+    rnti: "45 distinct but RNTIs are reassigned; not a stable device identity"
+    attack_subcategory: "19 distinct, but grouping on it is ATTACK-disjoint, a different protocol"
+
+session_recovery:
+  method: "maximal stretches with no idle gap longer than gap_threshold_s"
+  gap_threshold_s: 300
+  n_sessions: 30
+  label_pure_pct: 100.0                  # evidence these are real capture runs
+  records_per_session: {median: 1009.5, min: 47, max: 5727}
+  sensitivity: {"30s": 48, "60s": 46, "300s": 30, "900s": 21}
+  artefact: results/EXP-001/processed/radio_sessions.csv
+
+windowing_a12:
+  grouping: [session, ue_id]
+  window_records: 16                     # = 16 seconds at 1 Hz
+  min_records: 16
+  short_flow_policy: drop
+  n_groups: 48
+  complete_windows: 2808
+  records_dropped: 316
+  drop_rate_pct: 0.70
+  warning: >
+    2808 windows of shape 16x22 is a SMALL dataset. Under run-disjoint 5-fold splitting
+    the training set is roughly 2200 sequences. Deep sequence models are not well
+    supported by this sample size; report that as a property of the corpus.
+
+network_layer:
+  file: Network_Dataset.csv
+  n_rows: 1723817
+  n_cols: 26
+  provenance: "Zeek conn.log derived (uid, conn_state, history, missed_bytes)"
+  label_column: traffic_type
+  category_column: attack_category       # lowercase here, Capitalised in the radio layer
+  type_column: attack_type               # 15 values
+  time_column: null                      # Zeek 'ts' was DROPPED from the summary CSV
+  attack_prevalence_pct: 90.09
+  group_key: src_ip                      # 318 distinct, largest 33.8 pct
+  group_key_n: 318
+  exact_duplicate_rows: 83635            # 4.85 pct -- B-007
+  duplicate_uids: 119551                 # 6.94 pct -- uid is NOT unique across the summary
+  dedup_policy: null                     # MUST be declared in Phase 2 before splits are drawn
+
+cu_du_join:
+  record_level: false                    # L0 and L1 both impossible
+  l0_shared_identifier: false            # radio has ue_id/rnti/cellid; network has uid/ip/port
+  l1_shared_time_axis: false             # network CSV has NO time column
+  l2_run_level: "possible only via a hand-written mapping; zero exact string overlap"
+  shared_columns: [attack_category, traffic_type]
+  class_balance_divergence_pp:
+    dos: 26.26
+    benign: 13.66
+    web: 9.49
+    ddos: 8.96
+    probe: 8.04
+    bruteforce: 5.10
+  consequence: >
+    Claim C5 requires a joined feature vector and CANNOT be evaluated from the published
+    summary artefacts. The pre-registered failure criterion fired. Routes: (a) re-extract
+    from the raw per-category archives, whose .pcap and .txt both carry timestamps, which
+    reverses D-004; (b) restrict C5 to run-level late fusion, a different and weaker claim
+    that must be renamed; (c) withdraw C5. Recommended: (a).
+  artefact: results/EXP-001/statistics/join_analysis.json
 
 role: train_and_indist_test
 

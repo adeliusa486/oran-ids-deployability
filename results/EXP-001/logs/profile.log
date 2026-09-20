@@ -1,0 +1,9 @@
+provenance written -> data\provenance\d_a_files.json
+profile written -> results\EXP-001\processed\exp001_profile.json
+
+=== G1 CRITERIA ===
+  PASS  artefact downloaded and checksummed
+  PASS  a group key supports 5 disjoint folds
+  PASS  recovered sessions are label-pure
+  PASS  a usable time axis exists
+  PASS  network layer profiled
