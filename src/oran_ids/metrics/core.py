@@ -106,13 +106,24 @@ def bootstrap_ci(values: np.ndarray, *, n_boot: int = 10_000, alpha: float = 0.0
     Bootstrapping over SPLIT means, not over individual runs, is the point of
     the two-level seed design (plan A5): the dominant uncertainty is which
     groups landed in which fold, not which random state the model used.
+
+    WARNING (D-012): do NOT use this below about n=30. A percentile bootstrap
+    resampling a handful of points with replacement can only produce intervals
+    spanning the observed values, so it understates uncertainty. At n=5 it
+    reported four significant leakage effects that a paired t-test does not
+    support. Use a t-interval at small n; this function warns if asked.
     """
+    import warnings as _w
     values = np.asarray(values, dtype=float)
     values = values[~np.isnan(values)]
     if len(values) == 0:
         return float("nan"), float("nan"), float("nan")
     if len(values) == 1:
         return float(values[0]), float("nan"), float("nan")
+    if len(values) < 30:
+        _w.warn(f"bootstrap_ci called with n={len(values)} (<30): percentile "
+                f"intervals are anti-conservative at this size. Use a "
+                f"t-interval. See D-012.", stacklevel=2)
     rng = np.random.default_rng(seed)
     boots = rng.choice(values, size=(n_boot, len(values)), replace=True).mean(axis=1)
     return (float(values.mean()),

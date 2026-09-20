@@ -579,3 +579,72 @@ group key (318 groups) and 45,244 radio records with a recovered `session` group
 **Do not substitute an unverified mirror to unblock X2.** An unattributable corpus is
 worse than a missing experiment: the missing experiment is a stated limitation, the
 unattributable one is a reproducibility failure.
+
+---
+
+## D-012 — The n=5 bootstrap CIs were anti-conservative; raise n to 20 and re-run
+
+- **Phase:** 15 (statistical audit)
+- **Status:** `DECIDED 2026-09-20`
+- **Raised by:** the Phase 15 audit contradicting the Phase 2 result
+
+### What happened
+
+EXP-002 reported that the leakage effect was significant for 4 of 6 non-trivial
+models, on the basis that a **percentile bootstrap CI over 5 split means excluded
+zero**. The statistical audit then ran the correct paired test on the same data:
+
+| Model | Diff | Bootstrap CI (as reported) | **Paired t 95% CI** | p | p (Holm) |
+|---|---:|---|---|---:|---:|
+| tree | +0.134 | [+0.048, +0.226] | **[−0.007, +0.274]** | 0.057 | 0.401 |
+| xgboost | +0.117 | [+0.029, +0.221] | **[−0.033, +0.266]** | 0.096 | 0.554 |
+| hgb | +0.113 | [+0.027, +0.209] | **[−0.029, +0.256]** | 0.092 | 0.554 |
+| rf | +0.099 | [+0.009, +0.204] | **[−0.054, +0.252]** | 0.148 | 0.590 |
+
+**The earlier significance claim was wrong.** A percentile bootstrap resampling
+5 points with replacement is well known to be anti-conservative: it can only ever
+produce intervals spanning the observed values, so at n=5 it systematically
+understates uncertainty. The paired t-interval is the correct instrument at this
+sample size, and under it **no non-trivial model reaches significance**, corrected
+or uncorrected.
+
+The point estimates did not change. The effect is still large (d_z 0.66–1.18) and
+uniformly positive. What changed is that **n=5 cannot establish it.** The audit's own
+pre-stated power calculation said as much before the tests ran: the minimum effect
+detectable at n=5 with 80% power is d_z ≈ 1.32, larger than anything observed.
+
+### Decision
+
+**Raise the split-seed count to 20 and re-run the leakage audit.** Pre-registered
+before the re-run:
+
+- **n = 20**, chosen from the power calculation, not from the data: 80% power at
+  alpha = 0.05 requires n ≈ 20 to detect d_z = 0.63, which sits below the smallest
+  non-trivial effect observed (mlp, d_z = 0.66).
+- **Run exactly 20 and report whatever results.** Not "add seeds until it becomes
+  significant" — that is the p-hacking this project exists to avoid. If the effect
+  is still not significant at n=20, that is the reported outcome.
+- **The primary interval becomes the paired t-interval.** Bootstrap intervals are
+  retained only where n ≥ 30.
+- **The Holm family stays as it is**, including the trivial baselines. Dropping
+  them now would make the correction less conservative *after* seeing that the
+  correction bites, which is the wrong direction to move.
+
+### Why raising n is legitimate here and not p-hacking
+
+The distinction is whether the stopping rule depends on the result. It does not:
+n = 20 is fixed in advance from a power calculation that was written into the audit
+script *before* the tests ran, the analysis is unchanged, and the outcome will be
+reported either way. What would be illegitimate is re-running at n = 25, 30, 35
+until a p-value crossed 0.05.
+
+### Correction to the record
+
+`reports/experiments/EXP-002_004_005.md` §1 and the EXP-002 commit message both
+state "significant for 4 of 6 non-trivial models". **That is withdrawn.** The
+corrected statement, pending the n=20 re-run, is:
+
+> The leakage effect is large and uniformly positive in point estimate (+0.03 to
+> +0.13 macro-F1, ordered by model capacity), but n = 5 split seeds is underpowered
+> to establish it: no non-trivial model reaches significance under a paired t-test,
+> before or after Holm correction.

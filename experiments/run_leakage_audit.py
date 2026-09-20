@@ -14,10 +14,13 @@ Design (pre-registered before running):
   protocols   random, group_disjoint
   layers      network (src_ip groups), radio (session groups)
   models      the full ladder, including the majority-class floor
-  seeds       5 split seeds x 2 model seeds  (plan A5, two-level)
-  primary     macro-F1 and PR-AUC-benign, NOT accuracy: the corpus is 94.6%
-              attack, so accuracy is uninformative by construction
-  CIs         percentile bootstrap over SPLIT means
+  seeds       20 split seeds x 2 model seeds  (plan A5 two-level; n raised from
+              5 to 20 by D-012 on a power calculation made before the tests)
+  primary     macro-F1 and PR-AUC-benign, NOT accuracy: the corpus is 76.5%
+              attack at window level, so accuracy is uninformative
+  CIs         paired t-interval over SPLIT means. NOT a percentile bootstrap:
+              at n=5 that was anti-conservative and reported four significant
+              effects the correct paired test does not support (D-012)
 
 Hypothesis H-leak: group-disjoint scores are materially lower than random-split
 scores for every non-trivial model.
@@ -43,12 +46,38 @@ from oran_ids.data import load_network, load_radio  # noqa: E402
 from oran_ids.metrics import bootstrap_ci, detection_metrics  # noqa: E402
 from oran_ids.models import LADDER, fit_model, predict_scores  # noqa: E402
 from oran_ids.splits import group_disjoint_split, random_split  # noqa: E402
+from scipy import stats as _st  # noqa: E402
 
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+def interval(vals):
+    """Paired t-interval, not a percentile bootstrap.
+
+    D-012: a percentile bootstrap resampling n=5 points with replacement is
+    anti-conservative -- it can only span the observed values, so it
+    systematically understates uncertainty at small n. It reported four
+    significant leakage effects that the correct paired test does not support.
+    Bootstrap is used only when n >= 30.
+    """
+    v = np.asarray(vals, dtype=float)
+    v = v[~np.isnan(v)]
+    if len(v) < 2:
+        return (float(v[0]) if len(v) else float("nan")), float("nan"), float("nan")
+    if len(v) >= 30:
+        return bootstrap_ci(v, seed=7)
+    if v.std(ddof=1) == 0:
+        return float(v.mean()), float(v.mean()), float(v.mean())
+    lo, hi = _st.t.interval(0.95, len(v) - 1, loc=v.mean(), scale=_st.sem(v))
+    return float(v.mean()), float(lo), float(hi)
+
+
 OUT = Path("results/EXP-002")
-SPLIT_SEEDS = [101, 102, 103, 104, 105]
+# D-012: raised from 5 to 20 on a power calculation written BEFORE the tests ran.
+# n=20 gives 80% power at alpha=0.05 for d_z=0.63, below the smallest non-trivial
+# effect observed at n=5. Run exactly 20 and report whatever results -- the
+# stopping rule must not depend on the outcome.
+SPLIT_SEEDS = list(range(101, 121))
 MODEL_SEEDS = [11, 22]
 PRIMARY = "f1_macro"
 # The network layer has 1.64M rows; fitting the full ladder on all of it for
@@ -129,7 +158,7 @@ def summarise(df: pd.DataFrame) -> pd.DataFrame:
             # average over model seeds within a split seed, then bootstrap over
             # SPLIT means -- the dominant source of variance (plan A5)
             per_split = gp.groupby("split_seed")[PRIMARY].mean().to_numpy()
-            m, lo, hi = bootstrap_ci(per_split, seed=7)
+            m, lo, hi = interval(per_split)
             rec[f"{proto}_{PRIMARY}"] = m
             rec[f"{proto}_lo"] = lo
             rec[f"{proto}_hi"] = hi
@@ -144,7 +173,7 @@ def summarise(df: pd.DataFrame) -> pd.DataFrame:
             common = r.index.intersection(d.index)
             if len(common) >= 2:
                 diffs = (r.loc[common] - d.loc[common]).to_numpy()
-                dm, dlo, dhi = bootstrap_ci(diffs, seed=7)
+                dm, dlo, dhi = interval(diffs)
                 rec.update(delta_mean=dm, delta_lo=dlo, delta_hi=dhi,
                            delta_excludes_zero=bool(dlo > 0 or dhi < 0))
         out.append(rec)

@@ -1,0 +1,4 @@
+file,mb,seconds,flows,mb_per_s,ms_per_flow
+ddos_icmp_hping3.pcap,224.2,52.5,1406,4.3,37.338
+ddos_udp_hping3.pcap,447.0,172.1,38340,2.6,4.49
+ddos_syn_hping3.pcap,1452.5,1320.4,191326,1.1,6.901

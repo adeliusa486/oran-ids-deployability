@@ -1,0 +1,30 @@
+{
+  "measurement_class": "emulated",
+  "question": "Does feature construction dominate per-decision latency? (claim C10)",
+  "feature_extraction_ms_per_flow": {
+    "median": 6.901,
+    "min": 4.49,
+    "max": 37.338,
+    "n_captures": 3,
+    "source": "DDoS pcaps, exporter 1.1.0"
+  },
+  "inference_p50_ms": {
+    "tree": 0.176,
+    "mlp": 0.578,
+    "logreg": 0.629,
+    "xgboost": 0.955,
+    "hgb": 41.956,
+    "rf": 90.785
+  },
+  "ratio_featext_over_inference": {
+    "tree": 39.21,
+    "mlp": 11.94,
+    "logreg": 10.97,
+    "xgboost": 7.23,
+    "hgb": 0.16,
+    "rf": 0.08
+  },
+  "verdict": "C10 is SUPPORTED for the light architectures. Packet-level feature extraction costs a median 6.90 ms per flow against 0.18-0.96 ms of inference for tree, mlp, logreg and xgboost -- 7x to 39x. It does NOT hold for hgb (0.16x) or rf (0.08x), whose inference is itself far slower than extraction.",
+  "caveat_that_must_appear_in_the_paper": "The exporter is a pure-Python reference implementation running at 1.1-4.3 MB/s. A production C or eBPF exporter would be perhaps an order of magnitude faster. The honest claim is therefore NOT 'feature extraction dominates' in absolute terms, but that it is the same order as or larger than inference for every architecture that meets a 10 ms budget -- so optimising the model alone addresses the smaller half of the problem. A native-exporter measurement is required before any stronger statement.",
+  "note_on_variance": "Per-flow cost varies 8x across captures (4.5-37.3 ms) because it is driven by packets-per-flow, not flow count: the ICMP flood has 1,406 flows over 224 MB while the UDP flood has 38,340 over 447 MB. Report the range, not just a median."
+}
