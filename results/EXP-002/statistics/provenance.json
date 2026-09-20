@@ -1,0 +1,45 @@
+{
+  "corpora": {
+    "radio": {
+      "corpus": "d_a_radio_w16",
+      "n_rows": 2808,
+      "n_features": 32,
+      "attack_prevalence_pct": 76.46,
+      "group_key": "session",
+      "n_groups": 30,
+      "categories": {
+        "ddos": 936,
+        "benign": 661,
+        "probe": 526,
+        "dos": 293,
+        "web": 202,
+        "bruteforce": 190
+      },
+      "source_file": "Lower_Layer_Data.db",
+      "n_records_raw": 45244,
+      "n_sessions": 30,
+      "sessions_label_pure": 30,
+      "session_gap_s": 300.0,
+      "n_rows_used": 2808,
+      "windowed": true,
+      "window_records": 16,
+      "window_seconds": 16,
+      "records_dropped_short": 316,
+      "drop_rate_pct": 0.7
+    }
+  },
+  "split_seeds": [
+    101,
+    102,
+    103,
+    104,
+    105
+  ],
+  "model_seeds": [
+    11,
+    22
+  ],
+  "primary_metric": "f1_macro",
+  "network_subsample": 300000,
+  "quick": false
+}
