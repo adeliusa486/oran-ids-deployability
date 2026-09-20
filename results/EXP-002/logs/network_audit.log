@@ -1,0 +1,31 @@
+
+=== layer: network ===
+  1,640,182 rows, 48 features, 318 groups, 94.63% attack
+  subsampled to 300,000 rows (declared, seed 0)
+    random seed=101: done (8x2 fits)
+    random seed=102: done (8x2 fits)
+    random seed=103: done (8x2 fits)
+    random seed=104: done (8x2 fits)
+    random seed=105: done (8x2 fits)
+    group_disjoint seed=101: done (8x2 fits)
+    group_disjoint seed=102: done (8x2 fits)
+    group_disjoint seed=103: done (8x2 fits)
+    group_disjoint seed=104: done (8x2 fits)
+    group_disjoint seed=105: done (8x2 fits)
+
+=== LEAKAGE AUDIT ===
+primary metric: f1_macro; CIs bootstrapped over split means
+
+--- network ---
+model          random   grouped    delta       95% CI on delta  excl 0
+rf             0.8978    0.7916  +0.1062    [+0.0102, +0.2023]    True
+xgboost        0.8712    0.7824  +0.0889    [+0.0162, +0.1616]    True
+mlp            0.8646    0.7741  +0.0906    [+0.0137, +0.1584]    True
+hgb            0.8706    0.7720  +0.0987    [+0.0237, +0.1708]    True
+logreg         0.8007    0.7403  +0.0605    [+0.0010, +0.1262]    True
+tree           0.8636    0.7346  +0.1290    [+0.0230, +0.2671]    True
+stratified     0.5013    0.4975  +0.0039    [+0.0011, +0.0087]    True
+majority       0.4863    0.4902  -0.0039    [-0.0075, -0.0017]    True
+
+raw     -> results\EXP-002\raw\leakage_runs.csv
+summary -> results\EXP-002\processed\leakage_summary.csv

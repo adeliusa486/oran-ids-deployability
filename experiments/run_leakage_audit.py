@@ -203,9 +203,42 @@ def main() -> int:
         frames.append(run_layer(layer, corpus, models, args.quick))
 
     raw = pd.concat(frames, ignore_index=True)
-    raw.to_csv(OUT / "raw" / "leakage_runs.csv", index=False)
     summ = summarise(raw)
-    summ.to_csv(OUT / "processed" / "leakage_summary.csv", index=False)
+
+    # Name outputs by the layers they contain.
+    #
+    # These paths used to be fixed, so running --layers network after
+    # --layers radio overwrote the radio results in place. It did so silently:
+    # the files still parsed, still had the right columns, and nothing
+    # downstream noticed that a 20-seed radio result had become a 5-seed
+    # network one. Only a manual check caught it.
+    tag = "_".join(sorted(raw.layer.unique()))
+    raw_path = OUT / "raw" / f"leakage_runs_{tag}.csv"
+    sum_path = OUT / "processed" / f"leakage_summary_{tag}.csv"
+    raw.to_csv(raw_path, index=False)
+    summ.to_csv(sum_path, index=False)
+
+    # The canonical unsuffixed files are what the figure and table generators
+    # read. Only write them when this run does not contradict what is already
+    # there, so a partial re-run cannot quietly replace a fuller one.
+    canon_raw = OUT / "raw" / "leakage_runs.csv"
+    canon_sum = OUT / "processed" / "leakage_summary.csv"
+    write_canon = True
+    if canon_sum.exists():
+        prev = pd.read_csv(canon_sum)
+        prev_layers = set(prev.layer.unique())
+        new_layers = set(summ.layer.unique())
+        prev_n = int(prev.get("group_disjoint_n_splits", pd.Series([0])).max())
+        new_n = int(summ.get("group_disjoint_n_splits", pd.Series([0])).max())
+        if not new_layers >= prev_layers or new_n < prev_n:
+            write_canon = False
+            print(f"\n  NOT overwriting the canonical files: they hold "
+                  f"{sorted(prev_layers)} at n={prev_n}, this run has "
+                  f"{sorted(new_layers)} at n={new_n}.")
+            print(f"  This run is preserved at {sum_path}")
+    if write_canon:
+        raw.to_csv(canon_raw, index=False)
+        summ.to_csv(canon_sum, index=False)
     (OUT / "statistics" / "provenance.json").write_text(
         json.dumps({"corpora": prov, "split_seeds": SPLIT_SEEDS,
                     "model_seeds": MODEL_SEEDS, "primary_metric": PRIMARY,
@@ -228,8 +261,10 @@ def main() -> int:
                   f"{r.get('leakage_delta', float('nan')):>+9.4f}{ci:>22}"
                   f"{str(r.get('delta_excludes_zero','-')):>8}")
         print()
-    print(f"raw     -> {OUT/'raw'/'leakage_runs.csv'}")
-    print(f"summary -> {OUT/'processed'/'leakage_summary.csv'}")
+    print(f"raw     -> {raw_path}")
+    print(f"summary -> {sum_path}")
+    if write_canon:
+        print("canonical files updated")
     return 0
 
 

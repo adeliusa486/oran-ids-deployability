@@ -56,5 +56,5 @@
   ],
   "primary_metric": "f1_macro",
   "network_subsample": 300000,
-  "quick": false
+  "quick": true
 }

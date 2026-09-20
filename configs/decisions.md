@@ -678,3 +678,51 @@ as not establishing significance.
 
 This also becomes a stated limitation, because it is the honest answer to a reviewer
 who asks why the two layers were not treated identically.
+
+---
+
+## D-014 — A completed run silently overwrote another layer's results
+
+- **Phase:** 2
+- **Status:** `FIXED 2026-09-20`
+- **Severity:** would have corrupted a published number
+
+### What happened
+
+`run_leakage_audit.py` wrote to fixed paths — `leakage_runs.csv` and
+`leakage_summary.csv` — regardless of which layer it was told to run. The
+network-layer audit, launched at 16:46 and finishing 84 minutes later, therefore
+overwrote the radio-layer n=20 results that had been written at 17:16.
+
+It did this **silently**. The files still parsed, still had every expected column,
+and every downstream consumer would have read them without complaint. Had the
+figures and tables been regenerated after that point, the paper would have carried
+network n=5 numbers under radio n=20 captions, and nothing in the pipeline would
+have objected.
+
+It was caught only because the network result was read manually and its `n` looked
+wrong for what the canonical file was supposed to hold.
+
+### Recovery
+
+The radio n=20 results were already committed, so `git checkout HEAD --` restored
+them intact. The network results were preserved first, under
+`leakage_{runs,summary}_network_n5.csv`. Nothing was lost.
+
+### Fix
+
+1. Outputs are now named for the layers they contain
+   (`leakage_summary_radio.csv`, `leakage_summary_network.csv`).
+2. The canonical unsuffixed files, which the figure and table generators read, are
+   written **only** when the new run does not contradict what is already there: the
+   new layer set must be a superset and the seed count must not decrease. Otherwise
+   the run is preserved under its own name and the script says so.
+
+Verified by re-running a 2-seed radio audit and confirming the canonical file still
+holds n=20.
+
+### The general lesson, which is the reason this is written down
+
+Committing results early is what made this recoverable. The guard prevents
+recurrence, but the commit is what meant the damage was undoable. **Results go into
+git as soon as they exist**, not once they are final.
