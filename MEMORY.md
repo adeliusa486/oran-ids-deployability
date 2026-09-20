@@ -617,3 +617,75 @@ landing page. **D-004 must be settled inside EXP-001, before any feature is comp
 4. **Do not let the contribution quietly re-inflate.** Three of the four things the
    draft treats as findings are separately known. What is ours is the conjunction, plus
    two open questions.
+
+---
+
+# SESSION COMPLETE — 2026-09-20
+
+**Phases executed:** 0, 1, 2, 6, 9, 15, 19, 22, 23 (scope cut to a Q1 paper by D-009)
+**Commits:** 22, all pushed to `origin/main`
+**Final validation:** 11 PASS, 1 WARN, 4 BLOCKED, **0 FAIL**
+
+## What We Proved
+
+1. **A random split inflates macro-F1 by +0.093 to +0.168** on this corpus.
+   Significant for all six non-trivial models after Holm correction, n=20,
+   d_z 0.78–1.35.
+2. **Leakage tracks model flexibility.** Single tree +0.168 > boosted +0.14 >
+   rf/mlp +0.11 > logreg +0.093 > trivial baselines ~0. The trivial baselines
+   showing nothing is the control that identifies the mechanism as memorisation.
+3. **Corpus precision does not distinguish these detectors; operational
+   precision separates them sixfold.** Corpus P flat within 0.007 (0.926–0.933);
+   deployment PPV 0.036–0.218 at π=0.002, at 53k–63k alerts/hour.
+4. **PPV = 0.5 is unreachable at any threshold for four of five detectors.**
+   Score saturation under a group-disjoint split means the operator's only
+   runtime control barely works. Not visible in accuracy, F1 or AUC.
+5. **The near-RT conformance verdict is an authoring choice.** At 1 ms nothing
+   conforms, at 5 ms only a decision tree, at 10 ms four of six, at 1 s all.
+   Platform floor p99 is 0.103 ms, so this is not a measurement artefact.
+6. **Feature extraction is 7–39× inference** for the architectures that meet a
+   10 ms budget. Inverted for rf and hgb, so the claim is architecture-dependent.
+
+## What Failed Technically
+
+- Exporter parsed DLT_LINUX_SLL captures as Ethernet, silently producing 5,851
+  fictional flows where 908 real ones existed. Caught by the pilot. Fixed in 1.1.0.
+- Dedup policy dropped 35,916 real multi-transaction rows (98% benign). Caught by
+  inspecting the data rather than by a test. Fixed.
+- `\input` inside a `tabular` does not work in this TeX install. Generator now
+  emits complete tabular environments; `.gitattributes` pins LF so the fix
+  survives checkout.
+- **My own statistics were wrong.** n=5 percentile bootstrap CIs reported four
+  significant effects a paired t-test does not support. Withdrawn, cause
+  documented (D-012), guard added, re-run at a pre-registered n=20.
+
+## What Failed Scientifically
+
+- **C5 withdrawn** (D-010), the pre-registered outcome. The join works (96.2%)
+  but only attack-only archives were fetched, so no benign windows exist.
+- **C9 contradicted by our own measurement.** Four of six architectures meet
+  10 ms, not one, and the fastest is a plain decision tree, not XGBoost.
+- **C13 / Table VIII deleted** (D-009) — never had evidence.
+- **C15 energy withdrawn** (I9) — RAPL cannot attribute to a container.
+
+## Critical Warnings For Next Session
+
+1. **RQ1 has no result.** No target corpus (D-011). The paper is currently a
+   methods-and-measurement paper wearing a transfer paper's title. Either obtain
+   5G-NIDD / the NF-* family, or retitle. This is the single biggest item.
+2. **Latency is EMULATED.** Windows, no CPU isolation. Do not let a conformance
+   claim reach the paper without Level 2 (D-005) or explicit removal.
+3. **51 synthetic values remain in `main.tex`.** The draft banner must stay up.
+4. **The network layer groups by `src_ip`**, so its "group-disjoint" is
+   host-disjoint and in a testbed that is closer to attack-disjoint. The radio
+   layer carries the leakage claim (D-013).
+5. **Do not re-claim** radio-beats-flow in-distribution (P03), cross-domain
+   collapse (P14) or the base-rate result (Axelsson 2000). All prior work.
+
+## Next Actions, In Priority Order
+
+1. Obtain a target corpus, or retitle the paper away from transfer.
+2. Run Track C at Level 2, or delete the conformance claim.
+3. Re-run detection under resampled prevalence (Reviewer A3).
+4. Report the `src_ip` grouping confound explicitly (Reviewer A4).
+5. Align title, abstract and contributions with what was measured (Reviewer C1).
