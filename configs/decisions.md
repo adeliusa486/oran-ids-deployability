@@ -991,3 +991,95 @@ from pooled counts**, and the gap is largest exactly where the rate is smallest 
 which is exactly where the interesting operational questions live. This was our
 own published result, found by asking whether it survived a parameter sweep. It
 did not survive the sweep for a reason that had nothing to do with the parameter.
+
+---
+
+## D-019 — D-013 demoted the wrong layer. Amended, not reversed.
+
+- **Phase:** 29
+- **Status:** `AMENDED 2026-09-20`
+- **Amends:** D-013
+- **Evidence:** `results/EXP-029/processed/grouping_alignment.csv`,
+  `reports/network_grouping_confound.md`
+
+### What D-013 decided, and on what basis
+
+D-013 kept the network-layer leakage audit at n=5 and demoted it to a
+"directional cross-check only", because of a suspected confound: in a testbed,
+attacks are launched from dedicated hosts, so grouping by `src_ip` might be
+grouping by attack scenario. The radio layer, grouped by `session`, stayed
+primary.
+
+That worry was reasonable. It was also **never measured**. D-013 was taken on the
+plausibility of the mechanism.
+
+### What the measurement says
+
+Each grouping against two nulls — a label shuffle and a size-matched random
+grouping — and against an oracle that groups directly by `attack_type`:
+
+| Grouping | NMI(category) | nulls | Purity | Cramér's V | % of oracle NMI |
+|---|---:|---:|---:|---:|---:|
+| network `src_ip` | 0.128 | 0.0006 | 0.435 | 0.350 | **20.6%** |
+| **`attack_type` (oracle)** | 0.620 | 0.0001 | 0.810 | 0.911 | 100% |
+| **radio `session`** | **0.681** | 0.0106 | **1.000** | **1.000** | **110%** |
+
+Two findings, and the second was not the one under investigation.
+
+1. **The network confound is real but partial.** `src_ip` carries genuine label
+   information — 213x above both nulls, which agree with each other, so it is not
+   a small-group artefact. But it reaches only a fifth of the oracle, and fewer
+   than half of a group's records share its modal category. Host-disjoint and
+   attack-disjoint are measurably different protocols here.
+
+2. **The radio confound is total.** `session` purity is **1.000** and Cramér's V
+   is **1.000**. Every capture run holds exactly one attack category, by
+   construction of the testbed. EXP-001 recorded this as a quality property — "30
+   runs, 100% label-pure" — and it is, but it is also a confound, and a complete
+   one. The session grouping carries *more* category information than grouping by
+   attack type does, because 30 label-pure runs partition the corpus more finely
+   than 15 attack types.
+
+**D-013 demoted the layer with the weaker alignment and kept the layer with the
+complete one.**
+
+### What this does NOT overturn
+
+The radio leakage result stands, and the distinction matters.
+
+Purity 1.000 means no *group* mixes categories. It does not mean a group-disjoint
+split holds out a *category*: 30 sessions over 6 categories gives roughly five
+runs per category, so a held-out session usually shares its category with
+training sessions. Run-disjoint therefore still asks its intended question —
+generalise to a new capture run of a possibly familiar attack — and the
+random-versus-run-disjoint gap still measures memorisation of run identity.
+
+### Decision
+
+1. **The network layer is promoted from cross-check to co-primary** for any claim
+   that requires run identity and attack identity to be *separable*. On the radio
+   layer they cannot be separated at all, so no radio result can distinguish
+   "memorised the run" from "memorised the attack".
+2. **Neither layer may carry an unqualified "run-disjoint" label.** The purity
+   figure goes beside it, every time.
+3. **D-013's n=5 constraint on the network audit stands** for now. Promotion is a
+   change of role, not a licence to quote n=5 significance. The network audit must
+   be re-run at n=20 before any network-layer claim carries a significance mark.
+4. The radio layer stays primary for the leakage finding itself, because that
+   finding is *about* run-identity memorisation and a perfectly run-pure grouping
+   is the right instrument for measuring it.
+
+### What would reverse this
+
+A demonstration that `src_ip` groups are attack-pure after all — for example that
+the 0.435 purity is driven by one dominant host and the rest are pure. The
+largest `src_ip` group holds 33.9% of records, so this is worth checking, and it
+is what EXP-029 part B would settle.
+
+### The general lesson
+
+**A caveat carried forward long enough starts being treated as a measurement.**
+This one survived three phases and drove a decision about which layer the paper
+leans on, without anyone computing a mutual information. Twenty minutes of
+arithmetic showed the concern applied more strongly to the layer it had been used
+to protect.
