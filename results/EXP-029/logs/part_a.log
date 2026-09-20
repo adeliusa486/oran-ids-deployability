@@ -1,0 +1,19 @@
+=== Part A: does the grouping already encode the label? ===
+network: 1640182 rows, 318 src_ip groups; part A on a seeded subsample of 300000
+  src_ip               groups=152    NMI(cat)=0.128 (shuffle null 0.001, size-matched null 0.001) purity=0.435  [61s]
+  dst_ip               groups=1083   NMI(cat)=0.176 (shuffle null 0.006, size-matched null 0.006) purity=0.440  [78s]
+  src_ip__dst_ip       groups=2768   NMI(cat)=0.175 (shuffle null 0.010, size-matched null 0.010) purity=0.493  [112s]
+  attack_type_ORACLE   groups=15     NMI(cat)=0.620 (shuffle null 0.000, size-matched null 0.000) purity=0.810  [67s]
+  dst_port             groups=17047  NMI(cat)=0.260 (shuffle null 0.047, size-matched null 0.047) purity=0.523  [98s]
+radio: 2808 windows, 30 session groups
+  session              groups=30     NMI(cat)=0.681 (null 0.011) purity=1.000
+
+  layer           grouping  n_groups  largest_group_share  nmi_category  nmi_category_null_mean  nmi_category_sizematched_null  purity_category  purity_binary
+network             src_ip       152               0.3391        0.1276                  0.0006                         0.0006           0.4354         0.9619
+network             dst_ip      1083               0.8370        0.1756                  0.0060                         0.0059           0.4399         0.9748
+network     src_ip__dst_ip      2768               0.2952        0.1755                  0.0096                         0.0097           0.4934         0.9810
+network attack_type_ORACLE        15               0.3090        0.6197                  0.0001                         0.0001           0.8100         1.0000
+network           dst_port     17047               0.5548        0.2598                  0.0471                         0.0469           0.5225         0.9469
+  radio            session        30               0.1271        0.6805                  0.0106                         0.0114           1.0000         1.0000
+
+wrote results\EXP-029

@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-034",
+  "layer": "radio (network layer has NO time column)",
+  "n_sessions": 30,
+  "time_span_days": 52.96,
+  "train_fracs": [
+    0.4,
+    0.5,
+    0.6,
+    0.7
+  ],
+  "control_reps": 20,
+  "models": [
+    "logreg",
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp",
+    "stratified",
+    "majority"
+  ],
+  "pi": 0.002,
+  "lambda_b": 240000.0,
+  "session_ordering": "session id is assigned by cumsum over time-sorted records, so it IS the temporal order",
+  "power_note": "30 sessions is a small population. This design detects a large temporal effect and nothing subtler.",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 647.7
+}
