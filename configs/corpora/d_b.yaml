@@ -1,0 +1,12 @@
+id: d_b_5gnidd
+status: resolved
+source_doi: "10.21227/xtep-hv36"
+descriptor_doi: "10.1109/IEEEDATA.2025.3592888"
+source_url: "https://ieee-dataport.org/documents/5g-nidd-comprehensive-network-intrusion-detection-dataset-generated-over-5g-wireless"
+# A3: use the published pcapng, NOT the published CSV.
+use_artefact: pcapng
+source_sha256: null       # fill from download, then commit
+group_key: src_ip         # A4: declared per corpus
+has_radio_kpis: false
+label_column: label
+role: transfer_only       # A11: enforced by audit/guard.py

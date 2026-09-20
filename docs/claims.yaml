@@ -1,0 +1,49 @@
+# Phase 1 backbone. Every claim binds to an experiment, an artefact, and a
+# falsification condition. Phase 20 audits against this file.
+# status: planned | supported | withdrawn | rescoped | blocked
+claims:
+  C2:
+    text: "Every architecture loses substantial F1 under cross-deployment transfer"
+    hypothesis: H1
+    experiment: E1b
+    metric: delta_f1
+    artefact: tables/generated/cross.tex
+    figure: figures/generated/fig_gen.pdf
+    falsified_if: "95% CI on delta_f1 includes 0 for any architecture"
+    status: planned
+
+  C5:
+    text: "Radio KPIs raise in-distribution F1 and lower cross-deployment F1"
+    hypothesis: H4
+    experiment: E2
+    metric: [f1_indist, f1_cross]
+    artefact: tables/generated/ablation.tex
+    falsified_if: "the two deltas share a sign (no trade-off exists)"
+    status: blocked
+    blocked_on: A1
+
+  C8:
+    text: "The default threshold yields operationally unusable precision"
+    hypothesis: H2
+    experiment: E4
+    metric: [alerts_per_hour, ppv]
+    artefact: figures/generated/fig_alerts.pdf
+    falsified_if: "PPV at tau=0.5 exceeds rho across the whole pi sweep"
+    status: planned
+
+  C9:
+    text: "Only the gradient-boosted ensemble meets the p99 budget"
+    hypothesis: H3
+    experiment: E5a
+    metric: q99_latency_ms
+    artefact: tables/generated/runtime.tex
+    falsified_if: "floor experiment p99 is already near B, making the comparison uninformative"
+    status: planned
+
+  C13:
+    text: "Existing work under-reports the three deployment criteria"
+    experiment: E9
+    artefact: tables/generated/survey.tex
+    falsified_if: "screening finds the criteria are commonly reported"
+    status: planned
+    note: "No evidence exists yet. Execute Track D or delete Table VIII (A9)."

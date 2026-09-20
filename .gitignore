@@ -1,0 +1,37 @@
+# Data: manifests and split indices are committed, payloads are not.
+data/raw/
+data/interim/
+data/processed/
+*.pcap
+*.pcapng
+!data/MANIFEST.json
+!data/splits/**/*.json
+!data/splits/**/*.npy
+
+# Results: raw runs are large; aggregated CSVs are committed.
+results/raw/
+results/runtime/
+logs/
+
+# Models
+*.onnx
+*.pkl
+*.pt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# LaTeX
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.fls
+paper/*.fdb_latexmk

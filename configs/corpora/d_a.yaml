@@ -1,0 +1,11 @@
+# BLOCKED ON A1 -- this corpus is not yet identified.
+# Do not fill these fields with a guess. Resolve the A1 gate first.
+id: d_a
+status: UNRESOLVED_SEE_A1
+source_doi: null
+source_url: null
+source_sha256: null
+group_key: null          # A4: e.g. ue_imsi -- must exist, asserted at load
+has_radio_kpis: true
+label_column: null
+role: train_and_indist_test

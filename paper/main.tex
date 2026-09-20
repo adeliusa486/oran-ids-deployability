@@ -1,0 +1,795 @@
+%=======================================================================
+%  main.tex
+%  "Intrusion Detection for IoT Traffic in O-RAN Edge Data Centres:
+%   Why Accuracy Alone Is Not Enough"
+%
+%  BUILD:  pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+%
+%  -------------------------------------------------------------------
+%  IMPORTANT -- READ BEFORE SUBMITTING
+%  -------------------------------------------------------------------
+%  Every numerical value in this document is a SYNTHETIC PLACEHOLDER.
+%  No experiment was run to produce it. The numbers were chosen to be
+%  mutually consistent (all confusion matrices, rates and derived
+%  metrics reconcile arithmetically) so that the document illustrates
+%  the level of experimental depth an IEEE reviewer expects, and so
+%  that the figures and tables render correctly.
+%
+%  Search this file for the marker  % [SYNTHETIC]  to find every block
+%  that must be replaced with measured values.
+%
+%  While \synthdrafttrue is set, a warning banner is printed on page 1.
+%  Set \synthdraftfalse ONLY after all measurements are real.
+%  -------------------------------------------------------------------
+%=======================================================================
+
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{url}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric}
+
+% --- draft-safety switch -----------------------------------------------
+\newif\ifsynthdraft
+\synthdrafttrue   % <<<< CHANGE TO \synthdraftfalse ONCE RESULTS ARE REAL
+% \syn{} marks a headline synthetic figure; it is a no-op typographically
+% but makes every fabricated number greppable in the source.
+\newcommand{\syn}[1]{#1}
+% -----------------------------------------------------------------------
+
+\newcommand{\DA}{\ensuremath{\mathcal{D}_{A}}}
+\newcommand{\DB}{\ensuremath{\mathcal{D}_{B}}}
+
+\begin{document}
+
+\title{Intrusion Detection for IoT Traffic in O-RAN Edge Data Centres: Why Accuracy Alone Is Not Enough}
+
+\author{\IEEEauthorblockN{First A. Author, Second B. Author, and Third C. Author}
+\IEEEauthorblockA{\textit{Department of Computing and Communications} \\
+\textit{Institution Name}\\
+City, Country \\
+\{first.author, second.author, third.author\}@institution.edu}}
+
+\maketitle
+
+\begin{abstract}
+Edge data centres in Open Radio Access Network (O-RAN) deployments receive telemetry from very large numbers of IoT devices, and compromised IoT devices are a documented source of control-plane signalling overload. A common defence is to run a machine learning intrusion detection application, or xApp, on the RAN Intelligent Controller hosted inside the edge data centre. Published work in this area routinely reports detection accuracy above 99\%, but very little of it reports whether the same detector still works when network conditions differ from the conditions it was trained on, how many false alarms it raises during normal operation, or whether it returns a decision inside the controller's near-real-time deadline. This paper evaluates an intrusion detection xApp against those three deployment criteria. We train a detector on an O-RAN testbed dataset containing synchronised packet-level and radio telemetry, then evaluate the same model on a second, independently collected 5G intrusion detection dataset in order to measure cross-deployment generalisation. We then deploy the model as an xApp on a software O-RAN stack and measure per-decision latency at the median and the 99th percentile, together with the CPU and memory it consumes in the data centre container. Our results show that the best in-distribution model falls from an $F_1$ score of \syn{99.25\%} to \syn{71.39\%} when transferred to an independently collected deployment, a drop of \syn{27.9} points; that at its default operating threshold the same model raises \syn{682} alerts per hour on benign-only traffic and attains an operational precision of only \syn{41.2\%} once a realistic attack base rate is applied; and that only the gradient-boosted tree ensemble meets a \syn{10}\,ms 99th-percentile budget, and only up to an offered load of roughly \syn{2{,}300} decisions per second. We conclude with a short set of reporting requirements that future O-RAN security papers should meet before claiming deployability.
+\end{abstract}
+
+\begin{IEEEkeywords}
+O-RAN, edge data centre, IoT security, intrusion detection, xApp, RAN Intelligent Controller, model generalisation, false positive rate
+\end{IEEEkeywords}
+
+\ifsynthdraft
+\begin{center}
+\noindent\fcolorbox{red!70!black}{yellow!22}{%
+\parbox{0.93\columnwidth}{\footnotesize\textbf{DRAFT NOTICE --- NOT FOR SUBMISSION.} Every numerical result in this document is a synthetic placeholder generated to illustrate structure and expected experimental depth. No measurement reported here was actually taken. Replace all values marked \texttt{\% [SYNTHETIC]} in the source with real measurements, then set \texttt{\textbackslash synthdraftfalse} in the preamble to remove this banner.}}
+\end{center}
+\fi
+
+\section{Introduction}
+
+Open Radio Access Network (O-RAN) architectures disaggregate the base station into radio, distributed and centralised units connected by open interfaces, and place a RAN Intelligent Controller (RIC) alongside them to host third-party control logic \cite{polese2023understanding,abdalla2022toward,niknam2022intelligent}. In most commercial designs the near-real-time RIC is not deployed at the cell site but inside a regional edge data centre that aggregates traffic from tens to hundreds of cells \cite{shi2016edge,bonati2021intelligence}. That data centre therefore sees the union of the control-plane and user-plane telemetry generated by every IoT device attached to those cells, which makes it a natural vantage point for detecting compromised devices before their aggregate behaviour degrades the radio network.
+
+The motivating threat is well documented. Large IoT botnets have repeatedly been assembled from devices with weak or default credentials \cite{antonakakis2017mirai,kolias2017ddos}, and in cellular deployments the damage is not limited to volumetric flooding of an external target. Bursts of attach, detach and radio resource control transitions from a synchronised population of devices impose a signalling load that scales with the number of state changes rather than with the number of transmitted bytes, and this class of signalling storm has been shown to degrade a cellular network well before any link saturates \cite{gorbil2016signalling}. Detecting the underlying compromise early, from inside the RAN control loop, is consequently attractive.
+
+The natural implementation is a detection xApp: a containerised application that subscribes to E2 service model reports, extracts features, classifies traffic, and issues control actions through the same interface \cite{polese2023coloran,schmidt2021flexric}. A substantial and growing literature proposes such xApps, and the headline result is remarkably consistent across papers: detection accuracy or $F_1$ above 99\% on a held-out split of a single dataset. What is far less consistent is any evidence that the detector would survive contact with a production network.
+
+Three properties determine whether a detector is deployable, and none of them is measured by a held-out split of the training distribution. The first is cross-deployment generalisation. A model trained on telemetry from one radio configuration, device population and traffic mix must classify correctly in a different one, and network intrusion detection models are known to transfer poorly between independently collected datasets \cite{layeghy2022generalisability,layeghy2023benchmarking}. The second is alert burden. A false positive rate that appears negligible on a class-balanced benchmark becomes an unmanageable alert volume once it is multiplied by production flow rates and discounted by a realistic attack base rate, a consequence of the base-rate fallacy identified for intrusion detection more than two decades ago \cite{axelsson2000baserate,sommer2010outside}. The third is latency conformance. The near-real-time RIC control loop is specified to operate between 10\,ms and 1\,s \cite{oran_wg3_ricarch}; a detector whose tail latency exceeds the budget under load does not merely respond slowly, it fails to close the loop at all.
+
+This paper measures all three for a single detector family, on a single consistent pipeline, so that the trade-offs between them are visible rather than inferred. Our contributions are as follows.
+
+\begin{itemize}
+\item We define a three-criterion deployment evaluation protocol for O-RAN detection xApps --- cross-deployment generalisation, operational alert burden under a realistic base rate, and tail latency against the near-real-time budget --- and give a formal deployability predicate that combines them (Section~\ref{sec:criteria}).
+\item We quantify cross-deployment degradation for five detector architectures trained on an O-RAN testbed corpus and evaluated on an independently collected 5G intrusion detection dataset, using a harmonised feature space that makes the transfer well posed (Sections~\ref{sec:method} and \ref{sec:results}).
+\item We show, through a feature-family ablation, that the radio-layer telemetry which contributes most to in-distribution accuracy is also the primary source of deployment-specific overfitting, and that removing it improves transfer (Section~\ref{sec:results}).
+\item We deploy each detector as an xApp on a software O-RAN stack and report median and 99th-percentile decision latency, sustainable throughput, and container CPU and memory footprint, identifying feature extraction rather than inference as the dominant cost (Section~\ref{sec:results}).
+\item We provide a concise reporting checklist that we argue should accompany any O-RAN security paper claiming deployability (Section~\ref{sec:conclusion}).
+\end{itemize}
+
+\section{Background and Related Work}
+
+\subsection{The Near-Real-Time RIC as a Security Vantage Point}
+
+xApps subscribe to E2 nodes through service models, of which E2SM-KPM supplies periodic key performance measurements and E2SM-RC supplies control primitives \cite{polese2023understanding}. Prototyping platforms including OpenRAN Gym \cite{bonati2023openrangym}, SCOPE \cite{bonati2021scope}, ColO-RAN \cite{polese2023coloran} and FlexRIC \cite{schmidt2021flexric}, together with open radio stacks \cite{nikaein2014oai,gomez2016srslte}, have made experimental xApp development practical. This infrastructure is what makes an in-loop detector plausible; it is also what makes its timing constraints concrete, because an xApp that misses the control deadline is simply bypassed.
+
+\subsection{Security of Open RAN}
+
+The security implications of RAN disaggregation have been analysed both by the O-RAN Alliance's own threat modelling work \cite{oran_wg11_security} and by independent studies \cite{liyanage2023openran,mimran2022security}. These works identify the RIC and its xApps as a newly exposed attack surface and note the risks introduced by third-party application hosting. Complementary work has implemented and measured security mechanisms across O-RAN interfaces \cite{groen2025implementing}, and 5G-Spector demonstrates an O-RAN compliant layer-3 attack detection service running as a real xApp \cite{wen2024spector}. Our work is orthogonal in intent: rather than proposing a new detection mechanism, we ask what evidence is needed before any such mechanism can be called deployable.
+
+\subsection{Machine Learning for Network Intrusion Detection}
+
+A large family of IoT-oriented benchmark corpora now exists \cite{koroniotis2019botiot,moustafa2021toniot,ferrag2022edgeiiot,neto2023ciciot,sharafaldin2018cicids}, but cellular-specific corpora are rarer, and 5G-NIDD is notable for being captured over a functioning 5G test network rather than in emulation \cite{samarakoon2022nidd,siriwardhana2025descriptor}. Feature harmonisation across such corpora has been addressed by standardised NetFlow-based feature sets \cite{sarhan2021netflow,sarhan2022standard}, which is what makes a controlled cross-dataset transfer experiment possible at all.
+
+\subsection{Evaluation Practice and Its Critics}
+
+A persistent line of critique holds that intrusion detection results are systematically over-optimistic: Sommer and Paxson identified the mismatch between closed-world evaluation and open-world deployment \cite{sommer2010outside}, Axelsson showed that the attack base rate dominates achievable precision \cite{axelsson2000baserate}, Arp \emph{et al.} catalogued recurring methodological pitfalls including sampling bias and inappropriate performance measures \cite{arp2022dosdonts}, and Apruzzese \emph{et al.} examined the gap between reported and operational effectiveness \cite{apruzzese2023role}. Layeghy and Portmann demonstrated empirically that such models generalise poorly across independently collected datasets \cite{layeghy2022generalisability,layeghy2023benchmarking}. Our contribution is to instantiate these critiques within the O-RAN control loop, where an additional and unusually hard constraint --- a bounded control deadline --- applies alongside them.
+
+\section{Deployment Criteria and Threat Model}
+\label{sec:criteria}
+
+\subsection{System and Threat Model}
+
+We consider an edge data centre hosting a near-real-time RIC that serves a set of E2 nodes, as shown in Fig.~\ref{fig:arch}, with a population of IoT devices attached through those nodes. The adversary controls a subset of the devices and uses them to conduct volumetric flooding, reconnaissance scanning, botnet command-and-control communication, or synchronised signalling-plane abuse in the form of rapid connection state cycling. The adversary does not control the RIC, the E2 interface, or the xApp itself; platform-level compromise of the RIC is treated by the O-RAN threat model \cite{oran_wg11_security} and is out of scope. The defender operates a detection xApp that consumes E2SM-KPM indications and packet-level features, and may issue mitigation actions through E2SM-RC.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw=blue!55!black, fill=blue!8, rounded corners=2pt, minimum height=7.5mm, align=center, inner sep=3pt},
+  xapp/.style={draw=OliveGreen!80!black, fill=OliveGreen!10, rounded corners=2pt, minimum height=7.5mm, align=center, inner sep=3pt},
+  ids/.style={draw=red!65!black, fill=red!12, rounded corners=2pt, very thick, minimum height=9mm, align=center, inner sep=3pt},
+  dev/.style={draw=OliveGreen!60!black, fill=OliveGreen!8, rounded corners=2pt, minimum height=8mm, align=center, inner sep=3pt},
+  lnk/.style={-{Latex[length=2mm]}, thick, draw=gray!65!black},
+  bi/.style={{Latex[length=2mm]}-{Latex[length=2mm]}, thick, draw=gray!65!black},
+  ctl/.style={-{Latex[length=2mm]}, thick, draw=red!70!black, dashed},
+  tag/.style={circle, draw=black, fill=yellow!45, inner sep=1pt, font=\tiny\bfseries}
+]
+
+% --- edge data centre enclosure
+\draw[draw=black!45, dashed, rounded corners=4pt, fill=black!3]
+      (7.0,-0.85) rectangle (16.7,3.35);
+\node[anchor=south west, font=\scriptsize\bfseries, text=black!65] at (7.15,-0.78) {Edge data centre};
+
+% --- access side
+\node[dev] (iot) at (0.85,0.35) [minimum width=2.0cm] {IoT devices\\{\tiny sensors, meters,}\\{\tiny cameras}};
+\node[box] (ru)  at (3.05,0.35) [minimum width=1.1cm] {O-RU};
+\node[box] (du)  at (4.35,0.35) [minimum width=1.1cm] {O-DU};
+\node[box] (cu)  at (5.65,0.35) [minimum width=1.1cm] {O-CU};
+
+% --- RIC internals
+\node[box] (e2t)  at (8.85,0.20) [minimum width=2.9cm] {E2 termination\\{\tiny E2AP\,/\,E2SM-KPM\,/\,E2SM-RC}};
+\node[box] (ricp) at (13.4,0.20) [minimum width=5.6cm] {Near-RT RIC platform\\{\tiny message router $\cdot$ shared data layer $\cdot$ subscription manager}};
+
+\node[xapp] (kpi) at (8.85,2.10) [minimum width=2.5cm] {KPIMON\\xApp};
+\node[ids]  (ids) at (12.15,2.10) [minimum width=3.1cm] {\textbf{IoT intrusion detection}\\\textbf{xApp (this work)}};
+\node[xapp] (ts)  at (15.35,2.10) [minimum width=2.2cm] {Traffic steering\\xApp};
+
+\node[box] (nonrt) at (12.15,4.35) [minimum width=6.4cm] {Non-RT RIC\,/\,SMO {\tiny --- rApps, model lifecycle, policy}};
+
+% --- links
+\draw[lnk] (iot) -- node[above, font=\tiny] {Uu} (ru);
+\draw[lnk] (ru)  -- (du);
+\draw[lnk] (du)  -- (cu);
+\draw[bi]  (cu.east) -- node[above, font=\tiny] {E2} (e2t.west);
+\draw[bi]  (e2t.east) -- (ricp.west);
+\draw[bi]  (kpi.south)  -- (kpi.south  |- ricp.north);
+\draw[bi]  (ids.south)  -- (ids.south  |- ricp.north);
+\draw[bi]  (ts.south)   -- (ts.south   |- ricp.north);
+\draw[lnk] (nonrt.south) -- node[right=1.5pt, font=\tiny, fill=white, inner sep=1pt] {A1} (ids.north);
+
+% --- mitigation path back to the RAN
+\draw[ctl] (ids.north west) -- ++(0,0.55) -- (7.20,2.95) -- (7.20,-1.30) -- (5.65,-1.30) -- (cu.south);
+\node[font=\tiny, text=red!70!black, anchor=north] at (7.20,-1.36) {mitigation action (E2SM-RC)};
+
+% --- measurement points
+\node[tag] (t1) at (13.85,2.85) {1};
+\node[tag] (t2) at (10.45,1.35) {2};
+\node[tag] (t3) at (6.75,0.95) {3};
+
+\end{tikzpicture}
+\caption{Reference deployment. The near-real-time RIC is hosted in a regional edge data centre and aggregates telemetry from many E2 nodes, so the detection xApp observes the combined behaviour of a large IoT population. The three circled points mark where this paper takes measurements: \textcircled{\raisebox{-0.2pt}{\tiny 1}} cross-deployment generalisation of the classifier, \textcircled{\raisebox{-0.2pt}{\tiny 2}} alert burden imposed on the operator per unit time, and \textcircled{\raisebox{-0.2pt}{\tiny 3}} closed-loop decision latency against the near-real-time budget.}
+\label{fig:arch}
+\end{figure*}
+
+\subsection{Criterion 1: Cross-Deployment Generalisation}
+
+Let $\mathcal{D}_{A}$ and $\mathcal{D}_{B}$ be two independently collected corpora over a shared feature space $\mathcal{X}$ and label space $\mathcal{Y}=\{\textrm{benign},\textrm{attack}\}$. A model $f_{\theta}$ trained on \DA{} is characterised not by its held-out score on \DA{} alone but by the generalisation gap
+\begin{equation}
+\Delta_{F_{1}} \;=\; F_{1}\!\left(f_{\theta};\, \mathcal{D}_{A}^{\text{test}}\right) \;-\; F_{1}\!\left(f_{\theta};\, \mathcal{D}_{B}\right),
+\label{eq:gap}
+\end{equation}
+which upper-bounds nothing on its own but is directly interpretable as the accuracy an operator loses by reusing a published model. We report \eqref{eq:gap} in both directions and quantify the underlying covariate shift as the mean first-order Wasserstein distance between the marginal feature distributions,
+\begin{equation}
+\bar{W}_{1} \;=\; \frac{1}{|\mathcal{F}|}\sum_{j \in \mathcal{F}} W_{1}\!\left(P_{A}^{(j)},\, P_{B}^{(j)}\right),
+\label{eq:shift}
+\end{equation}
+where $\mathcal{F}$ is the set of harmonised features and $P^{(j)}$ denotes the marginal of feature $j$ after per-corpus quantile normalisation.
+
+\subsection{Criterion 2: Alert Burden Under a Realistic Base Rate}
+
+Let $\lambda_{b}$ be the arrival rate of benign flows observed by the xApp and $\mathrm{FPR}(\tau)$ the false positive rate at decision threshold $\tau$. The alert rate presented to the operator is
+\begin{equation}
+A(\tau) \;=\; \lambda_{b}\,\mathrm{FPR}(\tau)\,,
+\label{eq:alerts}
+\end{equation}
+which we report per hour. Crucially, the precision measured on a benchmark does not survive deployment, because benchmarks are constructed with attack prevalence far above the operational value. Writing $\pi$ for the true prevalence of attack flows and $R(\tau)$ for recall, the operational positive predictive value is
+\begin{equation}
+\mathrm{PPV}(\tau) \;=\; \frac{\pi\,R(\tau)}{\pi\,R(\tau) \;+\; (1-\pi)\,\mathrm{FPR}(\tau)},
+\label{eq:ppv}
+\end{equation}
+which for small $\pi$ is dominated by the second term of the denominator. Equation~\eqref{eq:ppv} is the quantitative form of the base-rate argument \cite{axelsson2000baserate}, and it is the reason a 0.3\% false positive rate can still yield a majority-false alert queue.
+
+\subsection{Criterion 3: Tail Latency Against the Control Budget}
+
+The end-to-end decision latency of an xApp decomposes as
+\begin{equation}
+L \;=\; t_{\text{ind}} \;+\; t_{\text{feat}} \;+\; t_{\text{inf}} \;+\; t_{\text{act}} \;+\; t_{q},
+\label{eq:latency}
+\end{equation}
+where $t_{\text{ind}}$ is E2 indication decoding, $t_{\text{feat}}$ feature construction, $t_{\text{inf}}$ model inference, $t_{\text{act}}$ control message encoding, and $t_{q}$ queueing delay induced by offered load. Conformance is a tail property, not a mean property: for budget $B$ and violation tolerance $\varepsilon$ we require
+\begin{equation}
+\Pr\!\left[L \le B\right] \;\ge\; 1-\varepsilon
+\qquad\Longleftrightarrow\qquad
+q_{1-\varepsilon}(L) \;\le\; B,
+\label{eq:budget}
+\end{equation}
+with $q_{1-\varepsilon}$ the $(1-\varepsilon)$ quantile. We adopt $B=10$\,ms, the lower bound of the near-real-time control loop \cite{oran_wg3_ricarch}, and $\varepsilon=0.01$, so \eqref{eq:budget} reduces to a constraint on the 99th percentile.
+
+\subsection{A Combined Deployability Predicate}
+
+Taken together, the three criteria define a predicate that a candidate detector either satisfies or does not:
+\begin{equation}
+\mathcal{P}(f_{\theta}) = \mathbb{1}\!\left[\Delta_{F_{1}} \le \delta\right]\cdot
+\mathbb{1}\!\left[A(\tau) \le A_{\max}\right]\cdot
+\mathbb{1}\!\left[q_{0.99}(L) \le B\right].
+\label{eq:deploy}
+\end{equation}
+The operating threshold is then chosen as the most sensitive setting that remains admissible,
+\begin{equation}
+\tau^{\star} \;=\; \arg\max_{\tau \in (0,1)} \; R(\tau)
+\quad \text{s.t.} \quad A(\tau) \le A_{\max}, \;\; \mathrm{PPV}(\tau) \ge \rho,
+\label{eq:tau}
+\end{equation}
+rather than being left at the conventional $\tau=0.5$. We stress that \eqref{eq:deploy} is deliberately conjunctive. A detector that satisfies two of the three conditions is not two-thirds deployable; it is undeployable for a specific and nameable reason.
+
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Corpora}
+
+We use two corpora, summarised in Table~\ref{tab:datasets}. \DA{} is an O-RAN testbed capture containing packet traces synchronised with per-user radio key performance measurements exported over E2SM-KPM, collected on an OpenRAN Gym style softwarised deployment \cite{bonati2023openrangym,bonati2021scope}. \DB{} is 5G-NIDD \cite{siriwardhana2025descriptor}, captured over a functioning 5G test network at a separate institution with a different device population, radio configuration and attack tooling \cite{samarakoon2022nidd}. The two corpora were collected independently, which is precisely the property required for the transfer experiment to be meaningful; evaluating on two splits of the same capture would measure nothing.
+
+% [SYNTHETIC] --- dataset statistics below are placeholders
+\begin{table}[t]
+\caption{Corpora used in the evaluation. \DA{} supplies training and in-distribution testing; \DB{} is held out entirely for cross-deployment evaluation.}
+\label{tab:datasets}
+\centering
+\footnotesize
+\begin{tabular}{lrr}
+\toprule
+\textbf{Property} & \textbf{\DA{} (O-RAN testbed)} & \textbf{\DB{} (5G-NIDD)} \\
+\midrule
+Flows (total)              & 4{,}210{,}000 & 1{,}215{,}900 \\
+Benign flows              & 3{,}018{,}500 & 477{,}700 \\
+Attack flows              & 1{,}191{,}500 & 738{,}200 \\
+Attack prevalence         & 28.3\%        & 60.7\% \\
+Radio KPIs available      & yes           & no \\
+Distinct attack families  & 4             & 8 \\
+Capture duration (h)      & 62            & 32 \\
+Role                      & train / test  & transfer only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Feature Harmonisation}
+
+Because the corpora were produced by different tooling, a shared feature space must be constructed before transfer is well posed. We follow the standardised NetFlow feature-set methodology \cite{sarhan2021netflow,sarhan2022standard} and derive 32 features in four families, listed in Table~\ref{tab:features}. Twenty-four of these are packet-level and are computable on both corpora; the remaining eight are radio-layer measurements available only in \DA{}. All cross-deployment results therefore use the 24-feature shared space, and the role of the radio family is examined separately in the ablation. Features are computed over a sliding window of 16 flow records per device, quantile-normalised per corpus to remove trivially deployment-specific scaling, and no feature derived from absolute timestamps or endpoint addresses is retained, since such features leak capture identity rather than attack behaviour \cite{arp2022dosdonts}.
+
+\begin{table}[t]
+\caption{Harmonised feature families with per-family covariate shift between corpora, measured by \eqref{eq:shift}. Only the 24 packet-level features exist in both corpora and are used for all transfer experiments.}
+\label{tab:features}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Family} & \textbf{Representative members} & \textbf{$n$} & \textbf{$\bar{W}_{1}$} \\
+\midrule
+Volumetric & byte and packet counts, payload stats & 8 & 0.29 \\
+Timing     & inter-arrival statistics, burst ratio & 7 & 0.51 \\
+Header     & flag ratios, port entropy, protocol mix & 9 & 0.34 \\
+Radio KPI  & PRB use, CQI, BLER, MCS, RRC rate & 8 & --- \\
+\midrule
+\multicolumn{2}{l}{\textbf{Total} \quad (shared subset: 24)} & \textbf{32} & \textbf{0.37} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Detector Family and Objective}
+
+We evaluate five architectures spanning the range typically reported in this literature: a random forest \cite{breiman2001random}, gradient-boosted trees \cite{chen2016xgboost,ke2017lightgbm}, a multilayer perceptron, a one-dimensional convolutional network, and an LSTM sequence model. All are trained on the same windows with the same splits. Class imbalance is handled with a weighted binary cross-entropy objective,
+\begin{equation}
+\begin{split}
+\mathcal{L}(\theta) = -\frac{1}{N}\sum_{i=1}^{N}\Big[ &w_{+}\, y_{i}\log \hat{p}_{i} \\[-2pt]
+&+ w_{-}(1-y_{i})\log\!\left(1-\hat{p}_{i}\right)\Big] + \gamma\lVert\theta\rVert_{2}^{2},
+\end{split}
+\label{eq:loss}
+\end{equation}
+with $\hat{p}_{i}=f_{\theta}(x_{i})$, weights $w_{\pm}$ set inversely to class frequency, and $\gamma$ the regularisation coefficient. The tree ensembles use the equivalent instance-weighting mechanism.
+
+\subsection{Experimental Pipeline}
+
+Fig.~\ref{fig:pipeline} shows the pipeline. A single trained model is carried unchanged through three evaluations: an in-distribution test split, a cross-deployment evaluation on \DB{}, and a runtime evaluation as a packaged xApp. This is deliberate --- the point of the study is that these three evaluations of one artefact disagree.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize, node distance=4mm,
+  st/.style={draw=blue!55!black, fill=blue!8, rounded corners=2pt, minimum width=2.35cm, minimum height=6.5mm, align=center, inner sep=2pt},
+  ev/.style={draw=red!60!black, fill=red!8, rounded corners=2pt, minimum width=2.35cm, minimum height=6.5mm, align=center, inner sep=2pt},
+  ar/.style={-{Latex[length=1.8mm]}, thick, draw=gray!65!black}
+]
+\node[st] (da)   at (0,3.35) {\DA{}: O-RAN testbed\\{\tiny packets $+$ radio KPIs}};
+\node[st] (harm) at (0,2.30) {Feature harmonisation\\{\tiny 32 total, 24 shared}};
+\node[st] (tr)   at (0,1.25) {Train $f_{\theta}$\\{\tiny 5 architectures, 5 seeds}};
+\node[st] (pack) at (0,0.20) {Package as xApp\\{\tiny ONNX, container image}};
+
+\node[ev] (e1) at (3.55,2.30) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DA{} test split\\{\tiny in-distribution}};
+\node[ev] (e2) at (3.55,1.25) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DB{}: 5G-NIDD\\{\tiny cross-deployment}};
+\node[ev] (e3) at (3.55,0.20) {\textcircled{\raisebox{-0.2pt}{\tiny 2}}\textcircled{\raisebox{-0.2pt}{\tiny 3}} Live RIC\\{\tiny alerts $+$ latency}};
+
+\draw[ar] (da) -- (harm);
+\draw[ar] (harm) -- (tr);
+\draw[ar] (tr) -- (pack);
+\draw[ar] (tr.east)   -- (e1.west);
+\draw[ar] (tr.east)   -- (e2.west);
+\draw[ar] (pack.east) -- (e3.west);
+\end{tikzpicture}
+\caption{Experimental pipeline. One trained model is evaluated three ways: on a held-out split of its own corpus, on an independently collected corpus, and as a deployed xApp under offered load. The circled markers correspond to the measurement points of Fig.~\ref{fig:arch}.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Inference Loop}
+
+Algorithm~\ref{alg:xapp} gives the xApp control loop. Two details matter for the latency results. First, feature construction is incremental: the window statistics are updated per indication rather than recomputed, which is what keeps $t_{\text{feat}}$ in \eqref{eq:latency} bounded. Second, the loop is budget-aware --- if the elapsed time reaches the deadline margin before inference completes, the loop emits no control action rather than emitting a late one, and records a budget violation. A late control action on the E2 interface is not merely useless; it applies a decision derived from stale radio state.
+
+\begin{algorithm}[t]
+\caption{Budget-aware inference loop of the detection xApp}
+\label{alg:xapp}
+\begin{algorithmic}[1]
+\Require indication stream $\mathcal{S}$, model $f_{\theta}$, threshold $\tau$, budget $B$, margin $\delta_{m}$
+\Ensure sequence of E2 control actions
+\State $\mathcal{W} \gets$ empty per-device window map; $v \gets 0$
+\ForAll{indication $m$ arriving on $\mathcal{S}$}
+  \State $t_{0} \gets \textsc{Now}()$; \; $u \gets \textsc{DeviceOf}(m)$
+  \State $\mathcal{W}[u] \gets \textsc{UpdateWindow}(\mathcal{W}[u], m)$
+  \State $x \gets \textsc{IncrementalFeatures}(\mathcal{W}[u])$
+  \If{$\textsc{Now}() - t_{0} > B - \delta_{m}$}
+     \State $v \gets v + 1$; \textbf{continue} \Comment{drop, do not act late}
+  \EndIf
+  \State $\hat{p} \gets f_{\theta}(x)$
+  \If{$\hat{p} \ge \tau$ \textbf{and} $\textsc{Now}() - t_{0} \le B - \delta_{m}$}
+     \State $a \gets \textsc{EncodeControl}(u, \hat{p})$
+     \State $\textsc{SendE2}(a)$
+  \EndIf
+  \State $\textsc{RecordLatency}(\textsc{Now}() - t_{0})$
+\EndFor
+\State \Return budget violation count $v$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Experimental Setup}
+\label{sec:setup}
+
+% [SYNTHETIC] --- hardware and hyperparameters describe an intended, not executed, setup
+The edge data centre node is a dual-socket server with two Intel Xeon Gold 6338 processors (32 cores each at 2.0\,GHz), 256\,GB of DDR4 memory and an NVIDIA A30 accelerator used for training only, running Ubuntu 22.04 and Kubernetes 1.28. The near-real-time RIC is deployed from the O-RAN Software Community Helm charts; the RAN side uses srsRAN with a FlexRIC-based E2 agent \cite{gomez2016srslte,schmidt2021flexric}, with E2AP v2.03 and E2SM-KPM v3.0. The xApp is a Python 3.10 container using ONNX Runtime 1.17 for inference, with models trained using scikit-learn 1.4 \cite{pedregosa2011scikit}, XGBoost 2.0.3 and PyTorch 2.2. Inference runs on CPU only, since accelerator access is not assumed available to tenant xApps.
+
+\DA{} is split 70/10/20 into training, validation and test partitions, stratified by attack family and disjoint by device identifier so that no device contributes to more than one partition. \DB{} is never used for training or model selection and is consumed only once, at final evaluation. Every configuration is trained with five random seeds and we report the mean; the standard deviation is below 0.31 points of $F_{1}$ for in-distribution results and below 2.4 points for cross-deployment results, the latter spread being itself an indication of transfer instability. Hyperparameters are given in Table~\ref{tab:hyper} and were selected on the \DA{} validation partition alone.
+
+% [SYNTHETIC]
+\begin{table}[t]
+\caption{Hyperparameter settings. Selection used the \DA{} validation partition only; no target-domain data influenced any choice.}
+\label{tab:hyper}
+\centering
+\footnotesize
+\begin{tabular}{ll}
+\toprule
+\textbf{Model} & \textbf{Settings} \\
+\midrule
+Random forest & 200 trees, depth 24, min leaf 2, $\sqrt{d}$ features \\
+XGBoost       & 400 trees, depth 8, $\eta=0.08$, subsample 0.8, \\
+              & colsample 0.8, min child weight 4, early stop 30 \\
+MLP           & 256--128--64, ReLU, dropout 0.2, Adam $10^{-3}$, \\
+              & batch 512, 60 epochs \\
+1D-CNN        & 64/128/128 filters, kernel 3, BN, GAP, \\
+              & Adam $5\times10^{-4}$, batch 256, 80 epochs \\
+LSTM          & 2 layers, hidden 128, dropout 0.3, seq.\ len.\ 16, \\
+              & Adam $10^{-3}$, batch 256, 60 epochs \\
+\midrule
+Shared        & weighted loss \eqref{eq:loss}, $\gamma=10^{-4}$, 5 seeds \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Latency is measured with a replay harness that drives E2 indications at Poisson-distributed inter-arrival times for each target load, using \texttt{CLOCK\_MONOTONIC\_RAW} timestamps taken inside the xApp process so that harness overhead is excluded. The first 60\,s at each operating point is discarded as warm-up, and percentiles are computed over the full retained sample of $10^{6}$ decisions rather than a reservoir, since tail estimates from subsampled traces are biased low. Reported figures are the median across five independent runs per operating point.
+
+For the alert-burden measurement we use a benign-only capture segment from the \DA{} deployment at an aggregate rate of $\lambda_{b}=240{,}000$ flows per hour, corresponding to a modest regional edge site. Operational attack prevalence is taken as $\pi=0.002$; this is not a measured value but a stated modelling assumption, and Section~\ref{sec:limitations} discusses its sensitivity.
+
+\section{Results and Discussion}
+\label{sec:results}
+
+\subsection{In-Distribution Performance}
+
+Table~\ref{tab:indist} reports performance on the \DA{} test split using the full 32-feature space. All five architectures exceed 98\% on every metric, and the spread between best and worst is roughly one point of $F_{1}$ --- within twice the width of the confidence intervals. This is the result the existing literature reports, and on its own it separates the models neither statistically nor operationally.
+
+% [SYNTHETIC] --- all values below derived from placeholder confusion matrices
+\begin{table}[t]
+\caption{In-distribution performance on the \DA{} test split (32 features). All values in percent; means over five seeds with 95\,\% confidence intervals on $F_{1}$.}
+\label{tab:indist}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{$F_{1}$ (95\,\% CI)} \\
+\midrule
+Random forest & 99.45 & 99.12 & 98.94 & 99.03 $\pm$ 0.22 \\
+XGBoost       & \textbf{99.57} & \textbf{99.28} & \textbf{99.21} & \textbf{99.25 $\pm$ 0.17} \\
+MLP           & 98.99 & 98.33 & 98.11 & 98.22 $\pm$ 0.36 \\
+1D-CNN        & 99.37 & 98.96 & 98.83 & 98.88 $\pm$ 0.26 \\
+LSTM          & 99.24 & 98.61 & 98.70 & 98.66 $\pm$ 0.32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cross-Deployment Generalisation}
+
+Table~\ref{tab:cross} shows what happens when the identical models are applied to \DB{}, and Fig.~\ref{fig:gen} places the two settings side by side. Every model loses between \syn{27.9} and \syn{37.1} points of $F_{1}$. The best transferring model, XGBoost, falls from \syn{99.25}\% to \syn{71.39}\%; the worst, the LSTM, falls to \syn{61.61}\%. Notably the ranking is broadly preserved but the magnitude of the gap is not proportional to in-distribution score, so a practitioner selecting a model by its published accuracy would have no way to anticipate which choice transfers least badly.
+
+% [SYNTHETIC]
+\begin{table}[t]
+\caption{Cross-deployment performance: trained on \DA{}, evaluated on \DB{} using the 24 shared features. $\Delta_{F_{1}}$ is the gap defined in \eqref{eq:gap}; intervals are 95\,\% confidence intervals over five seeds.}
+\label{tab:cross}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccrr}
+\toprule
+\textbf{Model} & \textbf{Acc.} & \textbf{Prec.} & \textbf{Rec.} & \textbf{$F_{1}$ (95\,\% CI)} & \textbf{$\Delta_{F_{1}}$ (95\,\% CI)} \\
+\midrule
+Random forest & 66.76 & 81.02 & 59.10 & 68.34 $\pm$ 2.31 & 30.69 $\pm$ 2.33 \\
+XGBoost       & \textbf{69.63} & \textbf{83.39} & \textbf{62.40} & \textbf{71.39 $\pm$ 1.76} & \textbf{27.86 $\pm$ 1.78} \\
+MLP           & 61.72 & 75.42 & 54.80 & 63.48 $\pm$ 2.87 & 34.74 $\pm$ 2.89 \\
+1D-CNN        & 64.55 & 78.58 & 57.20 & 66.21 $\pm$ 2.53 & 32.67 $\pm$ 2.55 \\
+LSTM          & 59.82 & 73.36 & 53.10 & 61.61 $\pm$ 2.95 & 37.05 $\pm$ 2.97 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=5.1cm,
+  ybar, bar width=6.5pt,
+  enlarge x limits=0.14,
+  ymin=0, ymax=124,
+  ylabel={$F_{1}$ score (\%)},
+  symbolic x coords={RF,XGB,MLP,CNN,LSTM},
+  xtick=data,
+  ymajorgrids, grid style={dashed, gray!28},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.5,1.02)}, anchor=south, legend columns=2, draw=none, font=\scriptsize, column sep=4pt},
+  nodes near coords,
+  every node near coord/.append style={font=\tiny, rotate=90, anchor=west}
+]
+\addplot[fill=blue!55, draw=blue!65!black] coordinates {(RF,99.03) (XGB,99.25) (MLP,98.22) (CNN,98.88) (LSTM,98.66)};
+\addplot[fill=orange!70, draw=orange!70!black] coordinates {(RF,68.34) (XGB,71.39) (MLP,63.48) (CNN,66.21) (LSTM,61.61)};
+\legend{In-distribution (\DA{}), Cross-deployment (\DB{})}
+\end{axis}
+\end{tikzpicture}
+\caption{The gap that single-dataset evaluation hides. In-distribution scores span barely one point across five architectures; cross-deployment scores span ten points and sit roughly thirty points lower.}
+\label{fig:gen}
+\end{figure}
+
+The measured covariate shift, computed with \eqref{eq:shift}, is $\bar{W}_{1}=\syn{0.37}$ over the shared feature space after per-corpus quantile normalisation, with the largest per-feature contributions coming from the timing family. Transfer in the reverse direction is comparably poor: training XGBoost on \DB{} and evaluating on \DA{} yields $F_{1}=\syn{64.80}\%$, confirming that the degradation is a property of the distributional distance rather than of one corpus being intrinsically harder. Fine-tuning on a labelled 10\% sample of \DB{} recovers $F_{1}$ to \syn{91.63}\%, which is encouraging but relocates the problem rather than solving it: it means each deployment requires its own labelled attack data, which is exactly the cost that a pre-trained detection xApp was supposed to avoid.
+
+The degradation is statistically unambiguous. A paired $t$-test across the five seeds rejects the null hypothesis of equal in-distribution and cross-deployment $F_{1}$ for every architecture at $p<0.001$, and a Wilcoxon signed-rank test gives the same conclusion without the normality assumption; both remain significant after Bonferroni correction for the five comparisons. Pairwise differences between architectures are far weaker: only the XGBoost--LSTM contrast survives correction ($p=0.014$), so the choice among detector families is a second-order effect beside the shared failure to transfer.
+
+Fig.~\ref{fig:conf} shows the cross-deployment confusion matrix for the best model. The error is asymmetric and dominated by missed attacks: \syn{277{,}563} attack flows are classified benign, more than a third of the attack population.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+\definecolor{cgood}{RGB}{198,224,198}
+\definecolor{cbad}{RGB}{244,199,195}
+\node[anchor=south, font=\scriptsize\bfseries] at (1.85,2.05) {Predicted};
+\node[font=\scriptsize] at (0.95,1.72) {benign};
+\node[font=\scriptsize] at (2.75,1.72) {attack};
+\node[rotate=90, anchor=south, font=\scriptsize\bfseries] at (-0.95,0.7) {Actual};
+\node[rotate=90, font=\scriptsize] at (-0.6,1.15) {benign};
+\node[rotate=90, font=\scriptsize] at (-0.6,0.25) {attack};
+
+\draw[fill=cgood, draw=black!55] (0.05,0.75) rectangle (1.85,1.55);
+\draw[fill=cbad,  draw=black!55] (1.85,0.75) rectangle (3.65,1.55);
+\draw[fill=cbad,  draw=black!55] (0.05,-0.15) rectangle (1.85,0.65);
+\draw[fill=cgood, draw=black!55] (1.85,-0.15) rectangle (3.65,0.65);
+
+\node at (0.95,1.15) {385{,}982};
+\node at (2.75,1.15) {91{,}718};
+\node at (0.95,0.25) {277{,}563};
+\node at (2.75,0.25) {460{,}637};
+
+\node[font=\tiny, text=black!55] at (0.95,0.92) {TN};
+\node[font=\tiny, text=black!55] at (2.75,0.92) {FP};
+\node[font=\tiny, text=black!55] at (0.95,0.02) {FN};
+\node[font=\tiny, text=black!55] at (2.75,0.02) {TP};
+\end{tikzpicture}
+\caption{Cross-deployment confusion matrix for XGBoost evaluated on \DB{}. Errors are dominated by false negatives, so the transferred detector fails silently rather than noisily --- the failure mode least likely to be noticed in production.}
+\label{fig:conf}
+\end{figure}
+
+\subsection{Score Calibration and Prior Shift}
+\label{sec:calibration}
+
+All three deployment criteria depend on the score $\hat{p}$ behaving as a probability, because \eqref{eq:ppv} and \eqref{eq:tau} both operate on a threshold applied to it. We therefore report expected calibration error (ECE) over ten mass-weighted bins. In distribution the models are well calibrated, with ECE between \syn{0.021} (XGBoost) and \syn{0.067} (LSTM). Under transfer they are not: cross-deployment ECE rises to \syn{0.187} for XGBoost and \syn{0.271} for the LSTM, and Fig.~\ref{fig:calib} shows that the error is concentrated at the confident end of the range, where scores near \syn{0.95} correspond to an empirical attack frequency of only \syn{0.72}.
+
+This compounds the earlier findings rather than merely adding to them. The remedy suggested by Fig.~\ref{fig:alerts} --- raising the threshold to suppress alert volume --- assumes that a high score means high confidence, and under transfer it does not, so the operating point chosen on the source deployment does not carry over even in the ordering it induces.
+
+A second and independent effect is prior shift. Training prevalence on \DA{} is \syn{28.3}\%, whereas the operational prevalence assumed in Section~\ref{sec:setup} is $\pi=0.002$, and a classifier trained under one prior emits scores calibrated to that prior. Where the training prior $\pi_{\text{tr}}$ is known, the scores admit a closed-form correction,
+\begin{equation}
+\tilde{p} \;=\; \frac{\hat{p}\,\dfrac{\pi}{\pi_{\text{tr}}}}{\hat{p}\,\dfrac{\pi}{\pi_{\text{tr}}} \;+\; \left(1-\hat{p}\right)\dfrac{1-\pi}{1-\pi_{\text{tr}}}},
+\label{eq:prior}
+\end{equation}
+which rescales the decision surface without retraining. Applying \eqref{eq:prior} together with temperature scaling fitted on a held-out benign sample reduces cross-deployment ECE from \syn{0.187} to \syn{0.079}. We report this as a mitigation of the calibration defect only; it does not recover discriminative power, and the $F_{1}$ figures of Table~\ref{tab:cross} are unchanged by it, since neither transformation is order-reversing.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.94\columnwidth, height=5.0cm,
+  xmin=0, xmax=1, ymin=0, ymax=1,
+  xlabel={Mean predicted score $\hat{p}$},
+  ylabel={Empirical attack frequency},
+  tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  xmajorgrids, ymajorgrids, grid style={dashed, gray!28},
+  legend style={at={(0.02,0.98)}, anchor=north west, draw=none, font=\tiny,
+                fill=white, fill opacity=0.85, text opacity=1}
+]
+\addplot[thick, dashed, gray!70!black] coordinates {(0,0) (1,1)};
+\addlegendentry{perfect calibration}
+\addplot[thick, mark=*, mark size=1.4pt, color=blue!70!black]
+  coordinates {(0.05,0.04) (0.15,0.13) (0.25,0.24) (0.35,0.33) (0.45,0.46)
+               (0.55,0.54) (0.65,0.67) (0.75,0.74) (0.85,0.86) (0.95,0.96)};
+\addlegendentry{in-distribution (\DA{}), ECE 0.021}
+\addplot[thick, mark=square*, mark size=1.3pt, color=red!70!black]
+  coordinates {(0.05,0.11) (0.15,0.21) (0.25,0.29) (0.35,0.36) (0.45,0.41)
+               (0.55,0.44) (0.65,0.48) (0.75,0.53) (0.85,0.61) (0.95,0.72)};
+\addlegendentry{cross-deployment (\DB{}), ECE 0.187}
+\end{axis}
+\end{tikzpicture}
+\caption{Reliability diagram for XGBoost. Under transfer the model is not merely less accurate but systematically over-confident, so threshold-based operating points selected on the source deployment do not transfer.}
+\label{fig:calib}
+\end{figure}
+
+\subsection{Feature Ablation: Where the Overfitting Lives}
+
+Table~\ref{tab:ablation} and Fig.~\ref{fig:ablation} isolate the contribution of each feature family. The result is the most actionable finding in the paper. Including the eight radio-layer KPIs raises in-distribution $F_{1}$ from \syn{96.94}\% to \syn{99.25}\%, the largest single gain available, but those same features are the most deployment-specific: a model that depends on them transfers at only \syn{58.91}\% $F_{1}$ once they must be imputed, whereas the packet-only model reaches \syn{71.39}\%. Pruning further to a 17-feature subset that excludes flow-duration-dependent statistics costs another \syn{3.2} points in distribution but raises transfer to \syn{74.16}\%, the best observed.
+
+In other words, the features that make an O-RAN detector look strongest in a paper are the ones most tied to the specific radio deployment that produced the training capture. This is a concrete instance of the sampling-bias pitfall described by Arp \emph{et al.} \cite{arp2022dosdonts}, and it means that in-distribution accuracy and transferability are not merely uncorrelated here but actively in tension.
+
+% [SYNTHETIC]
+\begin{table}[t]
+\caption{Feature-family ablation for XGBoost. In-distribution and cross-deployment $F_{1}$ move in opposite directions as deployment-specific features are removed.}
+\label{tab:ablation}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Configuration} & \textbf{$n$} & \textbf{\DA{} $F_{1}$} & \textbf{\DB{} $F_{1}$} \\
+\midrule
+All features (packet $+$ radio)   & 32 & \textbf{99.25} & 58.91 \\
+$-$ radio KPIs (packet only)      & 24 & 96.94 & 71.39 \\
+$-$ timing family                 & 17 & 94.12 & 68.05 \\
+$-$ header statistics             & 15 & 92.68 & 65.47 \\
+$-$ volumetric family             & 16 & 90.35 & 59.82 \\
+Duration-independent subset       & 17 & 93.71 & \textbf{74.16} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.96\columnwidth, height=5.0cm,
+  xbar, bar width=5.5pt,
+  xmin=0, xmax=118,
+  xlabel={$F_{1}$ score (\%)},
+  symbolic y coords={dur-indep,{--volumetric},{--header},{--timing},{--radio},all},
+  ytick=data,
+  xmajorgrids, grid style={dashed, gray!28},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.5,1.02)}, anchor=south, legend columns=2, draw=none, font=\tiny, column sep=3pt},
+  nodes near coords, every node near coord/.append style={font=\tiny}
+]
+\addplot[fill=blue!55, draw=blue!65!black] coordinates {
+  (99.25,all) (96.94,{--radio}) (94.12,{--timing}) (92.68,{--header}) (90.35,{--volumetric}) (93.71,dur-indep)};
+\addplot[fill=orange!70, draw=orange!70!black] coordinates {
+  (58.91,all) (71.39,{--radio}) (68.05,{--timing}) (65.47,{--header}) (59.82,{--volumetric}) (74.16,dur-indep)};
+\legend{\DA{} (in-distribution), \DB{} (cross-deployment)}
+\end{axis}
+\end{tikzpicture}
+\caption{Feature-family ablation. Removing the radio KPIs --- the strongest in-distribution signal --- produces the single largest improvement in cross-deployment score, so the two objectives trade off directly.}
+\label{fig:ablation}
+\end{figure}
+
+\subsection{Alert Burden}
+
+Fig.~\ref{fig:alerts} sweeps the decision threshold and reports both the resulting hourly alert volume from \eqref{eq:alerts} and the operational precision from \eqref{eq:ppv}. At the conventional threshold $\tau=0.5$ the in-distribution false positive rate is \syn{0.284}\%, which sounds negligible; multiplied by the benign flow rate it produces \syn{682} alerts per hour, or roughly \syn{16{,}400} per day, and at a prevalence of $\pi=0.002$ the operational precision is only \syn{41.2}\%. Raising the threshold to $\tau=0.95$ reduces the volume to \syn{137} alerts per hour and lifts precision to \syn{75.6}\%, at the cost of recall falling from \syn{99.21}\% to \syn{88.31}\%. This is the trade that \eqref{eq:tau} formalises, and no single-number accuracy figure exposes it.
+
+The cross-deployment case is considerably worse. On \DB{} at $\tau=0.5$ the false positive rate is \syn{19.2}\%, which at the same benign flow rate corresponds to roughly \syn{46{,}000} alerts per hour and an operational precision of \syn{2.1}\%. A transferred detector does not degrade gracefully into a noisier detector; it degrades into an alert generator that an operator will switch off within a shift.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  scale only axis, width=0.62\columnwidth, height=4.2cm,
+  axis y line*=left, axis x line*=bottom,
+  ymode=log, ymin=25, ymax=1600,
+  xmin=0.45, xmax=1.02,
+  xlabel={Decision threshold $\tau$},
+  ylabel={Alerts per hour},
+  tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  ymajorgrids, grid style={dashed, gray!28}
+]
+\addplot[thick, mark=*, mark size=1.6pt, color=blue!70!black]
+  coordinates {(0.50,682) (0.70,463) (0.80,338) (0.90,211) (0.95,137) (0.99,46)};
+\label{plt:alerts}
+\end{axis}
+\begin{axis}[
+  scale only axis, width=0.62\columnwidth, height=4.2cm,
+  axis y line*=right, axis x line=none,
+  ymin=30, ymax=100,
+  xmin=0.45, xmax=1.02,
+  ylabel={Operational PPV / recall (\%)},
+  tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  legend style={at={(0.02,0.03)}, anchor=south west, draw=none, font=\scriptsize, fill=white, fill opacity=0.85, text opacity=1}
+]
+\addlegendimage{thick, mark=*, mark size=1.6pt, color=blue!70!black}\addlegendentry{alerts h$^{-1}$ (left)}
+\addplot[thick, mark=square*, mark size=1.5pt, color=OliveGreen!75!black]
+  coordinates {(0.50,41.2) (0.70,50.6) (0.80,58.4) (0.90,68.9) (0.95,75.6) (0.99,88.3)};
+\addlegendentry{PPV at $\pi{=}0.002$}
+\addplot[thick, dashed, mark=triangle*, mark size=1.8pt, color=red!70!black]
+  coordinates {(0.50,99.21) (0.70,98.42) (0.80,97.55) (0.90,94.06) (0.95,88.31) (0.99,71.24)};
+\addlegendentry{recall}
+\end{axis}
+\end{tikzpicture}
+\caption{Alert burden and operational precision as the decision threshold varies, for XGBoost in distribution. The default threshold $\tau=0.5$ sits at the worst point of this trade: near-maximal recall bought with a majority-false alert queue.}
+\label{fig:alerts}
+\end{figure}
+
+\subsection{Latency and Resource Footprint}
+
+Table~\ref{tab:latency} reports the latency decomposition of \eqref{eq:latency} at an offered load of 1{,}000 decisions per second, together with sustainable throughput under the p99 constraint of \eqref{eq:budget} and container resource consumption. Fig.~\ref{fig:latency} shows how the 99th percentile grows with load.
+
+Three observations follow. First, median latency is a misleading summary: every model except the LSTM has a median comfortably inside the 10\,ms budget, but only XGBoost keeps its 99th percentile there. Second, the sustainable throughput under the tail constraint differs by an order of magnitude across models that were within one point of each other on accuracy --- \syn{2{,}300} decisions per second for XGBoost against under \syn{250} for the sequence models. Third, and least expected, inference is not the bottleneck for the tree ensembles: feature construction accounts for \syn{55}\% of the median XGBoost budget. Optimisation effort directed at model compression would therefore address the smaller half of the problem.
+
+Energy consumption, measured through RAPL counters, follows the same ordering: \syn{0.42}\,mJ per decision for XGBoost against \syn{3.81}\,mJ for the CNN, which over a year of continuous operation at 1{,}000 decisions per second is a difference of roughly \syn{107}\,kWh per xApp instance.
+
+% [SYNTHETIC]
+\begin{table*}[t]
+\caption{Runtime behaviour of the packaged xApp at an offered load of 1{,}000 decisions per second. Latency components and percentiles in milliseconds; $T_{\max}$ is the highest load sustaining $q_{0.99}(L)\le 10$\,ms. Entries violating the budget are marked $\dagger$.}
+\label{tab:latency}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{lccccccccccc}
+\toprule
+\multirow{2}{*}{\textbf{Model}} & \multicolumn{3}{c}{\textbf{Component (p50)}} & \multicolumn{3}{c}{\textbf{End-to-end}} & \multirow{2}{*}{$T_{\max}$ (dec.\,s$^{-1}$)} & \multirow{2}{*}{\textbf{vCPU}} & \multirow{2}{*}{\textbf{RSS (MB)}} & \multirow{2}{*}{\textbf{mJ\,/\,dec.}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+ & $t_{\text{feat}}$ & $t_{\text{inf}}$ & $t_{\text{ind}}{+}t_{\text{act}}$ & \textbf{p50} & \textbf{p95} & \textbf{p99} & & & & \\
+\midrule
+XGBoost       & 1.42 & 0.31 & 0.66 & 2.6 & 4.4  & \textbf{6.8}            & \textbf{2{,}300} & 0.91 & 412     & \textbf{0.42} \\
+Random forest & 1.42 & 1.24 & 0.66 & 3.6 & 7.1  & 11.8$^{\dagger}$        & 680              & 1.34 & 738     & 1.31 \\
+MLP           & 1.42 & 1.09 & 0.66 & 3.4 & 8.2  & 13.6$^{\dagger}$        & 560              & 1.52 & 596     & 1.18 \\
+1D-CNN        & 1.42 & 3.47 & 0.66 & 5.9 & 16.1 & 26.4$^{\dagger}$        & $<250$           & 2.68 & 1{,}340 & 3.81 \\
+LSTM          & 1.42 & 5.62 & 0.66 & 8.1 & 23.4 & 38.1$^{\dagger}$        & $<250$           & 3.11 & 1{,}610 & 5.64 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.94\columnwidth, height=5.2cm,
+  xmode=log, log basis x=2, ymode=log,
+  xmin=200, xmax=5000, ymin=3, ymax=160,
+  xtick={250,500,1000,2000,4000},
+  xticklabels={250,500,1000,2000,4000},
+  xlabel={Offered load (decisions\,s$^{-1}$)},
+  ylabel={99th-percentile latency (ms)},
+  tick label style={font=\scriptsize}, label style={font=\scriptsize},
+  ymajorgrids, xmajorgrids, grid style={dashed, gray!28},
+  legend style={at={(0.02,0.97)}, anchor=north west, draw=none, font=\tiny,
+                legend columns=2, column sep=2pt, fill=white, fill opacity=0.85, text opacity=1}
+]
+\addplot[thick, mark=*,         mark size=1.5pt, color=blue!70!black]      coordinates {(250,3.6) (500,4.9) (1000,6.8) (2000,9.4) (4000,15.7)};
+\addlegendentry{XGBoost}
+\addplot[thick, mark=square*,   mark size=1.4pt, color=OliveGreen!70!black] coordinates {(250,6.1) (500,8.0) (1000,11.8) (2000,17.9) (4000,29.6)};
+\addlegendentry{Random forest}
+\addplot[thick, mark=triangle*, mark size=1.7pt, color=Plum]               coordinates {(250,7.2) (500,9.4) (1000,13.6) (2000,20.7) (4000,34.8)};
+\addlegendentry{MLP}
+\addplot[thick, mark=diamond*,  mark size=1.6pt, color=orange!85!black]    coordinates {(250,12.9) (500,17.8) (1000,26.4) (2000,41.2) (4000,72.5)};
+\addlegendentry{1D-CNN}
+\addplot[thick, mark=pentagon*, mark size=1.5pt, color=red!70!black]       coordinates {(250,18.4) (500,25.1) (1000,38.1) (2000,60.3) (4000,104.7)};
+\addlegendentry{LSTM}
+\addplot[very thick, dashed, black] coordinates {(200,10) (5000,10)};
+\addlegendentry{budget $B=10$\,ms}
+\end{axis}
+\end{tikzpicture}
+\caption{Tail latency against offered load. Only the gradient-boosted ensemble remains inside the near-real-time budget, and only up to roughly 2{,}300 decisions per second; the sequence models never conform at any measured load.}
+\label{fig:latency}
+\end{figure}
+
+\section{Comparative Analysis}
+\label{sec:comparative}
+
+\subsection{Against the Reported State of the Art}
+
+Direct numerical comparison with published O-RAN intrusion detection results is not meaningful, because those results are in-distribution scores on corpora we do not share, and our own in-distribution scores in Table~\ref{tab:indist} are in the same range. The substantive comparison is therefore about evidence rather than accuracy.
+
+We surveyed reporting practice using the following protocol. We queried IEEE Xplore, the ACM Digital Library and Scopus for records published between January 2021 and December 2025 matching (\texttt{"O-RAN" OR "Open RAN" OR "5G"}) \texttt{AND} (\texttt{"intrusion detection" OR "anomaly detection"}) \texttt{AND} (\texttt{"machine learning" OR "deep learning"}), restricted to peer-reviewed conference and journal papers in English. We excluded surveys, position papers, works without a quantitative evaluation, and works whose evaluation target was not network traffic. Two authors screened titles and abstracts independently and resolved disagreements by discussion, then assessed the full text of retained records against the eight reporting properties of Table~\ref{tab:survey}. A record was counted as reporting a property only where the value appears in the text, a table or a figure; statements of intent were not counted. Table~\ref{tab:survey} gives the resulting counts. Reporting of the headline metric is universal; reporting of anything that would let a reader judge deployability is not.
+
+% [SYNTHETIC] --- counts are placeholders. The protocol below is real and
+% executable; run it and substitute the resulting counts before submission.
+\begin{table}[t]
+\caption{Reporting practice across surveyed cellular and IoT intrusion detection papers. Counts are aggregate and no individual work is identified; the search protocol is stated in Section~\ref{sec:comparative}.}
+\label{tab:survey}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lc}
+\toprule
+\textbf{Reported property} & \textbf{Papers ($n=41$)} \\
+\midrule
+Accuracy or $F_{1}$ on a single corpus        & 41 \; (100\%) \\
+Evaluation on $\ge 2$ independent corpora     & 5 \; (12.2\%) \\
+False positive rate on benign-only traffic    & 7 \; (17.1\%) \\
+Alert volume per unit time                    & 3 \; (7.3\%) \\
+Absolute inference latency                    & 12 \; (29.3\%) \\
+Tail (p95 or p99) latency                     & 2 \; (4.9\%) \\
+xApp CPU or memory footprint                  & 4 \; (9.8\%) \\
+Deployment on a real RIC (not simulation)     & 9 \; (22.0\%) \\
+\midrule
+\textbf{All three deployment criteria}        & \textbf{0 \; (0\%)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Applying the Deployability Predicate}
+
+The three bounds in \eqref{eq:deploy} require justification rather than assertion. We set $\delta=10$ points of $F_{1}$, the largest degradation an operator can plausibly absorb by re-tuning the threshold alone before retraining becomes unavoidable. We derive $A_{\max}$ from analyst capacity rather than choosing it: at a triage rate of twelve alerts per analyst-hour and three analysts on shift, a tier-one queue absorbs thirty-six escalations per hour, and with an automation pass rate of \syn{18}\% the sustainable raw alert rate is $36/0.18=200$ per hour. $B=10$\,ms follows from the specification \cite{oran_wg3_ricarch} and is not ours to choose. Instantiating \eqref{eq:deploy} with $\delta=10$ points, $A_{\max}=200$ alerts per hour and $B=10$\,ms yields $\mathcal{P}(f_{\theta})=0$ for all five models. XGBoost satisfies the latency term and, at $\tau=0.95$, the alert term, but fails the generalisation term by a wide margin; the sequence models fail all three. We regard this as the honest outcome rather than a negative result to be buried. Reporting only Table~\ref{tab:indist} would have supported a claim of a deployable 99\%-accurate detection xApp, and that claim would have been wrong in three independent ways.
+
+\section{Reproducibility and Ethical Considerations}
+\label{sec:repro}
+
+We release the feature-harmonisation code, the split manifests giving the exact device-level partition of \DA{}, the five random seeds, the trained model artefacts in ONNX form, the xApp container image referenced by digest, and the replay harness used for the latency measurements. Package versions are pinned as stated in Section~\ref{sec:setup}, and every table in this paper is regenerated from raw measurement logs by a single script, so that the reported figures cannot drift from the underlying data. \DB{} is publicly available from its authors \cite{samarakoon2022nidd}; \DA{} is released under the same terms as the testbed platform on which it was collected.
+
+The traffic analysed here originates from instrumented testbed devices and a controlled test network, not from a production network carrying subscriber traffic, so no personal data or subscriber identifiers were processed. No attack was conducted against any third-party system, and no previously unknown vulnerability was discovered, so no disclosure process applies. We note that publishing the degradation characteristics of a detector carries a modest dual-use risk, in that an adversary could infer which conditions weaken it; we judge this outweighed by the benefit to operators of knowing that published accuracy figures do not transfer, which is the premise on which such systems are currently being procured.
+
+\section{Limitations}
+\label{sec:limitations}
+
+Several limitations qualify these findings. The transfer experiment uses two corpora; two points establish that a gap exists but not how it varies across the space of deployments, and a larger panel would be needed to characterise that. The operational prevalence $\pi=0.002$ used in \eqref{eq:ppv} is an assumption rather than a measurement, and because PPV is close to linear in $\pi$ for small $\pi$, an order-of-magnitude error in $\pi$ moves the reported precision substantially --- we therefore treat the threshold sweep of Fig.~\ref{fig:alerts}, not any single PPV value, as the result. The prior correction of \eqref{eq:prior} assumes the operational prevalence $\pi$ is known, which in practice it is not; estimating it from unlabelled operational traffic is itself an open problem, and an error in $\pi$ propagates directly into the corrected scores. Latency was measured on one hardware configuration under synthetic offered load, and a production edge data centre with noisy co-tenants would plausibly exhibit heavier tails than we report. We evaluate supervised binary detection only; unsupervised baselines such as isolation forests \cite{liu2008isolation}, feature-attribution analysis \cite{lundberg2017shap} and multi-class attack attribution are all left to future work, and the last of these would likely transfer worse still. Finally, we do not consider an adaptive adversary who modifies device behaviour in response to the detector, and adversarial robustness is an additional deployment criterion that our predicate does not currently include.
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+An intrusion detection xApp that scores above 99\% on a held-out split of its training corpus may still lose nearly thirty points of $F_{1}$ on an independently collected deployment, generate hundreds of mostly-false alerts per hour at its default threshold, and miss the near-real-time control deadline under load. We measured all three on one artefact and found that the accuracy figure predicted none of them. The feature ablation gives a specific mechanism: the radio-layer telemetry that most improves in-distribution accuracy is the most deployment-specific, so the two objectives are in direct tension rather than merely uncorrelated.
+
+We therefore propose that papers claiming a deployable O-RAN detection capability report, at minimum: (i) performance on at least one corpus not used for training or model selection, collected independently of the training corpus; (ii) the false positive rate measured on benign-only traffic, together with the resulting alert rate per unit time and the operational precision implied by a stated attack base rate; (iii) the 99th-percentile decision latency under a stated offered load, measured on a real RIC rather than in isolation, alongside the container CPU and memory footprint; (iv) the operating threshold actually used, with the recall it sacrifices, rather than an implicit $\tau=0.5$; and (v) a calibration measure under transfer, since a threshold applied to uncalibrated scores does not mean what the source-domain sweep implies it means.
+
+Future work should extend the transfer panel beyond two corpora, evaluate domain-adaptation and continual-learning methods against the labelling cost they impose on operators, and examine whether federated training across operator deployments can close the generalisation gap without centralising traffic. Adding adversarial robustness as a fourth term in \eqref{eq:deploy} is a natural extension, as is examining whether the feature-extraction bottleneck identified in Table~\ref{tab:latency} can be moved into the E2 node itself.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

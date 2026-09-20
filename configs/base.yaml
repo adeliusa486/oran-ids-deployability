@@ -1,0 +1,40 @@
+# Root configuration. Every module reads Config objects, never YAML directly.
+project: oran-ids-deployability
+
+seeds:
+  # Two-level design (resolves A5): CIs are computed over SPLIT means.
+  split_seeds: [101, 102, 103, 104, 105]
+  model_seeds: [11, 22, 33]
+
+corpora:
+  source: configs/corpora/d_a.yaml     # trained on
+  target: configs/corpora/d_b.yaml     # evaluated on, ONCE
+
+features:
+  window_records: 16
+  min_records: 16
+  short_flow_policy: drop      # A12: declared, and drop rate is reported
+  # A2: 'source' forbids fitting any transform on the target corpus.
+  normalisation_modes: [source, target_unsup, none]
+  primary_normalisation: source
+
+operational:
+  # A6: declared deployment parameters, NOT measurements.
+  lambda_b_flows_per_hour: 240000
+  lambda_b_provenance: "declared parameter; see paper Section V"
+  pi_sweep: [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
+  pi_primary: 0.002
+  tau_sweep: [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
+              0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.99, 0.995]
+
+deployability:            # Eq. (7) thresholds, justified in paper Section VII
+  delta_f1_max: 10.0
+  alerts_per_hour_max: 200
+  budget_ms: 10.0
+  epsilon: 0.01
+
+paths:
+  data: data
+  results: results
+  figures: figures/generated
+  tables: tables/generated

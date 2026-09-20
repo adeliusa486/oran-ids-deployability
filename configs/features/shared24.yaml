@@ -1,0 +1,5 @@
+# The 24 packet-level features computable on BOTH corpora.
+# families.py asserts produced columns == declared union; this is what stops
+# radio features leaking into a transfer run.
+families: [volumetric, timing, header]
+expected_n_features: 24

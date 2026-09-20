@@ -1,0 +1,10 @@
+# A3 CONTROL: this exporter config is applied identically to BOTH corpora.
+# Mixing a published CSV with a self-computed one confounds the headline result.
+exporter:
+  name: oran_ids.ingest.exporter
+  version: "1.0.0"
+  active_timeout_s: 120
+  idle_timeout_s: 30
+  direction_policy: first_packet
+  bidirectional: true
+  drop_incomplete_handshakes: false
