@@ -501,3 +501,217 @@ campaign_2:
       Delta_F1 is an UPPER BOUND spanning an independent deployment AND an independent
       exporter. The A3 single-exporter control is NOT applied. Never write "due to
       deployment shift".
+
+  EXP-027:
+    title: Prevalence sensitivity and the PPV estimator bug
+    phase: 27
+    status: complete
+    gate: PASS
+    runner: experiments/run_prevalence_sensitivity.py
+    decisions: [D-018]
+    bug: B-E
+    method: analytic sweep over POOLED confusion counts; no model refitted
+    finding: >
+      The operational-precision result does not depend on pi. It depended on how
+      PPV was averaged. PPV is non-linear in FPR near zero, EXP-004 averaged PPV
+      across folds, and any fold with FPR=0 contributed 1.000. Same data, three
+      estimators: pooled 1.40x, median 1.73x, mean 13.18x. The mean was published
+      as 6x. Pooled counts are primary from here on; mean and median are reported
+      beside them so the artefact stays visible.
+    surviving_claim: >
+      Corpus precision ~0.93 against pooled deployment PPV 0.0055-0.0077, a 132x
+      collapse at pi=0.002, rising to 2,631x at pi=1e-4. The detectors are
+      operationally indistinguishable at every base rate swept.
+    also_found: >
+      FPR is not a stable property of these detectors: 0.000 to 0.890 across
+      group-disjoint folds. Any single-number FPR for this corpus is close to
+      meaningless without that range beside it.
+    separability_verified: >
+      PPV is lambda_b-invariant (max variation 2.2e-16) and alert volume is
+      exactly linear in lambda_b (max deviation 3.7e-9), checked numerically
+      rather than asserted.
+
+  EXP-028:
+    title: Calibration and operational-threshold audit
+    phase: 28
+    status: complete
+    gate: PASS
+    runner: experiments/run_calibration.py
+    calibrators: [raw, platt, isotonic, temperature]
+    split: group-disjoint three-way train/calibration/test on src_ip
+    hard_rule: >
+      No calibrator is ever fitted on the target. The prior-corrected variants
+      consume the TARGET prior, are labelled ORACLE, are an upper bound on what
+      prior correction could buy, and carry no claim.
+    bug_found: >
+      Isotonic regression returns exactly 1.0 and inherits float32 from the score
+      array. In float32, 1 - 1e-9 rounds to 1.0, so the clip in prior_correct was
+      a no-op, 1-p was 0, the odds were +inf and inf/(1+inf) was NaN. It crashed
+      three functions downstream in sklearn, which is the good failure mode -- the
+      same bug in a metric that tolerates NaN would have quietly poisoned a mean.
+      Fixed by casting to float64 before clipping, with a finiteness assertion.
+
+  EXP-029:
+    title: Network-layer grouping confound
+    phase: 29
+    status: partial
+    runner: experiments/run_grouping_confound.py
+    part_c_complete: true
+    part_c_finding: >
+      Test-fold composition does NOT explain the 0.000-0.890 FPR range. Mean R^2
+      across predictors 0.04-0.06, max 0.36, 1 of 7 significant. It is WHICH
+      groups land in test, not how many or their class balance.
+    parts_outstanding: [A, B]
+    hard_rule: >
+      Until parts A and B land, the network layer stays a directional cross-check
+      per D-013 and no per-layer claim rests on it.
+
+  EXP-030:
+    title: Native feature-extraction benchmark
+    phase: 30
+    status: complete
+    gate: PASS
+    runner: experiments/run_extraction_benchmark.py
+    new_module: src/oran_ids/ingest/fast_exporter.py
+    finding: >
+      A vectorised extractor is 2.3x to 12.1x faster than the per-packet reference
+      and agrees with it exactly -- 0 packet mismatches, 0 byte mismatches, 100%
+      bulk-parse coverage. The speedup tracks packets-per-flow. The reference is
+      flat at 63-78 us/packet whatever the shape, which is the per-packet Python
+      interpretation cost.
+    verdict: >
+      The C10 finding SURVIVES optimisation. Best vectorised extraction is 0.058
+      ms/flow; against real-RIC inference (1-5 us logreg, 10-25 us MLP) that is
+      still 19x and 3x. Smaller than the 7-39x measured against Python inference,
+      same sign, now resting on a measurement rather than a caveat.
+    caveat: >
+      Captures are SYNTHETIC -- D-010 stopped the pcap download and the originals
+      are gone. Calibration against the real captures is reported either way.
+
+  EXP-031:
+    title: Real Near-RT RIC runtime
+    phase: 31
+    status: blocked
+    gate: BLOCKED
+    report: reports/EXP-031_real_ric_blocked.md
+    blocker: >
+      Command-verified: wsl -d Ubuntu fails with HCS_E_SERVICE_NOT_AVAILABLE. The
+      Windows Virtual Machine Platform feature is not installed, so WSL2 cannot
+      start a VM, and Docker Desktop's Linux engine runs on WSL2 and fails too.
+      Docker 29.6.2, kubectl 1.36.1 and a registered Ubuntu ARE present.
+      Unblocking needs administrator rights and a reboot.
+    why_not_forced: >
+      Even with WSL2 there would be no CPU isolation, and tail latency is what a
+      noisy scheduler destroys. The outcome would have been a third emulated
+      measurement wearing the word "real".
+    scientific_content: >
+      A negative result about our own method. Obiuwevwi et al. measure 1-5 us for
+      logistic regression on a real RIC; we measure 2.45 ms p50 for the same
+      family. Three orders of magnitude is not hardware -- it is a compiled
+      embedded model against a Python object graph. The near-RT crossing point is
+      a property of the implementation, not the architecture.
+
+  EXP-033:
+    title: Adversarial and degraded-telemetry robustness
+    phase: 33
+    status: complete
+    runner: experiments/run_adversarial.py
+    was_cut_by: D-009
+    scope_note: >
+      NOT first. Adversarial attacks on O-RAN ML are prior art (arXiv:2309.03844,
+      arXiv:2510.18160, arXiv:2505.05537, WiSec 2024). What is added is the
+      operational reading: every attack scored on alert burden and on whether the
+      operating threshold still reaches a usable PPV, not on accuracy alone.
+    threat_models:
+      evasion_unconstrained: >
+        UPPER BOUND, not realisable -- it permits reducing bytes and packets
+        already sent.
+      evasion_constrained: >
+        The realistic number. An attacker can pad and delay but cannot un-send,
+        so only increases to bytes, packets and duration are allowed.
+    never_perturbed: >
+      The protocol one-hot. Perturbing it produces a vector corresponding to no
+      packet.
+
+  EXP-034:
+    title: Temporal and configuration drift
+    phase: 34
+    status: complete
+    runner: experiments/run_drift.py
+    layer: radio only -- the network layer has NO time column
+    design: >
+      Real time, not simulated drift. D_A's radio layer spans 52.96 days and
+      session ids are assigned by cumsum over time-sorted records, so the session
+      index IS the temporal order. Train on the earliest sessions, test on the
+      latest, sweep the boundary, and compare against a control with the same
+      session counts drawn at random rather than by time.
+    why_the_control_matters: >
+      Without it a temporal drop cannot be told apart from the ordinary variance
+      of which sessions land in test, and EXP-027 found that variance is enormous.
+    power_note: >
+      30 sessions detects a large effect and nothing subtler. Stated up front
+      rather than discovered in review.
+
+  EXP-035:
+    title: Multi-dimensional deployability
+    phase: 35
+    status: complete
+    runner: analysis/deployability.py
+    no_composite_score: >
+      Deliberate, and required by the brief. Collapsing latency, burden and
+      transfer into one number needs weights, the weights are unmeasurable, and
+      whoever picks them picks the winner.
+    finding: >
+      All six architectures are Pareto-efficient over eight axes. Naming the axis
+      each one wins is the usable result: logreg takes the three operational axes
+      (deployment PPV, false alerts/hour, drift robustness), rf takes the three
+      detection axes (target F1, distance above the floor, Brier), tree takes p99
+      latency, and mlp wins only source F1 -- the metric a paper reports, and
+      nothing else.
+    concrete: >
+      logreg emits 5,620 false alerts/hour against rf's 129,843, a factor of 23,
+      while rf is 0.042 macro-F1 better on the target.
+    unmeasured_dimensions: [cpu_under_load, ram_under_load, integration_complexity]
+    unmeasured_policy: >
+      Carried as NaN columns so their absence is visible, excluded from the
+      frontier with the exclusion printed, never imputed.
+
+  EXP-036:
+    title: Final literature and novelty audit
+    phase: 36
+    status: complete
+    gate: PASS
+    report: reports/literature_audit_v2.md
+    gaps_closed_by_others: [G1, G5]
+    pre_emptions:
+      - "Abraheem & Edhirig, WAUJPAS 4(2), 7 Aug 2026 -- bidirectional transfer
+         between the SAME two corpora. G1 closed. No first-cross-deployment claim."
+      - "Obiuwevwi et al., arXiv:2607.01583, Jul 2026 -- AI inference inside a real
+         OAI+FlexRIC RIC. G5 closed."
+    provenance: "2 entries FULL_PAGE, 9 SNIPPET. Nothing tagged SNIPPET may
+                 support an absence claim -- the rule G4 violated."
+
+  EXP-037:
+    title: Manuscript reconstruction from evidence
+    phase: 37
+    status: in_progress
+    report: reports/EXP-037_manuscript_audit.md
+    worst_finding: >
+      The syn{} markers cover fabricated NUMBERS, not fabricated METHODS. The
+      Methodology section said features are quantile-normalised per corpus, which
+      fits a transform on the target and is exactly what A2 forbids. As written
+      the paper described a leak it does not commit.
+    fixed: [feature harmonisation, tab:features, tab:cross, transfer prose]
+    remaining: 46 synthetic values
+
+  EXP-038:
+    title: Final reviewer attack
+    phase: 38
+    status: complete
+    report: reports/final_reviewer_attack_v2.md
+    could_not_answer:
+      - exporter confound cannot be removed without re-extracting both corpora
+      - no real RIC measurement exists and this machine cannot produce one
+      - 30 capture sessions is a small population; reseeding does not fix it
+      - ddos, bruteforce and web are untestable in transfer
+      - CPU and RAM under load are not measured at all

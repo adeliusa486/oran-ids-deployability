@@ -51,6 +51,7 @@ import argparse
 import json
 import platform
 import sys
+import time
 import warnings
 from pathlib import Path
 
@@ -70,8 +71,23 @@ from oran_ids.splits import group_disjoint_split, random_split  # noqa: E402
 warnings.filterwarnings("ignore")
 
 OUT = Path("results/EXP-029")
-N_NULL = 50          # label-shuffle replicates
+# Label-shuffle replicates. 20 is enough for a mean and a p95, and each one is
+# an information-theoretic computation over the whole corpus.
+N_NULL = 20
 SUBSAMPLE = 300_000  # declared, matches EXP-002
+
+# Part A works on a declared, seeded subsample rather than all 1.64M rows.
+#
+# This is a speed fix with a real cost, so it is stated: mutual information is a
+# plug-in estimator and is biased upward at small n, particularly for
+# high-cardinality groupings. The bias is why BOTH nulls are computed on the
+# SAME subsample -- a label shuffle and a size-matched random grouping carry the
+# same bias, so the comparison against them is unaffected even though the
+# absolute NMI is not directly comparable to a whole-corpus value.
+#
+# The first attempt ran on all 1.64M rows and was killed at 50 minutes without
+# finishing. 300k rows takes minutes and answers the same question.
+ALIGN_SUBSAMPLE = 300_000
 
 
 def cramers_v(a: np.ndarray, b: np.ndarray) -> float:
@@ -162,31 +178,43 @@ def part_a(rng) -> pd.DataFrame:
     # ---- network layer -------------------------------------------------
     net = load_network(feature_set="full")
     raw = aligned_metadata(len(net.y))
-    print("network: %d rows, %d src_ip groups" % (len(net.y), len(set(net.groups))))
+    n_all = len(net.y)
+    sub = np.sort(rng.choice(n_all, size=min(ALIGN_SUBSAMPLE, n_all),
+                             replace=False))
+    raw_s = raw.iloc[sub].reset_index(drop=True)
+    y_s, cat_s = net.y[sub], net.category[sub]
+    print("network: %d rows, %d src_ip groups; part A on a seeded subsample "
+          "of %d" % (n_all, len(set(net.groups)), len(sub)), flush=True)
 
     cands = {
-        "src_ip": raw["src_ip"].to_numpy(),
-        "dst_ip": raw["dst_ip"].to_numpy(),
-        "src_ip__dst_ip": (raw["src_ip"].astype(str) + "|"
-                           + raw["dst_ip"].astype(str)).to_numpy(),
+        "src_ip": raw_s["src_ip"].to_numpy(),
+        "dst_ip": raw_s["dst_ip"].to_numpy(),
+        "src_ip__dst_ip": (raw_s["src_ip"].astype(str) + "|"
+                           + raw_s["dst_ip"].astype(str)).to_numpy(),
         # The extreme case: group BY the attack scenario. If src_ip scores like
         # this, the two protocols are the same protocol.
-        "attack_type_ORACLE": raw["attack_type"].to_numpy(),
-        "dst_port": raw["dst_port"].astype(str).to_numpy(),
+        "attack_type_ORACLE": raw_s["attack_type"].to_numpy(),
+        "dst_port": raw_s["dst_port"].astype(str).to_numpy(),
     }
     for name, g in cands.items():
-        r = describe_grouping(name, g, net.y, net.category, rng)
+        t0 = time.time()
+        r = describe_grouping(name, g, y_s, cat_s, rng)
         r["layer"] = "network"
+        r["n_rows_used"] = int(len(sub))
         rows.append(r)
-        print("  %-20s groups=%-6d NMI(cat)=%.3f (null %.3f) purity=%.3f"
+        print("  %-20s groups=%-6d NMI(cat)=%.3f (shuffle null %.3f, "
+              "size-matched null %.3f) purity=%.3f  [%.0fs]"
               % (name, r["n_groups"], r["nmi_category"],
-                 r["nmi_category_null_mean"], r["purity_category"]))
+                 r["nmi_category_null_mean"],
+                 r["nmi_category_sizematched_null"],
+                 r["purity_category"], time.time() - t0), flush=True)
 
     # ---- radio layer ---------------------------------------------------
     rad = load_radio()
     print("radio: %d windows, %d session groups" % (len(rad.y), len(set(rad.groups))))
     r = describe_grouping("session", rad.groups, rad.y, rad.category, rng)
     r["layer"] = "radio"
+    r["n_rows_used"] = int(len(rad.y))   # the radio layer is small enough whole
     rows.append(r)
     print("  %-20s groups=%-6d NMI(cat)=%.3f (null %.3f) purity=%.3f"
           % ("session", r["n_groups"], r["nmi_category"],
