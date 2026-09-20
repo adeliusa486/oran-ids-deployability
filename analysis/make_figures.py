@@ -204,12 +204,129 @@ def fig_latency_budget():
 
 
 # ---------------------------------------------------------------------------
+def fig_transfer():
+    """Source against target, with the trivial floor drawn across the target.
+
+    The floor line is the point of the figure. A target macro-F1 of 0.53 looks
+    like a mediocre score until a coin flip is drawn at 0.42 beside it, at which
+    point it looks like near-total failure -- and the MLP, the best model on the
+    source, sits underneath the line.
+    """
+    src = RES / "EXP-026" / "processed" / "transfer_summary__a_to_b.csv"
+    if not src.exists():
+        print("  skip transfer figure"); return
+    d = pd.read_csv(src)
+    floor = float(d[d.model == "stratified"].target_f1.iloc[0])
+    nt = d[~d.model.isin(["majority", "stratified"])].sort_values(
+        "source_f1", ascending=False)
+
+    fig, ax = plt.subplots(figsize=(IEEE_COL, 2.5))
+    x = np.arange(len(nt))
+    w = 0.38
+    ax.bar(x - w / 2, nt.source_f1, w, label="Source held-out",
+           color=BLUE, edgecolor="none")
+    ax.bar(x + w / 2, nt.target_f1, w, label="Target ($D_B$)",
+           color=ORANGE, edgecolor="none")
+    ax.axhline(floor, color=INK, lw=0.9, ls="--", zorder=5)
+    ax.annotate("stratified floor on $D_B$ (%.3f)" % floor,
+                xy=(len(nt) - 0.45, floor), xytext=(0, 3),
+                textcoords="offset points", ha="right", va="bottom",
+                fontsize=6.5, color=INK)
+    ax.set_xticks(x)
+    ax.set_xticklabels(nt.model, rotation=20, ha="right")
+    ax.set_ylabel("macro-$F_1$")
+    ax.set_ylim(0, 0.85)
+    ax.legend(loc="upper right", ncol=1)
+    _despine(ax)
+    _save(fig, "fig_transfer")
+
+
+def fig_prevalence():
+    """PPV against base rate, pooled, with the corpus-precision line above it."""
+    src = RES / "EXP-027" / "processed" / "ppv_spread_vs_prevalence.csv"
+    if not src.exists():
+        print("  skip prevalence figure"); return
+    d = pd.read_csv(src)
+    fig, ax = plt.subplots(figsize=(IEEE_COL, 2.5))
+    colours = {"d_a_radio_heldout": BLUE, "d_b_target": ORANGE,
+               "d_a_network_heldout_shared": AQUA}
+    for surface, g in d.groupby("surface"):
+        g = g.sort_values("pi")
+        ax.fill_between(g.pi, g.ppv_min, g.ppv_max, alpha=0.18,
+                        color=colours.get(surface, MUTED), lw=0)
+        ax.plot(g.pi, (g.ppv_min + g.ppv_max) / 2, lw=1.2,
+                color=colours.get(surface, MUTED),
+                label=surface.replace("_", " "))
+        cp = float(g.corpus_precision_max.iloc[0])
+        ax.axhline(cp, color=colours.get(surface, MUTED), lw=0.7, ls=":")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"attack base rate $\pi$ (declared, not measured)")
+    ax.set_ylabel("PPV in deployment")
+    ax.annotate("dotted: precision measured on the corpus", xy=(0.02, 0.96),
+                xycoords="axes fraction", fontsize=6.5, color=INK2, va="top")
+    ax.legend(loc="lower right", fontsize=6.5)
+    _despine(ax)
+    _save(fig, "fig_prevalence")
+
+
+def fig_estimator_bug():
+    """B-E, drawn. Three estimates of one quantity against the lucky-fold count."""
+    src = RES / "EXP-027" / "processed" / "estimator_comparison.csv"
+    if not src.exists():
+        print("  skip estimator figure"); return
+    d = pd.read_csv(src)
+    d = d[(d.surface == "d_a_radio_heldout")
+          & (~d.model.isin(["majority", "stratified"]))]
+    d = d.sort_values("n_folds_ppv_equals_1")
+    fig, ax = plt.subplots(figsize=(IEEE_COL, 2.3))
+    ax.plot(d.n_folds_ppv_equals_1, d.ppv_mean_of_folds, "o-", color=ORANGE,
+            lw=1.2, ms=4, label="mean of folds (what was published)")
+    ax.plot(d.n_folds_ppv_equals_1, d.ppv_median_of_folds, "s-", color=MUTED,
+            lw=1.0, ms=3.5, label="median of folds")
+    ax.plot(d.n_folds_ppv_equals_1, d.ppv_pooled, "^-", color=BLUE, lw=1.2,
+            ms=4, label="pooled counts (correct)")
+    for _, r in d.iterrows():
+        ax.annotate(r.model, xy=(r.n_folds_ppv_equals_1, r.ppv_mean_of_folds),
+                    xytext=(3, 3), textcoords="offset points", fontsize=6,
+                    color=INK2)
+    ax.set_xlabel("folds (of 40) in which FPR happened to be exactly 0")
+    ax.set_ylabel(r"deployment PPV at $\pi=0.002$")
+    ax.set_yscale("log")
+    ax.legend(loc="upper left", fontsize=6.5)
+    _despine(ax)
+    _save(fig, "fig_estimator_bug")
+
+
+def fig_extraction():
+    """Extraction cost per packet by implementation, against deployed inference."""
+    src = RES / "EXP-030" / "processed" / "extraction_speedup.csv"
+    if not src.exists():
+        print("  skip extraction figure"); return
+    d = pd.read_csv(src).sort_values("pkts_per_flow")
+    fig, ax = plt.subplots(figsize=(IEEE_COL, 2.4))
+    ax.plot(d.pkts_per_flow, d.us_per_pkt_reference, "o-", color=ORANGE,
+            lw=1.2, ms=4, label="reference (per-packet Python)")
+    ax.plot(d.pkts_per_flow, d.us_per_pkt_vectorised, "^-", color=BLUE,
+            lw=1.2, ms=4, label="vectorised (bulk NumPy)")
+    ax.set_xscale("log")
+    ax.set_xlabel("packets per flow")
+    ax.set_ylabel(r"extraction, $\mu$s per packet")
+    ax.legend(loc="upper right", fontsize=6.5)
+    _despine(ax)
+    _save(fig, "fig_extraction")
+
+
 def main() -> int:
     _style()
     print("generating figures...")
     fig_leakage()
     fig_alert_burden()
     fig_latency_budget()
+    fig_transfer()
+    fig_prevalence()
+    fig_estimator_bug()
+    fig_extraction()
     print("done.")
     return 0
 
