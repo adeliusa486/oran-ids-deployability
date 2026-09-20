@@ -1,0 +1,8 @@
+model,p50,p95,p99,p99.9,conforms_p99_at_1ms,conforms_p99_at_2ms,conforms_p99_at_5ms,conforms_p99_at_10ms,conforms_p99_at_20ms,conforms_p99_at_50ms,conforms_p99_at_100ms,conforms_p99_at_200ms,conforms_p99_at_500ms,conforms_p99_at_1000ms,min_conforming_budget_ms
+FLOOR (no-op),0.0105,0.020519999999999983,0.10322399999999998,0.5274218000000044,True,True,True,True,True,True,True,True,True,True,1
+logreg,2.4472500000000004,4.403429999999998,6.508140999999998,13.428456400000135,False,False,False,True,True,True,True,True,True,True,10
+tree,1.80645,3.5061449999999996,4.755056,6.088304400000123,False,False,True,True,True,True,True,True,True,True,5
+rf,93.40555,124.54564500000001,378.04826299999957,1034.9050398001018,False,False,False,False,False,False,False,False,True,True,500
+xgboost,3.835,6.191424999999999,7.288235,11.392500500000846,False,False,False,True,True,True,True,True,True,True,10
+hgb,53.16405,74.75862000000001,94.61572199999999,446.0607888000016,False,False,False,False,False,False,True,True,True,True,100
+mlp,2.24825,4.9541,8.170017,13.976384900000006,False,False,False,True,True,True,True,True,True,True,10

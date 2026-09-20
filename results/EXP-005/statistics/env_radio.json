@@ -1,0 +1,35 @@
+{
+  "measurement_class": "emulated",
+  "warning": "Single-process Python timing on a non-isolated Windows host. Supports per-stage decomposition and relative ordering. Does NOT support a conformance claim on real RIC hardware.",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "python": "3.11.9",
+  "n_features": 32,
+  "layer": "radio",
+  "repeats": 1500,
+  "warmup": 200,
+  "budget_sweep_ms": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    50,
+    100,
+    200,
+    500,
+    1000
+  ],
+  "floor": {
+    "p50": 0.0105,
+    "p90": 0.012,
+    "p95": 0.020519999999999983,
+    "p99": 0.10322399999999998,
+    "p99.9": 0.5274218000000044,
+    "mean": 0.014479066666666669,
+    "std": 0.03699784392540853,
+    "min": 0.0096,
+    "max": 1.042,
+    "n": 1500
+  }
+}
