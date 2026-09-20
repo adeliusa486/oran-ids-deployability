@@ -1,0 +1,44 @@
+{
+  "experiment": "EXP-027",
+  "method": "analytic sweep over POOLED confusion counts from committed results",
+  "models_refitted": 0,
+  "primary_estimator": "pooled (micro) over folds",
+  "estimator_note": "per-fold mean is reported but NOT used: it is the artefact documented as B-E",
+  "pi_sweep": [
+    0.0001,
+    0.0005,
+    0.001,
+    0.002,
+    0.005,
+    0.01,
+    0.05,
+    0.1,
+    0.2,
+    0.5
+  ],
+  "pi_primary": 0.002,
+  "lambda_sweep": [
+    24000.0,
+    240000.0,
+    2400000.0,
+    24000000.0
+  ],
+  "lambda_primary": 240000.0,
+  "tau": 0.5,
+  "surfaces": [
+    "d_a_radio_heldout"
+  ],
+  "separability_verified": true,
+  "max_ppv_variation_across_lambda": 2.220446049250313e-16,
+  "max_linearity_deviation": 3.725290298461914e-09,
+  "declared_not_measured": [
+    "pi",
+    "lambda_b"
+  ],
+  "source_files": [
+    "results/EXP-002/raw/leakage_runs.csv",
+    "results/EXP-026/raw/transfer_runs__a_to_b.csv"
+  ],
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0"
+}

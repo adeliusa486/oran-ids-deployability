@@ -881,3 +881,113 @@ in-distribution number must carry that caveat every time it is quoted, and its
 Nothing scientific; this is a scope decision. If a reviewer reads the relaxation
 as target leakage, the reverse direction can be deleted without touching the
 primary result, which is exactly why the two are computed and stored separately.
+
+---
+
+## D-018 — The "6x deployment PPV spread" was an estimator artefact. Withdrawn.
+
+- **Phase:** 27
+- **Status:** `FINDING CORRECTED 2026-09-20`
+- **Bug ID:** B-E (self-caught, in our own previously reported result)
+- **Severity:** a published headline number that does not survive re-estimation
+
+### What was reported
+
+EXP-004, and section 4.2 of the session report:
+
+> Corpus precision is flat within 0.007 across all five detectors. Deployment PPV
+> spans 0.036 to 0.218 — a factor of six.
+
+### What is actually true
+
+The factor of six is a property of the **estimator**, not of the detectors.
+
+`PPV = TPR.pi / (TPR.pi + FPR.(1-pi))` is strongly non-linear in `FPR` near zero.
+At `pi = 0.002`, a fold with `FPR = 0` returns `PPV = 1.000` exactly, regardless
+of `TPR`. EXP-004 averaged PPV **across folds**, so any fold that happened to
+produce zero false positives contributed a 1.0 to the mean.
+
+Under a group-disjoint split over 30 radio sessions, a test fold holds a median of
+**136 benign windows**. Several folds genuinely return zero false positives. Those
+are real zeros, not a divide-by-zero: the guard `fp / max(fp+tn, 1)` was never
+triggered, and every fold had 112–171 benign windows. But `0/136` does not mean
+the deployment FPR is zero. By the rule of three it means the FPR is somewhere
+below about 2.6%. Substituting the point estimate 0 asserts *perfect precision
+against 240,000 flows per hour* on the evidence of 136 samples.
+
+How many zero-FP folds each architecture drew, out of 40:
+
+| Model | folds with FPR = 0 | mean-of-folds PPV | **pooled PPV** |
+|---|---:|---:|---:|
+| xgboost | 6 | 0.1794 | **0.0073** |
+| hgb | 4 | 0.1291 | **0.0072** |
+| rf | 2 | 0.0827 | **0.0071** |
+| logreg | 2 | 0.0815 | **0.0071** |
+| mlp | 0 | 0.0385 | **0.0077** |
+| tree | 0 | 0.0136 | **0.0055** |
+
+The reported ranking is almost exactly the ranking of that first column. XGBoost
+"won" by drawing six lucky folds; the MLP "lost" by drawing none.
+
+Spread across detectors, same data, three estimators:
+
+```
+pooled (micro)     1.40x      <- what a deployment experiences
+median of folds    1.73x
+mean of folds     13.18x      <- the estimator that was published
+```
+
+### Decision
+
+1. The **pooled (micro) estimator is primary** everywhere an operational metric
+   is reported: sum confusion counts over folds, form one `(TPR, FPR)`, then
+   apply the base rate. A deployment does not run twenty parallel universes and
+   average their precisions.
+2. Mean-of-folds and median-of-folds are computed and reported **alongside**, so
+   the size of the artefact stays visible rather than being quietly corrected.
+3. Any proportion estimated near 0 or 1 carries a **Wilson** interval, which
+   stays sensible at `k = 0` where a normal approximation has zero width.
+4. **Claim C8's "6x" clause is WITHDRAWN.**
+
+### What survives, and it is stronger
+
+The part of the finding that motivated the paper is untouched, and re-estimating
+it made it cleaner:
+
+- Corpus precision is ~0.93 for every detector.
+- Pooled deployment PPV at `pi = 0.002` is **0.0055 to 0.0077** for every detector.
+- **Corpus precision overstates deployment precision by a factor of 132.**
+- The detectors are operationally **indistinguishable** — 1.08x to 1.40x apart —
+  **at every base rate in the swept range.**
+
+The original claim was "the metric a paper reports cannot tell these detectors
+apart, but the metric an operator lives with says they are wildly different."
+The corrected claim is simpler and harder to argue with: **neither metric tells
+them apart, because all of them are unusable, and the two metrics differ by two
+orders of magnitude.** That is a cleaner statement of the base-rate problem and
+it no longer rests on an artefact.
+
+### Second finding, surfaced by the same investigation
+
+FPR on a group-disjoint split is **not a stable property of these detectors**.
+Across folds it ranges from 0.000 to 0.890 for every non-trivial architecture,
+with a median near 0.20. Which capture sessions land in the test fold dominates
+it. Any single-number FPR quoted for this corpus — ours included — is close to
+meaningless without that range beside it, and this feeds directly into the
+grouping-confound analysis of Phase 29.
+
+### What would reverse this
+
+Nothing about the estimator: pooling is correct and the artefact is arithmetic.
+A genuine per-architecture operational difference would have to show up in the
+pooled estimate, on a corpus whose folds carry enough benign traffic to estimate
+a small FPR. That is a reason to want a larger benign population, not a reason to
+go back to averaging.
+
+### The general lesson
+
+**Averaging a non-linear functional of a rate is not the same as computing it
+from pooled counts**, and the gap is largest exactly where the rate is smallest —
+which is exactly where the interesting operational questions live. This was our
+own published result, found by asking whether it survived a parameter sweep. It
+did not survive the sweep for a reason that had nothing to do with the parameter.
