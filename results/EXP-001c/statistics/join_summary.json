@@ -1,0 +1,21 @@
+{
+  "exporter_version": "1.1.0",
+  "exporter_fingerprint": "15f5ffbc3269c715",
+  "window": {
+    "width_s": 16.0,
+    "stride_s": 16.0,
+    "overlapping": false
+  },
+  "categories": [
+    "Web"
+  ],
+  "n_runs_total": 7,
+  "n_runs_ok": 6,
+  "n_runs_unpaired": 1,
+  "total_windows_joined": 170,
+  "median_join_rate": 0.96165,
+  "min_join_rate": 0.9333,
+  "median_overlap_fraction": 0.9537,
+  "median_abs_start_offset_s": 9.011,
+  "max_abs_start_offset_s": 3222.583
+}
