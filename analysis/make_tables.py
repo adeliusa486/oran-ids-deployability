@@ -256,6 +256,46 @@ def table_per_category():
                f"Model & {head} " + BS)
 
 
+def table_corpora_pair():
+    """Table I: the two corpora side by side, from measured provenance.
+
+    The manuscript carried a hand-written version of this table whose D_A row
+    said 4,210,000 flows at 28.3% attack prevalence. The measured figures are
+    1,640,182 and 94.63%. Nothing flagged it, because a fabricated number in a
+    hand-written tabular carries no marker -- which is the whole argument for
+    generating tables rather than typing them.
+    """
+    src = RES / "EXP-026" / "statistics" / "provenance__a_to_b.json"
+    if not src.exists():
+        print("  skip corpora-pair table"); return
+    p = json.loads(src.read_text(encoding="utf-8"))
+    a, b = p["source"], p["target"]
+
+    def att(d):
+        return sum(v for k, v in d["categories"].items() if k != "benign")
+
+    rows = [
+        f"Flow records (after dedup.) & {_num(a['n_rows'])} & {_num(b['n_rows'])} {BS}",
+        f"Benign flows & {_num(a['categories'].get('benign', 0))} & "
+        f"{_num(b['categories'].get('benign', 0))} {BS}",
+        f"Attack flows & {_num(att(a))} & {_num(att(b))} {BS}",
+        f"Attack prevalence & {a['attack_prevalence_pct']:.2f}\\% & "
+        f"{b['attack_prevalence_pct']:.2f}\\% {BS}",
+        f"Exact duplicates removed & {_num(a['n_exact_duplicates_removed'])} & "
+        f"{_num(b['n_exact_duplicates_removed'])} {BS}",
+        f"Canonical attack categories & {len(a['categories']) - 1} & "
+        f"{len(b['categories']) - 1} {BS}",
+        "Exporter & Zeek & Argus " + BS,
+        f"Group key & \\texttt{{{_esc(a['group_key'])}}} & none published {BS}",
+        f"Groups & {_num(a['n_groups'])} & --- {BS}",
+        "Radio KPIs available & yes & no " + BS,
+        "Role & train and test & transfer only " + BS,
+    ]
+    _write("corpora_pair", rows, str(src), "lrr",
+           r"\textbf{Property} & \textbf{\DA{} (O-RAN testbed)} & "
+           r"\textbf{\DB{} (5G-NIDD)} " + BS)
+
+
 def table_prevalence():
     """PPV against the base rate, pooled. The '6x' clause died here (D-018)."""
     src = RES / "EXP-027" / "processed" / "ppv_spread_vs_prevalence.csv"
@@ -315,6 +355,7 @@ def main() -> int:
     table_shared_space()
     table_transfer()
     table_per_category()
+    table_corpora_pair()
     table_prevalence()
     table_estimator_bug()
     table_extraction()

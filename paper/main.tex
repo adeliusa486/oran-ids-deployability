@@ -157,61 +157,8 @@ We consider an edge data centre hosting a near-real-time RIC that serves a set o
 
 \begin{figure*}[t]
 \centering
-\begin{tikzpicture}[
-  font=\scriptsize,
-  box/.style={draw=blue!55!black, fill=blue!8, rounded corners=2pt, minimum height=7.5mm, align=center, inner sep=3pt},
-  xapp/.style={draw=OliveGreen!80!black, fill=OliveGreen!10, rounded corners=2pt, minimum height=7.5mm, align=center, inner sep=3pt},
-  ids/.style={draw=red!65!black, fill=red!12, rounded corners=2pt, very thick, minimum height=9mm, align=center, inner sep=3pt},
-  dev/.style={draw=OliveGreen!60!black, fill=OliveGreen!8, rounded corners=2pt, minimum height=8mm, align=center, inner sep=3pt},
-  lnk/.style={-{Latex[length=2mm]}, thick, draw=gray!65!black},
-  bi/.style={{Latex[length=2mm]}-{Latex[length=2mm]}, thick, draw=gray!65!black},
-  ctl/.style={-{Latex[length=2mm]}, thick, draw=red!70!black, dashed},
-  tag/.style={circle, draw=black, fill=yellow!45, inner sep=1pt, font=\tiny\bfseries}
-]
-
-% --- edge data centre enclosure
-\draw[draw=black!45, dashed, rounded corners=4pt, fill=black!3]
-      (7.0,-0.85) rectangle (16.7,3.35);
-\node[anchor=south west, font=\scriptsize\bfseries, text=black!65] at (7.15,-0.78) {Edge data centre};
-
-% --- access side
-\node[dev] (iot) at (0.85,0.35) [minimum width=2.0cm] {IoT devices\\{\tiny sensors, meters,}\\{\tiny cameras}};
-\node[box] (ru)  at (3.05,0.35) [minimum width=1.1cm] {O-RU};
-\node[box] (du)  at (4.35,0.35) [minimum width=1.1cm] {O-DU};
-\node[box] (cu)  at (5.65,0.35) [minimum width=1.1cm] {O-CU};
-
-% --- RIC internals
-\node[box] (e2t)  at (8.85,0.20) [minimum width=2.9cm] {E2 termination\\{\tiny E2AP\,/\,E2SM-KPM\,/\,E2SM-RC}};
-\node[box] (ricp) at (13.4,0.20) [minimum width=5.6cm] {Near-RT RIC platform\\{\tiny message router $\cdot$ shared data layer $\cdot$ subscription manager}};
-
-\node[xapp] (kpi) at (8.85,2.10) [minimum width=2.5cm] {KPIMON\\xApp};
-\node[ids]  (ids) at (12.15,2.10) [minimum width=3.1cm] {\textbf{IoT intrusion detection}\\\textbf{xApp (this work)}};
-\node[xapp] (ts)  at (15.35,2.10) [minimum width=2.2cm] {Traffic steering\\xApp};
-
-\node[box] (nonrt) at (12.15,4.35) [minimum width=6.4cm] {Non-RT RIC\,/\,SMO {\tiny --- rApps, model lifecycle, policy}};
-
-% --- links
-\draw[lnk] (iot) -- node[above, font=\tiny] {Uu} (ru);
-\draw[lnk] (ru)  -- (du);
-\draw[lnk] (du)  -- (cu);
-\draw[bi]  (cu.east) -- node[above, font=\tiny] {E2} (e2t.west);
-\draw[bi]  (e2t.east) -- (ricp.west);
-\draw[bi]  (kpi.south)  -- (kpi.south  |- ricp.north);
-\draw[bi]  (ids.south)  -- (ids.south  |- ricp.north);
-\draw[bi]  (ts.south)   -- (ts.south   |- ricp.north);
-\draw[lnk] (nonrt.south) -- node[right=1.5pt, font=\tiny, fill=white, inner sep=1pt] {A1} (ids.north);
-
-% --- mitigation path back to the RAN
-\draw[ctl] (ids.north west) -- ++(0,0.55) -- (7.20,2.95) -- (7.20,-1.30) -- (5.65,-1.30) -- (cu.south);
-\node[font=\tiny, text=red!70!black, anchor=north] at (7.20,-1.36) {mitigation action (E2SM-RC)};
-
-% --- measurement points
-\node[tag] (t1) at (13.85,2.85) {1};
-\node[tag] (t2) at (10.45,1.35) {2};
-\node[tag] (t3) at (6.75,0.95) {3};
-
-\end{tikzpicture}
-\caption{Reference deployment. The near-real-time RIC is hosted in a regional edge data centre and aggregates telemetry from many E2 nodes, so the detection xApp observes the combined behaviour of a large IoT population. The three circled points mark where this paper takes measurements: \textcircled{\raisebox{-0.2pt}{\tiny 1}} cross-deployment generalisation of the classifier, \textcircled{\raisebox{-0.2pt}{\tiny 2}} alert burden imposed on the operator per unit time, and \textcircled{\raisebox{-0.2pt}{\tiny 3}} closed-loop decision latency against the near-real-time budget.}
+\input{fig1_architecture}
+\caption{Reference O-RAN edge deployment and the closed detection loop. The near-real-time RIC is hosted in a regional edge data centre and aggregates telemetry from many E2 nodes, so the detection xApp observes the combined behaviour of a large IoT population. Circled markers show where this paper takes its measurements: \textcircled{\raisebox{-0.2pt}{\tiny 1}}~cross-deployment generalisation of the classifier and \textcircled{\raisebox{-0.2pt}{\tiny 2}}~the alert burden imposed on the operator per unit time are measured; \textcircled{\raisebox{-0.2pt}{\tiny 3}}~decision latency against the near-real-time budget is \textbf{emulated off-platform}, with no RIC in the path, and supports relative ordering and stage decomposition only.}
 \label{fig:arch}
 \end{figure*}
 
@@ -289,20 +236,7 @@ We use two corpora, summarised in Table~\ref{tab:datasets}. \DA{} is an O-RAN te
 \label{tab:datasets}
 \centering
 \footnotesize
-\begin{tabular}{lrr}
-\toprule
-\textbf{Property} & \textbf{\DA{} (O-RAN testbed)} & \textbf{\DB{} (5G-NIDD)} \\
-\midrule
-Flows (total)              & 4{,}210{,}000 & 1{,}215{,}900 \\
-Benign flows              & 3{,}018{,}500 & 477{,}700 \\
-Attack flows              & 1{,}191{,}500 & 738{,}200 \\
-Attack prevalence         & 28.3\%        & 60.7\% \\
-Radio KPIs available      & yes           & no \\
-Distinct attack families  & 4             & 8 \\
-Capture duration (h)      & 62            & 32 \\
-Role                      & train / test  & transfer only \\
-\bottomrule
-\end{tabular}
+\input{../tables/generated/corpora_pair}
 \end{table}
 
 \subsection{Feature Harmonisation}
@@ -344,42 +278,12 @@ with $\hat{p}_{i}=f_{\theta}(x_{i})$, weights $w_{\pm}$ set inversely to class f
 
 Fig.~\ref{fig:pipeline} shows the pipeline. A single trained model is carried unchanged through three evaluations: an in-distribution test split, a cross-deployment evaluation on \DB{}, and a runtime evaluation as a packaged xApp. This is deliberate --- the point of the study is that these three evaluations of one artefact disagree.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\begin{tikzpicture}[
-  font=\scriptsize, node distance=4mm,
-  st/.style={draw=blue!55!black, fill=blue!8, rounded corners=2pt, minimum width=2.35cm, minimum height=6.5mm, align=center, inner sep=2pt},
-  ev/.style={draw=red!60!black, fill=red!8, rounded corners=2pt, minimum width=2.6cm, minimum height=6.5mm, align=center, inner sep=2pt},
-  % An arm that was designed and never executed. Drawn obviously inactive rather
-  % than deleted: showing what was intended and not achieved is more honest than
-  % silently omitting it.
-  blk/.style={draw=black!40, dashed, fill=black!6, rounded corners=2pt, minimum width=2.6cm, minimum height=6.5mm, align=center, inner sep=2pt, text=black!55},
-  ar/.style={-{Latex[length=1.8mm]}, thick, draw=gray!65!black}
-]
-\node[st] (da)   at (0,3.35) {\DA{}: O-RAN testbed\\{\tiny Zeek flow records $+$ radio KPIs}};
-\node[st] (harm) at (0,2.30) {Shared feature space\\{\tiny 15 concepts, 18 columns}};
-\node[st] (spl)  at (0,1.25) {Group-disjoint split\\{\tiny \texttt{src\_ip}, 20 split seeds}};
-\node[st] (tr)   at (0,0.20) {Train\\{\tiny 8 architectures incl.\ 2 floors}};
-
-\node[ev] (e1) at (3.75,3.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} Held-out \DA{}\\{\tiny in-distribution reference}};
-\node[ev] (e2) at (3.75,2.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} Time-disjoint \DA{}\\{\tiny early runs $\rightarrow$ late runs}};
-\node[ev] (e3) at (3.75,1.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DB{}: 5G-NIDD\\{\tiny independent, evaluated once}};
-\node[ev] (e4) at (3.75,0.05) {\textcircled{\raisebox{-0.2pt}{\tiny 2}} Operational\\{\tiny base rate, threshold, burden}};
-\node[blk] (e5) at (3.75,-1.05) {\textcircled{\raisebox{-0.2pt}{\tiny 3}} Live Near-RT RIC\\{\tiny \textbf{NOT EXECUTED}}};
-
-\draw[ar] (da) -- (harm);
-\draw[ar] (harm) -- (spl);
-\draw[ar] (spl) -- (tr);
-\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.55] {reference} (e1.west);
-\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.55] {$-0.27\,F_1$} (e2.west);
-\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.6] {to the floor} (e3.west);
-\draw[ar] (tr.east) -- node[below, font=\tiny, pos=0.55] {PPV $0.93\!\rightarrow\!0.006$} (e4.west);
-\draw[ar, dashed, draw=black!40] (tr.south) |- (e5.west);
-\node[font=\tiny, text=black!55, anchor=west] at (1.15,1.05) {once; access logged};
-\end{tikzpicture}
-\caption{Experimental pipeline. One trained model is evaluated under four protocols of increasing realism, and each step away from the conventional protocol costs performance: a group-disjoint held-out split, a time-disjoint split of the same corpus, an independently collected corpus evaluated once, and an operational analysis over a swept attack base rate. Arrow labels are measured degradations relative to the in-distribution reference. The live-RIC arm was \textbf{not executed} (Section~\ref{sec:limitations}). Circled markers correspond to the measurement points of Fig.~\ref{fig:arch}.}
+\input{fig2_pipeline}
+\caption{Experimental pipeline. One trained detector is evaluated under four protocols of increasing realism, and each step away from the conventional protocol costs performance: a group-disjoint held-out split, a time-disjoint split of the same corpus, an independently collected corpus evaluated once, and an operational analysis over a swept attack base rate. Annotations at the right of each rung are measured degradations relative to the in-distribution reference. The rung borders thicken as the protocol approaches deployment conditions. The live-RIC arm was \textbf{not executed}; the runtime decomposition shown is \textbf{emulated}, with no RIC in the path, and reports the stage breakdown only.}
 \label{fig:pipeline}
-\end{figure}
+\end{figure*}
 
 \subsection{Inference Loop}
 
@@ -414,7 +318,9 @@ Algorithm~\ref{alg:xapp} gives the xApp control loop. Two details matter for the
 \label{sec:setup}
 
 % [SYNTHETIC] --- hardware and hyperparameters describe an intended, not executed, setup
-The edge data centre node is a dual-socket server with two Intel Xeon Gold 6338 processors (32 cores each at 2.0\,GHz), 256\,GB of DDR4 memory and an NVIDIA A30 accelerator used for training only, running Ubuntu 22.04 and Kubernetes 1.28. The near-real-time RIC is deployed from the O-RAN Software Community Helm charts; the RAN side uses srsRAN with a FlexRIC-based E2 agent \cite{gomez2016srslte,schmidt2021flexric}, with E2AP v2.03 and E2SM-KPM v3.0. The xApp is a Python 3.10 container using ONNX Runtime 1.17 for inference, with models trained using scikit-learn 1.4 \cite{pedregosa2011scikit}, XGBoost 2.0.3 and PyTorch 2.2. Inference runs on CPU only, since accelerator access is not assumed available to tenant xApps.
+Every measurement in this paper was produced on one commodity workstation: an Intel Core i-series host running Windows, Python 3.11.9, scikit-learn 1.4 and XGBoost 2.0, with inference on CPU. A full \texttt{pip freeze} of the interpreter that produced every number is committed alongside the results.
+
+\textbf{No RIC was involved.} We did not deploy the detector as an xApp, we did not run an E2 agent or a RAN stack, and we did not containerise anything. The latency figures in Section~\ref{sec:results} are \emph{emulated}: they time the decision path in a single Python process on a host with no CPU isolation. They support per-stage decomposition and relative ordering between implementations, and they support no conformance claim whatever. A measurement of AI inference inside a real Near-RT RIC exists in the literature~\cite{obiuwevwi2026realtime} and reports figures three orders of magnitude below ours for the same model families, which is the comparison we draw rather than a substitute for it.
 
 \DA{} is split \emph{group-disjointly}: whole groups go to exactly one side, and a guard raises if a group is ever found on both. The grouping key is the capture run on the radio layer (\measured{30} recovered runs) and the source address on the network layer. Device-disjoint splitting, which an earlier version of this protocol specified, is \textbf{not supportable on this corpus}: \texttt{ue\_id} takes nine values and one of them holds \measured{60.8}\% of records, so a device-disjoint split is not a split.
 
@@ -459,7 +365,7 @@ Shared        & 20 split seeds; identical class-imbalance policy \\
 \end{tabular}
 \end{table}
 
-Latency is measured with a replay harness that drives E2 indications at Poisson-distributed inter-arrival times for each target load, using \texttt{CLOCK\_MONOTONIC\_RAW} timestamps taken inside the xApp process so that harness overhead is excluded. The first 60\,s at each operating point is discarded as warm-up, and percentiles are computed over the full retained sample of $10^{6}$ decisions rather than a reservoir, since tail estimates from subsampled traces are biased low. Reported figures are the median across five independent runs per operating point.
+Latency is timed in-process with a monotonic clock around each stage of the decision path. Each architecture is warmed up for 200 iterations and then timed over 1{,}500, and we report $p_{50}$, $p_{95}$, $p_{99}$ and $p_{99.9}$ rather than a mean. A no-op detector is timed \emph{first}, so that the platform floor is known before any model is measured: its $p_{99}$ is \measured{0.103}\,ms, two orders of magnitude below the tightest budget we consider, which is what makes the model figures interpretable at all. We report no throughput or offered-load sweep, because we ran none.
 
 For the alert-burden measurement we use a benign-only capture segment from the \DA{} deployment at an aggregate rate of $\lambda_{b}=240{,}000$ flows per hour, corresponding to a modest regional edge site. Operational attack prevalence is taken as $\pi=0.002$; this is not a measured value but a stated modelling assumption, and Section~\ref{sec:limitations} discusses its sensitivity.
 
