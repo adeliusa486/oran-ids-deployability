@@ -1,0 +1,64 @@
+source (1640182, 18), attack 0.9463
+  seed 101 logreg   22.4s
+  seed 101 tree     18.8s
+  seed 101 rf       90.4s
+  seed 101 xgboost  11.9s
+  seed 101 hgb      20.0s
+  seed 101 mlp      275.5s
+  seed 102 logreg   7.1s
+  seed 102 tree     6.8s
+  seed 102 rf       114.1s
+  seed 102 xgboost  32.7s
+  seed 102 hgb      40.2s
+  seed 102 mlp      159.6s
+  seed 103 logreg   10.0s
+  seed 103 tree     9.5s
+  seed 103 rf       96.9s
+  seed 103 xgboost  42.3s
+  seed 103 hgb      68.8s
+  seed 103 mlp      1228.1s
+  seed 104 logreg   23.4s
+  seed 104 tree     18.3s
+  seed 104 rf       94.2s
+  seed 104 xgboost  50.8s
+  seed 104 hgb      49.3s
+  seed 104 mlp      392.6s
+  seed 105 logreg   22.4s
+  seed 105 tree     17.3s
+  seed 105 rf       83.8s
+  seed 105 xgboost  31.8s
+  seed 105 hgb      56.5s
+  seed 105 mlp      427.0s
+
+=== macro-F1 drop at eps = 0.10 ===
+attack   evasion_constrained  evasion_unconstrained  gaussian_noise  missing_telemetry  scaling_attack  stale_telemetry
+model                                                                                                                  
+hgb                  +0.0121                +0.0000         +0.0154            -0.0108         -0.0027          +0.0002
+logreg               -0.0059                +0.0256         +0.0416            +0.0139         +0.0381          +0.0001
+mlp                  -0.0023                +0.0002         +0.0055            +0.0391         -0.0041          +0.0003
+rf                   -0.0162                -0.0293         -0.0149            +0.0042         -0.0065          +0.0002
+tree                 +0.0624                +0.0446         +0.0841            +0.1376         -0.0037          -0.0007
+xgboost              +0.0019                -0.0053         +0.0041            -0.0085         -0.0015          +0.0003
+
+=== false alerts/hour at eps = 0.10 (clean baseline in eps=0) ===
+attack  evasion_constrained        evasion_unconstrained        gaussian_noise        missing_telemetry        scaling_attack        stale_telemetry       
+eps                     0.0    0.1                   0.0    0.1            0.0    0.1               0.0    0.1            0.0    0.1             0.0    0.1
+model                                                                                                                                                      
+hgb                   24470  24470                 24470  24470          24470  47554             24470  53057          24470  24470           24470  27792
+logreg                44055  44055                 44055  44055          44055  51895             44055 179161          44055  44055           44055  44034
+mlp                  108682 108682                108682 108682         108682 109162            108682 110481         108682 108682          108682 108707
+rf                    72468  72468                 72468  72468          72468  89917             72468  94137          72468  72468           72468  75948
+tree                  48537  48537                 48537  48537          48537  87558             48537  77495          48537  48537           48537  48074
+xgboost               22379  22379                 22379  22379          22379  33434             22379  69529          22379  22379           22379  22448
+
+=== label poisoning ===
+poison_rate   0.00   0.01   0.05   0.10   0.25
+model                                         
+hgb         0.6160 0.6080 0.5699 0.5811 0.5539
+logreg      0.5932 0.5897 0.5901 0.5826 0.5385
+mlp         0.7000 0.6998 0.7148 0.7187 0.7338
+rf          0.6768 0.6530 0.6069 0.5842 0.4957
+tree        0.6254 0.6187 0.5959 0.6171 0.5654
+xgboost     0.6356 0.6249 0.5820 0.5668 0.4880
+
+wrote results\EXP-033  (3558s)

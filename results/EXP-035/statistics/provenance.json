@@ -8,11 +8,10 @@
     "false_alerts_per_hour",
     "brier_target",
     "p99_latency_ms",
+    "worst_case_f1_drop",
     "drift_delta"
   ],
-  "axes_partial": [
-    "worst_case_f1_drop"
-  ],
+  "axes_partial": [],
   "axes_absent": [],
   "axes_not_measured": [
     "cpu_under_load",

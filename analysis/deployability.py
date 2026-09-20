@@ -204,7 +204,8 @@ def main() -> int:
           % (len(present), n_eff, len(df)))
     if n_eff == len(df):
         print("  ALL of them. No architecture dominates another on deployability.")
-        print("  With 6 points and 8 axes some of that is dimensionality, but the")
+        print("  With %d points and %d axes some of that is dimensionality, but the"
+              % (len(df), len(present)))
         print("  per-axis winners above show it is not only that: the operational")
         print("  and detection axes genuinely disagree about which model to pick.")
     print("\nNo composite score is computed, by design.")

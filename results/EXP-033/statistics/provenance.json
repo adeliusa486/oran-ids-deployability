@@ -2,13 +2,20 @@
   "experiment": "EXP-033",
   "seeds": [
     101,
-    102
+    102,
+    103,
+    104,
+    105
   ],
   "models": [
     "logreg",
-    "tree"
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp"
   ],
-  "subsample": 40000,
+  "subsample": 200000,
   "eps_grid": [
     0.0,
     0.01,
@@ -55,5 +62,5 @@
   "not_first": "adversarial attacks on O-RAN ML are prior art; this experiment reports the operational reading, not primacy",
   "python": "3.11.9",
   "platform": "Windows-10-10.0.26120-SP0",
-  "runtime_s": 17.5
+  "runtime_s": 3558.1
 }
