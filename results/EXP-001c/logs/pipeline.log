@@ -1,2 +1,24 @@
 [13:09:08] waiting for DDOS.zip
 [13:18:51] processing DDOS
+bash: line 4:  1360 Killed                  python scripts/exp001c_build_crosslayer.py --categories "$cat" 2>&1
+[14:28:44] finished DDOS
+[14:28:44] waiting for DoS.zip
+[14:28:44] processing DoS
+SKIP DoS: C:\Users\adeel\oran-ids-data\d_a\DoS.zip not present yet
+
+=== SUMMARY ===
+  exporter_version             1.1.0
+  exporter_fingerprint         15f5ffbc3269c715
+  window                       {'width_s': 16.0, 'stride_s': 16.0, 'overlapping': False}
+  categories                   ['DoS']
+  n_runs_total                 0
+  n_runs_ok                    0
+  n_runs_unpaired              0
+  total_windows_joined         0
+  median_join_rate             0.0
+  min_join_rate                0.0
+  median_overlap_fraction      0.0
+  median_abs_start_offset_s    0.0
+  max_abs_start_offset_s       0.0
+[14:28:47] finished DoS
+[14:28:47] waiting for BruteForce.zip
