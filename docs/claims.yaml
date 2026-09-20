@@ -105,3 +105,143 @@ claims:
       it to a container. EXP-000 found no retrieved source that attributes container
       energy either. Improvement I9: drop the column. One row of one table is not worth
       an indefensible claim.
+
+# --- Updated by campaign 2 (2026-09-20) ------------------------------------
+# Statuses below SUPERSEDE the ones above. The originals are left unedited,
+# per the standing rule that history is appended to and never rewritten.
+
+campaign_2_status:
+  C2:
+    status: SUPPORTED
+    evidence: results/EXP-026/processed/transfer_summary__a_to_b.csv
+    artefact: tables/generated/transfer_d_a_to_d_b.tex
+    figure: figures/generated/fig_transfer.pdf
+    result: >
+      All six non-trivial architectures degrade significantly after Holm
+      correction, Delta_F1 +0.096 to +0.300, 20 split seeds.
+    but_the_gap_is_not_the_point: >
+      A stratified coin flip scores 0.4240 on D_B. The best architecture clears
+      it by 0.148 and the MLP lands 0.0017 BELOW it, with balanced accuracy
+      0.4966. Report the floor, not the drop.
+    hard_constraint: >
+      UPPER BOUND spanning an independent deployment AND an independent exporter.
+      Never "due to deployment shift".
+    novelty: >
+      NOT first. Abraheem & Edhirig (WAUJPAS, 7 Aug 2026) ran bidirectional
+      transfer between the same two corpora. Cite as prior art.
+
+  C3:
+    status: SUPPORTED_NEW
+    text: >
+      In-distribution score does not predict cross-deployment performance.
+    evidence: results/EXP-026/processed/transfer_summary__a_to_b.csv
+    result: >
+      The source-best architecture ranks LAST of six on the target.
+      Spearman rho = +0.143 (p = 0.787); Kendall tau = +0.333 (p = 0.469).
+    supersedes: >
+      The draft's "the ranking is broadly preserved", which is CONTRADICTED.
+
+  C8:
+    status: SUPPORTED_WITH_A_WITHDRAWAL
+    evidence: results/EXP-027/processed/ppv_spread_vs_prevalence.csv
+    figure: figures/generated/fig_prevalence.pdf
+    kept: >
+      Corpus precision ~0.93 against pooled deployment PPV 0.0055-0.0077 -- a
+      132x collapse at pi=0.002, rising to 2,631x at pi=1e-4. The detectors are
+      operationally indistinguishable at every base rate swept.
+    withdrawn_clause: >
+      "Deployment PPV differs by ~6x across models" is WITHDRAWN (D-018, B-E).
+      It was an artefact of averaging PPV across folds rather than pooling
+      counts. Pooled spread is 1.40x; the published 6x came from a mean of 13.18x
+      driven by folds where FPR happened to be exactly 0.
+    threshold_saturation: >
+      Still holds, and EXP-028 shows calibration does NOT rescue it. Source-fitted
+      calibration makes the target operating point worse, because the calibrator
+      encodes the source corpus's 94.6% attack prior.
+
+  C9:
+    status: CONTRADICTED_TWICE
+    by_our_measurement: >
+      Four of six architectures conform at a 10 ms budget, and the fastest is a
+      decision tree, not XGBoost.
+    by_external_measurement: >
+      Obiuwevwi et al. (arXiv:2607.01583) measure 1-5 us for logistic regression
+      inside a real OAI+FlexRIC RIC. We measure 2.45 ms p50 for the same family.
+    replacement_finding: >
+      The near-RT crossing point is a property of the IMPLEMENTATION, not the
+      architecture. Three orders of magnitude separates a compiled embedded model
+      from a Python object graph. Any architecture recommendation made on
+      prototype latency describes its own toolchain.
+    measurement_class: EMULATED. Track C BLOCKED (EXP-031).
+
+  C10:
+    status: SUPPORTED_AND_STRENGTHENED
+    evidence: results/EXP-030/processed/extraction_speedup.csv
+    figure: figures/generated/fig_extraction.pdf
+    result: >
+      A vectorised extractor is 2.3x-12.1x faster than the reference and agrees
+      with it exactly. The finding SURVIVES the optimisation: best extraction is
+      0.058 ms/flow, which is still 19x a 1-5 us logistic regression and 3x a
+      10-25 us MLP on a real RIC.
+    note: >
+      The earlier caveat is now discharged by measurement. Against DEPLOYED rather
+      than prototype inference the ratio is 3-19x rather than 7-39x: smaller, same
+      sign, and no longer resting on an assumption.
+
+  C11:
+    status: NOT_EXECUTED
+    reason: >
+      Needs a load sweep on hardware we do not have. RESOURCE is BLOCKED. The
+      draft's "T_max < 250" must not be reused in any form.
+
+  C13:
+    status: WITHDRAWN
+    reason: Track D never executed; Table VIII deleted. No evidence was collected.
+
+  C15:
+    status: WITHDRAWN
+    reason: RAPL cannot attribute package energy to a container.
+
+  C16:
+    status: SUPPORTED_NEW
+    text: >
+      FPR is not a stable property of these detectors under a group-disjoint
+      protocol.
+    evidence: results/EXP-027/processed/pooled_operating_points.csv
+    result: >
+      Fold FPR ranges 0.000 to 0.890 for every non-trivial architecture, median
+      ~0.20. Test-fold composition explains almost none of it (EXP-029 part C:
+      mean R^2 0.04-0.06, max 0.36). Any single-number FPR quoted for this corpus,
+      ours included, is close to meaningless without that range beside it.
+
+  C17:
+    status: SUPPORTED_NEW
+    text: >
+      Averaging a non-linear functional of a rate across evaluation folds, rather
+      than pooling counts, materially distorts operational metrics, and the
+      distortion scales with how few negatives each fold holds.
+    evidence: results/EXP-027/processed/estimator_comparison.csv
+    figure: figures/generated/fig_estimator_bug.pdf
+    result: >
+      Radio folds hold a median of 136 benign windows and the distortion is 9x
+      (1.40x pooled against 13.18x mean). The network shared space holds far more
+      and it is 1.4x. The target, evaluated whole, shows none. The distortion is a
+      property of the evaluation design, not of the metric.
+    provenance: found in our OWN published result, by asking whether it survived a
+      parameter sweep.
+
+  C18:
+    status: SUPPORTED_NEW
+    text: >
+      No architecture dominates on deployability; the operational and detection
+      axes disagree about which model to choose.
+    evidence: results/EXP-035/processed/deployability_matrix.csv
+    result: >
+      All six architectures are Pareto-efficient over eight axes. logreg wins the
+      three operational axes, rf the three detection axes, tree latency, and mlp
+      wins only source macro-F1 -- the metric a paper reports. logreg emits 5,620
+      false alerts/hour against rf's 129,843, a factor of 23, while rf is 0.042
+      macro-F1 better on the target.
+    no_composite_score: >
+      Deliberate. Weights would be unmeasurable and whoever picks them picks the
+      winner.
