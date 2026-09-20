@@ -247,7 +247,7 @@ the paper except through a generated table" contract currently has no mechanism.
 | Commit | Description | Pushed |
 |---|---|---|
 | `6d657fe` | Repository skeleton (pre-existing) | yes |
-| *(see below)* | EXP-000: repository and literature reconstruction | *(recorded at commit time)* |
+| `8c600de` | EXP-000: repository and literature reconstruction | **yes** — `6d657fe..8c600de main -> main`, confirmed by Git; `origin/main` at `8c600de` |
 
 ---
 
@@ -309,3 +309,133 @@ withdrawn, not weakened.
    split, baseline, threshold, metric or exclusion rule to make a result favourable.
 5. **The five architectures are subjects, not competitors.** Under-tuning any of them
    inflates the headline gap and is the first thing a reviewer will attack.
+
+---
+
+# PHASE 0 COMPLETE
+
+**Date:** 2026-09-20
+**Phase:** 0 — Repository and literature reconstruction
+**Experiments:** EXP-000
+
+## What We Proved
+
+- The repository contains **0 non-blank lines of research code** and four guards that
+  all fail, all correctly. Established by command output, not by reading the README.
+- `paper/main.tex` contains exactly **15** machine-detectable synthetic placeholder
+  sites. The honesty mechanism works.
+- **NetsLab-5GORAN-IDD exists and is citable** (IEEE Data Descriptions 2025,
+  CC-BY-4.0): raw pcap at the O-CU, 22 DU radio KPIs over E2, six labelled attack
+  classes, physical OpenAirInterface O-RAN testbed. Gate A1 has a route.
+- The O-RAN near-real-time control loop is specified over **10 ms to 1 s**, and two
+  prior studies reach positive deployability verdicts five orders of magnitude apart by
+  picking opposite ends of it.
+
+## What We Observed
+
+- The blocker was **stale, not hard**. The corpus was published after the plan was
+  written. A blocker that has not been re-searched recently may simply be out of date.
+- Adopting the corpus means **inheriting prior work on it** (Fard et al., IEEE CSR 2026)
+  and giving up half of claim C5. The plan's decision table did not anticipate this cost
+  of the cheap option.
+- The A3 single-exporter control collides with reality: `D_A` raw is ~1.5 TB against
+  `D_B`'s ~3.65 GB.
+
+## What Failed Technically
+
+Nothing in the experiment. One artefact defect found and fixed: **B-006**, an unquoted
+`x: 0.0` in a prose value broke `configs/experiment_registry.yaml` parsing. Fixed and
+re-validated with `yaml.safe_load`.
+
+The four failing repository guards are **not** technical failures — they are guards
+correctly refusing an empty project.
+
+## What Failed Scientifically
+
+Nothing was tested, so nothing failed. But three literature findings **narrow the
+paper**, and they are recorded as findings rather than as inconveniences:
+
+1. The in-distribution half of C5 is prior work (P03), on our own candidate corpus.
+2. Cross-domain IDS transfer failure is published for IIoT in 2026 (P14), so RQ1 cannot
+   be framed as a discovery.
+3. Inference cost is not where the latency is (P04: 1–5 µs in a real xApp), so C10
+   becomes the load-bearing latency claim.
+
+## Strongest Baseline
+
+None established. The ladder is specified and unimplemented.
+
+## Strongest Proposed Result
+
+None. No measurement exists.
+
+## Unexpected Finding
+
+**The two latency comparators contradict each other, and the contradiction is a
+contribution opportunity.** P04 assumes `B = 10 ms`, P05 assumes `B = 1000 ms`, both
+conclude feasibility. Sweeping `B` over the specified range and reporting each
+architecture's crossing point converts an arbitrary threshold into the quantity an
+operator actually needs. This may become the paper's most useful single figure.
+
+## Literature Findings
+
+25 entries, 32 fields, every cell provenance-tagged. **0 full texts read**; 11 abstracts
+or landing pages, 4 search-snippet-only, 9 title-only. One retrieval blocked (HTTP 403)
+and it is one of only two latency comparators.
+
+## New Literature Gap
+
+Primary, and the only one graded strong: **no retrieved study reports cross-deployment
+transfer, operational alert burden and tail latency for the same artefact.** This rests
+on a coverage *pattern* across twelve studies, not on any single source, which is why it
+survives the shallow-reading caveat.
+
+Secondary: the near-RT budget is treated as a constant when it is a range, and the
+choice decides the verdict.
+
+## New Limitation
+
+Track C cannot run on this host (Windows; the methodology needs Linux CPU isolation).
+D-005 is now unavoidable rather than deferrable.
+
+## Manuscript Claims Changed
+
+C5 rescoped, C9 rescoped, C10 promoted to load-bearing, C11's `< 250` formulation
+marked for deletion, C15 recommended for withdrawal, C13 unevidenced and explicitly
+barred from citing this phase's literature audit as support. `docs/claims.yaml` updated;
+C10, C11 and C15 added to it so the Phase 20 audit covers the whole manuscript.
+
+## New Figures
+
+None.
+
+## New Tables
+
+None.
+
+## Git Commits
+
+`8c600de` — EXP-000: repository and literature reconstruction (27 files).
+
+## GitHub Status
+
+Pushed. `6d657fe..8c600de main -> main`, confirmed by Git. `origin/main` is at
+`8c600de`.
+
+## Next Phase
+
+**Phase 1 / EXP-001** — artefact-level verification of `D_A`. Gate G1 cannot pass on a
+landing page. **D-004 must be settled inside EXP-001, before any feature is computed.**
+
+## Critical Warnings
+
+1. **The gate is provisionally, not actually, resolved.** Nothing has been downloaded.
+   Record counts, label columns, group keys, timestamps and CU–DU alignment are all
+   unknown, and every one of them blocks the split design.
+2. **If the CU–DU join cannot be demonstrated, C5 is withdrawn, not weakened.** Written
+   down now, before the data is seen, so the decision cannot be made after the fact.
+3. **Do not treat `reports/literature_audit.md` as a systematic review.** It is a
+   targeted keyword search and over-samples work that mentions the search terms.
+4. **Do not let the contribution quietly re-inflate.** Three of the four things the
+   draft treats as findings are separately known. What is ours is the conjunction, plus
+   two open questions.
