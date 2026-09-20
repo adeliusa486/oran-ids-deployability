@@ -317,6 +317,57 @@ def fig_extraction():
     _save(fig, "fig_extraction")
 
 
+def fig_deployability():
+    """The trade-off that has no winner: detection against alert burden.
+
+    Both axes are things a practitioner cares about and the two disagree. Drawing
+    them together is the argument against a single deployability score, which is
+    why this figure exists instead of one.
+    """
+    src = RES / "EXP-035" / "processed" / "deployability_matrix.csv"
+    if not src.exists():
+        print("  skip deployability figure"); return
+    d = pd.read_csv(src)
+    need = {"target_f1", "false_alerts_per_hour"}
+    if not need.issubset(d.columns) or d[list(need)].isna().any().any():
+        print("  skip deployability figure (axes incomplete)"); return
+
+    fig, ax = plt.subplots(figsize=(IEEE_COL, 2.6))
+    ax.scatter(d.false_alerts_per_hour, d.target_f1, s=34, color=BLUE,
+               zorder=4, edgecolor="none")
+    # hgb, xgboost and tree sit almost on top of one another, so their labels
+    # are placed by hand rather than overlapping into illegibility.
+    offsets = {"hgb": (5, 5), "xgboost": (5, -9), "tree": (5, -2),
+               "rf": (5, 2), "mlp": (-5, 4), "logreg": (6, -2)}
+    for _, r in d.iterrows():
+        dx, dy = offsets.get(r.model, (5, 3))
+        ax.annotate(r.model, xy=(r.false_alerts_per_hour, r.target_f1),
+                    xytext=(dx, dy), textcoords="offset points", fontsize=7,
+                    ha="right" if dx < 0 else "left", color=INK)
+    # The frontier: lower burden and higher target F1 are both better.
+    f = d.sort_values("false_alerts_per_hour")
+    best, xs, ys = -np.inf, [], []
+    for _, r in f.iterrows():
+        if r.target_f1 > best:
+            best = r.target_f1
+            xs.append(r.false_alerts_per_hour)
+            ys.append(r.target_f1)
+    ax.step(xs, ys, where="post", color=ORANGE, lw=1.0, ls="--", zorder=3,
+            label="Pareto frontier")
+    ax.set_xscale("log")
+    if "target_above_floor" in d.columns:
+        floor = float((d.target_f1 - d.target_above_floor).iloc[0])
+        ax.axhline(floor, color=INK, lw=0.8, ls=":", zorder=2)
+        ax.annotate("trivial floor on $D_B$", xy=(ax.get_xlim()[0], floor),
+                    xytext=(3, 4), textcoords="offset points", ha="left",
+                    fontsize=6.5, color=INK)
+    ax.set_xlabel("false alerts per hour (lower is better)")
+    ax.set_ylabel("target macro-$F_1$")
+    ax.legend(loc="upper left", fontsize=6.5)
+    _despine(ax)
+    _save(fig, "fig_deployability")
+
+
 def main() -> int:
     _style()
     print("generating figures...")
@@ -327,6 +378,7 @@ def main() -> int:
     fig_prevalence()
     fig_estimator_bug()
     fig_extraction()
+    fig_deployability()
     print("done.")
     return 0
 
