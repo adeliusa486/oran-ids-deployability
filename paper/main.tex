@@ -281,26 +281,21 @@ Role                      & train / test  & transfer only \\
 
 \subsection{Feature Harmonisation}
 
-Because the corpora were produced by different tooling, a shared feature space must be constructed before transfer is well posed. We follow the standardised NetFlow feature-set methodology \cite{sarhan2021netflow,sarhan2022standard} and derive 32 features in four families, listed in Table~\ref{tab:features}. Twenty-four of these are packet-level and are computable on both corpora; the remaining eight are radio-layer measurements available only in \DA{}. All cross-deployment results therefore use the 24-feature shared space, and the role of the radio family is examined separately in the ablation. Features are computed over a sliding window of 16 flow records per device, quantile-normalised per corpus to remove trivially deployment-specific scaling, and no feature derived from absolute timestamps or endpoint addresses is retained, since such features leak capture identity rather than attack behaviour \cite{arp2022dosdonts}.
+Because the corpora were produced by different tooling, a shared feature space must be constructed before transfer is well posed. \DA{} is exported by Zeek and \DB{} by Argus, and the two share \emph{no column names at all}, so the space is defined by meaning rather than by name. The mapping is given in Table~\ref{tab:features} and is generated from a single committed specification, so that the code and the paper cannot drift apart.
+
+The space contains \measured{15} shared concepts, realised as \measured{18} model columns: seven base numeric quantities each exporter reports natively, one categorical (protocol, expanded against a fixed level list so that source and target matrices cannot differ in width), and seven quantities derived identically on both sides. Families available on only one side are excluded and enumerated in the specification; in particular \DB{} publishes no inter-arrival statistics, so no timing family exists in the shared space, and \DA{}'s radio KPIs have no counterpart and are examined separately.
+
+One mapping deserves stating because the obvious choice is wrong. Zeek's \texttt{src\_bytes} counts application payload, and both corpora are dominated by floods and scans that carry none, so its median is zero; Argus's \texttt{SrcBytes} counts the whole frame and has a median of 84. Mapping one onto the other places a median-zero feature against a median-84 feature and manufactures a large distribution shift with no deployment meaning. The counterpart that actually corresponds is \texttt{src\_ip\_bytes}, at 40 against 42 bytes per packet, the residual being link-layer framing that Argus includes and Zeek does not.
+
+Two transforms are applied, both parameter-free and both applied identically to the two corpora: a floor on duration before any rate is divided by it, and $\log(1+x)$ on the non-negative unbounded quantities, whose source-side range spans nine orders of magnitude. Scaling is fitted \emph{on source training data only}, inside the model pipeline, so that no statistic of the target corpus can enter source-side preprocessing. No feature derived from absolute timestamps or endpoint addresses is retained, since such features leak capture identity rather than attack behaviour \cite{arp2022dosdonts}; \DB{} in fact publishes no addresses or ports at all.
 
 \begin{table}[t]
-\caption{Harmonised feature families with per-family covariate shift between corpora, measured by \eqref{eq:shift}. Only the 24 packet-level features exist in both corpora and are used for all transfer experiments.}
+\caption{The \DA{}/\DB{} shared feature space, generated from \texttt{configs/features/shared\_space.yaml}. Fifteen concepts, eighteen model columns. Zeek and Argus share no column names, so every row is a correspondence by meaning. Note \texttt{src\_ip\_bytes}, not \texttt{src\_bytes}: the latter is payload-only and has median zero on this corpus.}
 \label{tab:features}
 \centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcc}
-\toprule
-\textbf{Family} & \textbf{Representative members} & \textbf{$n$} & \textbf{$\bar{W}_{1}$} \\
-\midrule
-Volumetric & byte and packet counts, payload stats & 8 & 0.29 \\
-Timing     & inter-arrival statistics, burst ratio & 7 & 0.51 \\
-Header     & flag ratios, port entropy, protocol mix & 9 & 0.34 \\
-Radio KPI  & PRB use, CQI, BLER, MCS, RRC rate & 8 & --- \\
-\midrule
-\multicolumn{2}{l}{\textbf{Total} \quad (shared subset: 24)} & \textbf{32} & \textbf{0.37} \\
-\bottomrule
-\end{tabular}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../tables/generated/shared_space}
 \end{table}
 
 \subsection{Detector Family and Objective}
@@ -442,26 +437,19 @@ LSTM          & 99.24 & 98.61 & 98.70 & 98.66 $\pm$ 0.32 \\
 
 \subsection{Cross-Deployment Generalisation}
 
-Table~\ref{tab:cross} shows what happens when the identical models are applied to \DB{}, and Fig.~\ref{fig:gen} places the two settings side by side. Every model loses between \syn{27.9} and \syn{37.1} points of $F_{1}$. The best transferring model, XGBoost, falls from \syn{99.25}\% to \syn{71.39}\%; the worst, the LSTM, falls to \syn{61.61}\%. Notably the ranking is broadly preserved but the magnitude of the gap is not proportional to in-distribution score, so a practitioner selecting a model by its published accuracy would have no way to anticipate which choice transfers least badly.
+Table~\ref{tab:cross} shows what happens when the identical models are applied to \DB{}. Every non-trivial architecture degrades, and all six differences survive Holm correction across the family. That is the less informative half of the result.
 
-% [SYNTHETIC]
+The informative half is the floor. A macro-$F_{1}$ of $0.53$ carries no meaning until one knows what guessing scores on the same corpus, and on \DB{} a stratified random classifier scores \measured{0.4240}. The best architecture clears that by \measured{0.148}; the MLP scores \measured{0.4223}, which is \emph{beneath} the floor, with a balanced accuracy of \measured{0.4966} --- on the wrong side of chance. Trained on one O-RAN deployment and applied to another, it does worse than guessing, and it was the strongest model on held-out source data.
+
+That last observation generalises. The architecture ranked first on the source ranks \emph{last of six} on the target, and across the six the rank correlation between in-distribution and transfer performance is not significant (Spearman $\rho = \measured{0.143}$, $p = \measured{0.787}$). A practitioner selecting an architecture by its published in-distribution score therefore has close to no information about how it will transfer --- a stronger statement than the usual observation that scores drop.
+
 \begin{table}[t]
-\caption{Cross-deployment performance: trained on \DA{}, evaluated on \DB{} using the 24 shared features. $\Delta_{F_{1}}$ is the gap defined in \eqref{eq:gap}; intervals are 95\,\% confidence intervals over five seeds.}
+\caption{Cross-deployment performance: trained on \DA{}, evaluated once on the whole of \DB{} using the \measured{18}-column shared space. Intervals are paired $t$-intervals over \measured{20} split seeds; $^{\ast}$ marks significance after Holm correction across the six non-trivial architectures. The two trivial baselines are \emph{italicised}: they are the floor, not competitors. $\Delta_{F_{1}}$ is an \textbf{upper bound} spanning an independent deployment \emph{and} an independent exporter.}
 \label{tab:cross}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccrr}
-\toprule
-\textbf{Model} & \textbf{Acc.} & \textbf{Prec.} & \textbf{Rec.} & \textbf{$F_{1}$ (95\,\% CI)} & \textbf{$\Delta_{F_{1}}$ (95\,\% CI)} \\
-\midrule
-Random forest & 66.76 & 81.02 & 59.10 & 68.34 $\pm$ 2.31 & 30.69 $\pm$ 2.33 \\
-XGBoost       & \textbf{69.63} & \textbf{83.39} & \textbf{62.40} & \textbf{71.39 $\pm$ 1.76} & \textbf{27.86 $\pm$ 1.78} \\
-MLP           & 61.72 & 75.42 & 54.80 & 63.48 $\pm$ 2.87 & 34.74 $\pm$ 2.89 \\
-1D-CNN        & 64.55 & 78.58 & 57.20 & 66.21 $\pm$ 2.53 & 32.67 $\pm$ 2.55 \\
-LSTM          & 59.82 & 73.36 & 53.10 & 61.61 $\pm$ 2.95 & 37.05 $\pm$ 2.97 \\
-\bottomrule
-\end{tabular}
+\input{../tables/generated/transfer_d_a_to_d_b}
 \end{table}
 
 \begin{figure}[t]
