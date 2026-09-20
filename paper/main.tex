@@ -479,7 +479,11 @@ That last observation generalises. The architecture ranked first on the source r
 \label{fig:gen}
 \end{figure}
 
-The measured covariate shift, computed with \eqref{eq:shift}, is $\bar{W}_{1}=\syn{0.37}$ over the shared feature space after per-corpus quantile normalisation, with the largest per-feature contributions coming from the timing family. Transfer in the reverse direction is comparably poor: training XGBoost on \DB{} and evaluating on \DA{} yields $F_{1}=\syn{64.80}\%$, confirming that the degradation is a property of the distributional distance rather than of one corpus being intrinsically harder. Fine-tuning on a labelled 10\% sample of \DB{} recovers $F_{1}$ to \syn{91.63}\%, which is encouraging but relocates the problem rather than solving it: it means each deployment requires its own labelled attack data, which is exactly the cost that a pre-trained detection xApp was supposed to avoid.
+How separable are the two corpora in the shared space? We do not answer this with a covariate-shift statistic of our own, because a stronger answer already exists: Abraheem and Edhirig~\cite{abraheem2026bidirectional} train a classifier to predict \emph{which corpus} a flow came from and reach a balanced accuracy of 0.993 on harmonised features of the same two corpora, a figure that survives correlation alignment and feature filtering. The corpora are trivially separable. That bounds what any transfer measurement between them can mean, and it is the quantitative form of the exporter confound declared in Section~\ref{sec:setup}.
+
+The reverse direction, \DB{} to \DA{}, is reported separately as a symmetry check rather than as a second headline. It distinguishes ``detectors do not transfer'' from ``\DB{} is simply harder'', and it carries a caveat the forward direction does not: \DB{} publishes no identifiers, so it has no group key, and its own held-out reference is a random split and therefore an optimistic bound. Its $\Delta_{F_{1}}$ is consequently an over-estimate.
+
+We do not report a fine-tuning result. Few-shot adaptation on labelled target data is a different experiment, it is already published for these corpora~\cite{abraheem2026bidirectional}, and it relocates the problem rather than solving it: it means each deployment requires its own labelled attack data, which is exactly the cost a pre-trained detection xApp was supposed to avoid.
 
 The degradation is statistically unambiguous. A paired $t$-test across the five seeds rejects the null hypothesis of equal in-distribution and cross-deployment $F_{1}$ for every architecture at $p<0.001$, and a Wilcoxon signed-rank test gives the same conclusion without the normality assumption; both remain significant after Bonferroni correction for the five comparisons. Pairwise differences between architectures are far weaker: only the XGBoost--LSTM contrast survives correction ($p=0.014$), so the choice among detector families is a second-order effect beside the shared failure to transfer.
 
@@ -523,7 +527,7 @@ All three deployment criteria depend on the score $\hat{p}$ behaving as a probab
 
 This compounds the earlier findings rather than merely adding to them. The remedy suggested by Fig.~\ref{fig:alerts} --- raising the threshold to suppress alert volume --- assumes that a high score means high confidence, and under transfer it does not, so the operating point chosen on the source deployment does not carry over even in the ordering it induces.
 
-A second and independent effect is prior shift. Training prevalence on \DA{} is \syn{28.3}\%, whereas the operational prevalence assumed in Section~\ref{sec:setup} is $\pi=0.002$, and a classifier trained under one prior emits scores calibrated to that prior. Where the training prior $\pi_{\text{tr}}$ is known, the scores admit a closed-form correction,
+A second and independent effect is prior shift, and it is severe. Training prevalence on \DA{} is \measured{94.63}\%, target prevalence on \DB{} is \measured{60.71}\%, and the operational prevalence assumed in Section~\ref{sec:setup} is $\pi=0.002$. A classifier trained under one prior emits scores calibrated to that prior. Where the training prior $\pi_{\text{tr}}$ is known, the scores admit a closed-form correction,
 \begin{equation}
 \tilde{p} \;=\; \frac{\hat{p}\,\dfrac{\pi}{\pi_{\text{tr}}}}{\hat{p}\,\dfrac{\pi}{\pi_{\text{tr}}} \;+\; \left(1-\hat{p}\right)\dfrac{1-\pi}{1-\pi_{\text{tr}}}},
 \label{eq:prior}
@@ -617,7 +621,9 @@ Duration-independent subset       & 17 & 93.71 & \textbf{74.16} \\
 
 Fig.~\ref{fig:alerts} sweeps the decision threshold and reports both the resulting hourly alert volume from \eqref{eq:alerts} and the operational precision from \eqref{eq:ppv}. At the conventional threshold $\tau=0.5$ the in-distribution false positive rate is \syn{0.284}\%, which sounds negligible; multiplied by the benign flow rate it produces \syn{682} alerts per hour, or roughly \syn{16{,}400} per day, and at a prevalence of $\pi=0.002$ the operational precision is only \syn{41.2}\%. Raising the threshold to $\tau=0.95$ reduces the volume to \syn{137} alerts per hour and lifts precision to \syn{75.6}\%, at the cost of recall falling from \syn{99.21}\% to \syn{88.31}\%. This is the trade that \eqref{eq:tau} formalises, and no single-number accuracy figure exposes it.
 
-The cross-deployment case is considerably worse. On \DB{} at $\tau=0.5$ the false positive rate is \syn{19.2}\%, which at the same benign flow rate corresponds to roughly \syn{46{,}000} alerts per hour and an operational precision of \syn{2.1}\%. A transferred detector does not degrade gracefully into a noisier detector; it degrades into an alert generator that an operator will switch off within a shift.
+The cross-deployment case is considerably worse, and it separates the architectures in a way the source corpus does not. On \DB{} at $\tau=0.5$ the false positive rate ranges from \measured{0.023} for logistic regression to \measured{0.885} for the MLP. At the same benign flow rate that is \measured{5{,}620} false alerts per hour at one end and \measured{212{,}383} at the other, against pooled operational precisions of \measured{0.0232} and \measured{0.0020} respectively --- a factor of \measured{23} in burden for \measured{0.042} of macro-$F_{1}$. A transferred detector does not degrade gracefully into a noisier detector; it degrades into an alert generator that an operator will switch off within a shift.
+
+Two points deserve emphasis because they run against the intuition the source corpus builds. First, the detectors are operationally \emph{indistinguishable} on held-out source data --- pooled PPV spans a factor of \measured{1.40} --- and an order of magnitude apart on the target, where the spread is \measured{11.68}. Which corpus one evaluates on decides whether the architectures look alike or not. Second, the model that wins on the target operationally is the simplest one, and it is not the model that wins on macro-$F_{1}$ there. Whichever single metric is chosen, it recommends a different system.
 
 \begin{figure}[t]
 \centering
@@ -664,7 +670,11 @@ Table~\ref{tab:latency} reports the latency decomposition of \eqref{eq:latency} 
 
 Three observations follow. First, median latency is a misleading summary: every model except the LSTM has a median comfortably inside the 10\,ms budget, but only XGBoost keeps its 99th percentile there. Second, the sustainable throughput under the tail constraint differs by an order of magnitude across models that were within one point of each other on accuracy --- \syn{2{,}300} decisions per second for XGBoost against under \syn{250} for the sequence models. Third, and least expected, inference is not the bottleneck for the tree ensembles: feature construction accounts for \syn{55}\% of the median XGBoost budget. Optimisation effort directed at model compression would therefore address the smaller half of the problem.
 
-Energy consumption, measured through RAPL counters, follows the same ordering: \syn{0.42}\,mJ per decision for XGBoost against \syn{3.81}\,mJ for the CNN, which over a year of continuous operation at 1{,}000 decisions per second is a difference of roughly \syn{107}\,kWh per xApp instance.
+% WITHDRAWN (C15). An energy-per-decision comparison appeared here. RAPL reports
+% package and DRAM energy for a whole socket and cannot attribute it to a
+% container or a process, so the measurement the sentence described cannot be
+% made with the instrument it named. One row of one table is not worth an
+% indefensible claim. See configs/decisions.md and docs/claims.yaml C15.
 
 % [SYNTHETIC]
 \begin{table*}[t]
