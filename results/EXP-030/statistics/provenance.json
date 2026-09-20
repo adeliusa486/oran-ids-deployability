@@ -1,0 +1,76 @@
+{
+  "experiment": "EXP-030",
+  "exporter_version": "1.1.0",
+  "fast_exporter_version": "0.1.0",
+  "capture": "SYNTHETIC -- original D_A pcaps not on disk (D-010)",
+  "link_type": 113,
+  "shapes": [
+    [
+      200,
+      200
+    ],
+    [
+      2000,
+      50
+    ],
+    [
+      20000,
+      10
+    ],
+    [
+      50000,
+      4
+    ],
+    [
+      100000,
+      2
+    ]
+  ],
+  "calibration_band_mb_per_s": [
+    1.1,
+    4.3
+  ],
+  "calibration_representative": true,
+  "real_capture_reference": {
+    "ddos_icmp_hping3": {
+      "mb": 224.2,
+      "flows": 1406,
+      "ms_per_flow": 37.338,
+      "mb_per_s": 4.3
+    },
+    "ddos_udp_hping3": {
+      "mb": 447.0,
+      "flows": 38340,
+      "ms_per_flow": 4.49,
+      "mb_per_s": 2.6
+    },
+    "ddos_syn_hping3": {
+      "mb": 1452.5,
+      "flows": 191326,
+      "ms_per_flow": 6.901,
+      "mb_per_s": 1.1
+    }
+  },
+  "all_equivalent": true,
+  "verdict": {
+    "best_vectorised_ms_per_flow": 0.05782383999787271,
+    "deployed_inference_us_obiuwevwi_2026": {
+      "logreg": [
+        1,
+        5
+      ],
+      "mlp": [
+        10,
+        25
+      ]
+    },
+    "extraction_over_deployed_inference_ratio": {
+      "logreg": 19.274613332624238,
+      "mlp": 3.304219428449869
+    },
+    "speedup_over_reference": 12.082233680024983,
+    "still_dominates": true
+  },
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0"
+}
