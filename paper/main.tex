@@ -58,6 +58,7 @@
 \newcommand{\DA}{\ensuremath{\mathcal{D}_{A}}}
 \newcommand{\DB}{\ensuremath{\mathcal{D}_{B}}}
 
+\input{figstyle}
 \begin{document}
 
 \title{Intrusion Detection for IoT Traffic in O-RAN Edge Data Centres: Why Accuracy Alone Is Not Enough}
@@ -157,7 +158,7 @@ We consider an edge data centre hosting a near-real-time RIC that serves a set o
 
 \begin{figure*}[t]
 \centering
-\input{fig1_architecture}
+\resizebox{\textwidth}{!}{\input{fig1_architecture}}
 \caption{Reference O-RAN edge deployment and the closed detection loop. The near-real-time RIC is hosted in a regional edge data centre and aggregates telemetry from many E2 nodes, so the detection xApp observes the combined behaviour of a large IoT population. Circled markers show where this paper takes its measurements: \textcircled{\raisebox{-0.2pt}{\tiny 1}}~cross-deployment generalisation of the classifier and \textcircled{\raisebox{-0.2pt}{\tiny 2}}~the alert burden imposed on the operator per unit time are measured; \textcircled{\raisebox{-0.2pt}{\tiny 3}}~decision latency against the near-real-time budget is \textbf{emulated off-platform}, with no RIC in the path, and supports relative ordering and stage decomposition only.}
 \label{fig:arch}
 \end{figure*}
@@ -280,7 +281,7 @@ Fig.~\ref{fig:pipeline} shows the pipeline. A single trained model is carried un
 
 \begin{figure*}[t]
 \centering
-\input{fig2_pipeline}
+\resizebox{\textwidth}{!}{\input{fig2_pipeline}}
 \caption{Experimental pipeline. One trained detector is evaluated under four protocols of increasing realism, and each step away from the conventional protocol costs performance: a group-disjoint held-out split, a time-disjoint split of the same corpus, an independently collected corpus evaluated once, and an operational analysis over a swept attack base rate. Annotations at the right of each rung are measured degradations relative to the in-distribution reference. The rung borders thicken as the protocol approaches deployment conditions. The live-RIC arm was \textbf{not executed}; the runtime decomposition shown is \textbf{emulated}, with no RIC in the path, and reports the stage breakdown only.}
 \label{fig:pipeline}
 \end{figure*}

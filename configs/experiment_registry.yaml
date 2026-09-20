@@ -710,7 +710,7 @@ campaign_2:
   EXP-037:
     title: Manuscript reconstruction from evidence
     phase: 37
-    status: in_progress
+    status: complete
     report: reports/EXP-037_manuscript_audit.md
     worst_finding: >
       The syn{} markers cover fabricated NUMBERS, not fabricated METHODS. The
@@ -718,7 +718,7 @@ campaign_2:
       fits a transform on the target and is exactly what A2 forbids. As written
       the paper described a leak it does not commit.
     fixed: [feature harmonisation, tab:features, tab:cross, transfer prose]
-    remaining: 46 synthetic values
+    remaining: none -- the MANUSCRIPT gate reports zero synthetic values
 
   EXP-038:
     title: Final reviewer attack
@@ -731,3 +731,31 @@ campaign_2:
       - 30 capture sessions is a small population; reseeding does not fix it
       - ddos, bruteforce and web are untestable in transfer
       - CPU and RAM under load are not measured at all
+
+  EXP-039:
+    title: Figures rebuilt in TikZ from the source renders, and audited
+    phase: 39
+    status: complete
+    decision: D-020
+    inputs:
+      - figures/source/fig1_arch_raw.jpeg
+      - figures/source/fig2_pipeline_raw.jpeg
+      - figures/source/style_ref_1.jpg   # visual language only, not content
+      - figures/source/style_ref_2.jpg
+    outputs:
+      - paper/figstyle.tex
+      - paper/fig1_architecture.tex
+      - paper/fig2_pipeline.tex
+      - figures/icons/*.png              # 27, all regenerable
+    worst_finding: >
+      The renders asserted three things the work does not support: three
+      equivalent measurement markers where the third is emulated with no RIC in
+      the path, telemetry flowing from the detector into the feature space
+      rather than the reverse, and a "measured latency" stage over an
+      offered-load curve for a sweep that was never run. All three would have
+      been read by a reviewer as claims.
+    verification:
+      - pdflatex main.tex, 0 errors, 0 overfull hboxes over 10pt
+      - 12/12 figure-text probes selectable in main.pdf
+      - both figure pages rendered and inspected in context
+      - scripts/extract_figure_icons.py regenerates all 27 icons byte-identically

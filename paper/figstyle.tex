@@ -1,0 +1,81 @@
+% ---------------------------------------------------------------------------
+%  Shared visual language for the paper's schematic figures.
+%
+%  The palette and the idioms below are sampled from the reference renders in
+%  figures/source/: muted sage / pale-green / coral / teal badge fills on a
+%  near-black ink, grey letterspaced column headers separated by hairline
+%  rules, numbered step badges on a vertical flow, and accent callouts in teal
+%  and coral.
+%
+%  Both figures \input this file, so the two cannot drift apart.
+% ---------------------------------------------------------------------------
+
+% ---- palette --------------------------------------------------------------
+\definecolor{fgInk}  {HTML}{272B2E}   % headings, rules, numerals
+\definecolor{fgMute} {HTML}{8A9095}   % column headers, secondary text
+\definecolor{fgRule} {HTML}{D6D9DC}   % hairline separators
+\definecolor{fgPanel}{HTML}{F4F6F6}   % panel and enclosure fills
+\definecolor{fgEmpty}{HTML}{D9DCE1}   % unfilled capacity blocks
+
+\definecolor{fgTeal} {HTML}{3C7D85}   % primary accent
+\definecolor{fgTealL}{HTML}{B2CBC5}   % badge fill, ribbons
+\definecolor{fgGrn}  {HTML}{7FA86B}   % secondary accent
+\definecolor{fgGrnL} {HTML}{CAD5C5}
+\definecolor{fgSage} {HTML}{CDD8D4}
+\definecolor{fgCor}  {HTML}{E2795E}   % attention accent
+\definecolor{fgCorL} {HTML}{EBC6B4}
+\definecolor{fgSlate}{HTML}{5A6B7D}
+
+% ---- icon helper ----------------------------------------------------------
+\providecommand{\ficon}[2]{%
+  \raisebox{-0.5\height}{\includegraphics[height=#2]{../figures/icons/#1.png}}}
+
+% ---- shared tikz styles ---------------------------------------------------
+\tikzset{
+  figbase/.style={
+    font=\scriptsize,
+    every node/.style={inner sep=1pt, outer sep=0pt},
+    % column header: uppercase, letterspaced, muted
+    colhdr/.style={align=center, font=\scriptsize\bfseries, text=fgMute},
+    % hairline column separator
+    colrule/.style={draw=fgRule, line width=0.6pt},
+    % numbered step badge on the vertical flow
+    badge/.style={circle, draw=fgInk, line width=0.7pt, fill=fgSage,
+                  minimum size=5.4mm, inner sep=0pt,
+                  font=\tiny\bfseries, text=fgInk},
+    badgeG/.style={badge, fill=fgGrnL},
+    badgeC/.style={badge, fill=fgCorL},
+    badgeT/.style={badge, fill=fgTealL},
+    % the flow line that threads the badges
+    stepflow/.style={-{Latex[length=1.7mm]}, draw=fgMute, line width=0.7pt},
+    % panels and enclosures
+    panel/.style={draw=fgRule, fill=fgPanel, rounded corners=2.4pt,
+                  line width=0.7pt, align=center, inner sep=4pt},
+    card/.style={draw=fgInk!70, fill=white, rounded corners=2.4pt,
+                 line width=0.9pt, align=left, inner sep=4pt},
+    dashbox/.style={draw=fgMute!70, dashed, fill=fgPanel, rounded corners=3pt,
+                    line width=0.7pt, dash pattern=on 2.4pt off 2pt},
+    % connectors
+    dataflow/.style={-{Latex[length=1.9mm]}, draw=fgSlate, line width=0.8pt},
+    hairflow/.style={draw=fgSlate!55, line width=0.45pt},
+    tealflow/.style={-{Latex[length=1.9mm]}, draw=fgTeal, line width=1.0pt},
+    corflow/.style ={-{Latex[length=1.9mm]}, draw=fgCor, line width=0.9pt,
+                     dash pattern=on 2.2pt off 1.8pt},
+    % callout label sitting on a rule
+    callout/.style={font=\tiny, text=fgInk, fill=white, inner sep=1.5pt},
+    % decision diamond
+    diamond@/.style={diamond, draw=fgInk!75, fill=white, line width=0.8pt,
+                     aspect=1.9, align=center, inner sep=1.5pt, font=\tiny},
+  }
+}
+
+% ---- capacity blocks: n filled of m, in a given accent ---------------------
+% \capblocks{x}{y}{filled}{total}{colour}
+\newcommand{\capblocks}[5]{%
+  \foreach \i in {1,...,#4}{%
+    \pgfmathparse{\i<=#3 ? 1 : 0}%
+    \ifnum\pgfmathresult=1\relax
+      \fill[#5] ($(#1,#2)+(0.215*\i-0.215,0)$) rectangle ++(0.17,0.17);
+    \else
+      \fill[fgEmpty] ($(#1,#2)+(0.215*\i-0.215,0)$) rectangle ++(0.17,0.17);
+    \fi}}

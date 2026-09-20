@@ -8,6 +8,9 @@ from PIL import Image, ImageChops, ImageDraw
 import pathlib
 
 SRC1 = Image.open("figures/source/fig1_arch_raw.jpeg").convert("RGB")
+# The two style references supplied for the restyle. Only pictograms are
+# taken from them -- their content belongs to a different paper.
+SREF = Image.open("figures/source/style_ref_1.jpg").convert("RGB")
 OUT = pathlib.Path("figures/icons")
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -48,6 +51,11 @@ BOXES = {
     "act_mitig":   (2662, 1068, 2718, 1110),
 }
 
+# name -> box in ORIGINAL pixels of style_ref_1.jpg
+REF_BOXES = {
+    "ic_warn": (2556, 898, 2615, 953),
+}
+
 
 def trim(im, thresh=246, pad=3):
     """Drop uniform near-white margin so each icon sits tight in its box."""
@@ -62,12 +70,13 @@ def trim(im, thresh=246, pad=3):
 
 
 tiles = []
-for name, box in BOXES.items():
-    ic = trim(SRC1.crop(box))
-    # upscale modestly so the icon stays crisp at print size
-    ic = ic.resize((ic.width * 2, ic.height * 2), Image.LANCZOS)
-    ic.save(OUT / f"{name}.png")
-    tiles.append((name, ic))
+for src, boxes in ((SRC1, BOXES), (SREF, REF_BOXES)):
+    for name, box in boxes.items():
+        ic = trim(src.crop(box))
+        # upscale modestly so the icon stays crisp at print size
+        ic = ic.resize((ic.width * 2, ic.height * 2), Image.LANCZOS)
+        ic.save(OUT / f"{name}.png")
+        tiles.append((name, ic))
 
 cols = 7
 tw = max(c.width for _, c in tiles)

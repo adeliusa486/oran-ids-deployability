@@ -1083,3 +1083,58 @@ This one survived three phases and drove a decision about which layer the paper
 leans on, without anyone computing a mutual information. Twenty minutes of
 arithmetic showed the concern applied more strongly to the layer it had been used
 to protect.
+
+## D-020 — The figures are authored, not generated, and they carry corrections
+
+**Date:** 2026-09-21
+**Status:** accepted
+**Supersedes:** nothing. **Touches:** paper/fig1_architecture.tex,
+paper/fig2_pipeline.tex, paper/figstyle.tex, scripts/extract_figure_icons.py
+
+### The problem
+
+Figures 1 and 2 began as image-model renders (`figures/source/fig1_arch_raw.jpeg`,
+`fig2_pipeline_raw.jpeg`). They were handsome and they were wrong in ways that a
+reader cannot see and a reviewer can:
+
+| The render claimed | The evidence says |
+|---|---|
+| three identical measurement markers | marker 3 is latency, which is EMULATED off-platform with no RIC in the path (D-005) |
+| telemetry flowing detector to feature space | the harmonised feature space feeds the detector, not the reverse |
+| a stage labelled "measured latency" over an offered-load/queueing-delay curve | no load sweep was performed; only the stage decomposition was measured |
+| layout instructions rendered as headings: LEFT SPINE, RIGHT SIDE, RUNTIME / LATENCY ARM | prompt text leaked into the artwork |
+| a title inside the artwork | a journal figure carries a caption |
+
+The text was also rasterised, so it was neither selectable nor searchable nor in
+the body font.
+
+### Decision
+
+1. **Both figures are TikZ source in the repository.** Every word is set in
+   LaTeX. The rasters survive only as the pictograms, cropped by
+   `scripts/extract_figure_icons.py` from committed sources, and as provenance
+   in `figures/source/`.
+2. **One shared style file.** `paper/figstyle.tex` holds the palette and every
+   shared style, and both figures `\input` it. Two figures that each define
+   their own colours drift; a reviewer sees it immediately.
+3. **Every correction is written into the figure's header comment**, naming what
+   the render claimed and what the evidence says. The table above is the
+   permanent record of it.
+4. **Nothing unexecuted is drawn in the style of something executed.** The
+   live-RIC arm is hatched and labelled NOT EXECUTED; the emulated marker is
+   hollow and dashed with a legend entry saying why. Both stay in the figures:
+   showing what was designed and not achieved is more honest than deleting it.
+5. **The figures are fitted to the text block with `\resizebox`**, at 0.96-0.97,
+   rather than being allowed to overhang it. The text stays real text.
+
+### What would reverse this
+
+A real RIC measurement (EXP-031, currently BLOCKED) would make marker 3 solid
+and the runtime panel unqualified. Nothing else here is provisional.
+
+### The general lesson
+
+**An image model will draw the claim you asked for, whether or not you have the
+evidence for it.** Three of the five defects above were the render obeying a
+prompt rather than the results. A figure is an assertion; audit it against the
+results before you draw it, not after.
