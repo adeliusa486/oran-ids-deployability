@@ -16,7 +16,8 @@
 # See configs/decisions.md D-001, D-004 and D-008.
 
 id: d_a_netslab_5goran_idd
-status: verified_partial        # usable for RQ1/RQ2/RQ3; NOT usable for C5 as published
+status: verified_partial        # summaries usable for RQ1/RQ2/RQ3; C5 needs the raw archives (D-008 route a)
+raw_archive_root: "C:/Users/adeel/oran-ids-data/d_a"   # outside the OneDrive-synced tree by design
 resolved_by: EXP-001            # gate G1, PASS_WITH_LIMITATIONS
 
 source_doi: "10.1109/IEEEDATA.2025.3614167"     # descriptor, IEEE Data Descriptions 2025
@@ -39,7 +40,7 @@ attack_classes: [benign, dos, ddos, probe, brute_force, web]
 # A3: which artefact we extract from. D-004 (2026-09-20) decided to use the PUBLISHED
 # features on both sides, so the single-exporter control is not applied. That decision
 # was taken on a size estimate that EXP-001 has since corrected -- see size_correction.
-use_artefact: published_features      # D-004 option (b); was 'pcap'
+use_artefact: pcap                    # D-008 route (a), 2026-09-20: D-004 REVERSED for D_A
 artefact_inventory:
   # Exact sizes from the Zenodo REST API, 2026-09-20. Authoritative.
   source: "https://zenodo.org/api/records/18923275"
@@ -65,7 +66,8 @@ size_correction:
   is: "16.85 GB total; 16.40 GB of pcap zips"
   consequence: >
     D_A raw is about 4.5x D_B raw, not about 400x. The infeasibility premise behind
-    D-004 does not hold. D-004 is flagged for revisit.
+    D-004 did not hold. D-004 was revisited and REVERSED for D_A on 2026-09-20
+    (decision D-008, route (a)): we re-extract from the raw archives.
 known_gaps:
   probe_archive_missing: >
     The Zenodo description lists six categories (Benign, DoS, DDoS, Probe, BruteForce,

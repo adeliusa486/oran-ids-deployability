@@ -155,9 +155,10 @@ experiments:
     title: "Cross-layer re-extraction from raw archives (route (a) for claim C5)"
     phase: 1
     claims: [C5]
-    status: planned_pending_decision
+    status: running
+    started: 2026-09-20
     depends_on: [EXP-001]
-    blocked_on: "D-008, the C5 route decision, which also revisits D-004"
+    authorised_by: "D-008 route (a), 2026-09-20"
     research_question: >
       Can an L1 time-axis join between CU flow records and DU radio telemetry be
       recovered from the raw per-category archives?

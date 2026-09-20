@@ -250,9 +250,9 @@ Carried from `docs/IMPLEMENTATION_PLAN.md` §4, plus those raised by EXP-000.
 
 | ID | Improvement | Origin | Status |
 |---|---|---|---|
-| I1 | One exporter over both corpora, from pcap | plan (A3) | **`withdrawn`** — D-004 decided against it. Replaced by M1 + M2 |
-| M1 | Measure the exporter confound on `D_B` (recompute from pcapng, compare to published Argus) | D-004 | **`mandatory`** |
-| M2 | Report `Δ_F1` on both the feature intersection and a conservative sub-intersection | D-004 | **`mandatory`** |
+| I1 | One exporter over both corpora, from pcap | plan (A3) | **`REINSTATED`** 2026-09-20 by D-008 route (a). D-004 is reversed for `D_A` |
+| M1 | Measure the exporter confound on `D_B` (recompute from pcapng, compare to published Argus) | D-004 | **`mandatory`** — still runs; it is what demonstrates the control worked |
+| M2 | Report `Δ_F1` on both the feature intersection and a conservative sub-intersection | D-004 | **`retained`** — now a robustness check rather than a mitigation |
 | I2 | `source` normalisation primary, three modes reported | plan (A2) | `decided`, unimplemented |
 | I3 | Split-seed × model-seed nesting | plan (A5) | `decided`, unimplemented |
 | I4 | π and λ_b swept as surfaces | plan (A6) | `decided`, unimplemented |
@@ -288,7 +288,7 @@ Equation (7) in the manuscript should be re-expressed as a function of `B`, with
 ## D-008 — Route for claim C5 after the CU/DU join failed
 
 - **Phase:** 1 (raised by EXP-001)
-- **Status:** `OPEN — BLOCKING for Phase 2 and for claim C5`
+- **Status:** `DECIDED 2026-09-20 — route (a), re-extract from the raw archives`
 - **Raised by:** EXP-001, 2026-09-20
 
 ### What happened
@@ -337,3 +337,47 @@ Route (a) must be judged on whether the join *exists*, not on whether it rescues
 claim. EXP-001c has its own pre-registered failure criterion: if the joined fraction is
 too low to support an ablation, **C5 is withdrawn**, and route (a) having been attempted
 is not a reason to weaken that.
+
+---
+
+### DECISION — 2026-09-20, project owner: **route (a)**
+
+**Re-extract from the raw per-category archives.** EXP-001c is authorised and becomes
+the next experiment.
+
+Basis on which it was taken (all three established before the decision, not after):
+
+1. The cost premise that originally ruled route (a) out was wrong. The whole Zenodo
+   record is **16.85 GB**, of which 16.40 GB is pcap archives — not the ~1.5 TB
+   EXP-000 recorded.
+2. The join demonstrably exists in the raw data. P03 (Fard et al., IEEE CSR 2026)
+   performs it on this corpus, aligning the layers by **run-relative timestamps** taken
+   from the raw per-category archives, and assigning time from the sample index at 1 Hz
+   for DoS traces whose telemetry lacks timestamps.
+3. The alternative routes were worse for reasons independent of the claim's survival:
+   route (b) joins populations that differ in composition by up to 26 percentage points
+   and cannot address the within-flow question C5 asks; route (c) discards the only part
+   of the paper that uses the radio modality.
+
+**Consequential changes:**
+
+- **D-004 is REVERSED for `D_A`.** The A3 single-exporter control is reinstated on the
+  `D_A` side. `use_artefact` returns to `pcap`.
+- **I1 is reinstated** and supersedes M1/M2 for `D_A`. M1 (the `D_B` exporter-agreement
+  study, EXP-001b) **still runs**, because `D_B`'s published Argus CSV remains the point
+  of comparison and the agreement measurement is what demonstrates the control worked.
+- `Δ_F1` is upgraded from an *upper bound* to an *estimate*, conditional on EXP-001b
+  showing acceptable agreement.
+
+**The failure criterion is unchanged and is not softened by this decision.** EXP-001c
+pre-registers: if the joined fraction is too low to support an ablation, **C5 is
+withdrawn, not weakened**. Having spent the download is not a reason to keep the claim.
+
+**Pilot first.** `Web.zip` (594 MB, the smallest category) is downloaded and the join is
+validated end to end on it before the remaining 15.8 GB is fetched. If the method does
+not work on one category it will not work on five, and the pilot costs 4% of the data.
+
+**Storage.** Raw archives live at `C:/Users/adeel/oran-ids-data/`, deliberately outside
+the OneDrive-synced project tree, so that 16 GB of packet captures is not uploaded to
+the owner's cloud storage. The path is recorded in provenance; nothing in the repository
+depends on its value.

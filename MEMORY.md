@@ -314,6 +314,14 @@ baseline; **I14** per-stage latency breakdown; **I15** widen or bound the threat
 
 ---
 
+## Standing Tasks
+
+| Task | Raised | Status |
+|---|---|---|
+| **Re-mine `plan.zip` / `IMPLEMENTATION_PLAN.md` for paper-strengthening items once the experimental phases are done.** Owner's instruction, 2026-09-20. First check (2026-09-20): `plan.zip` holds only `IMPLEMENTATION_PLAN.md` (md5 identical to `docs/IMPLEMENTATION_PLAN.md`, already mined in EXP-000) and `bootstrap_repo.sh`, which creates the skeleton already present. **No unmined content.** The plan's sections 16-17 (figure and table plans), 21 (reviewer-risk audit) and 22 (final improvement priorities) are the parts not yet exploited and are the natural source of strengthening material in Phases 17-22 | owner | open |
+| Retrieve the P05 PDF (HTTP 403 so far). Its numbers are used in reasoning and must not be cited until the PDF is in hand | EXP-000 | open |
+| Execute or delete Table VIII / claim C13 (plan A9) | EXP-000 | open |
+
 ## Manuscript Changes Required
 
 Tracked in `docs/CLAIM_EVIDENCE_MATRIX.csv`. **0 of 15 claims are currently established.**
