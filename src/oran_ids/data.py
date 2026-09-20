@@ -29,6 +29,8 @@ import pandas as pd
 import yaml
 
 RAW_DA = Path("data/raw/d_a")
+RAW_DB = Path("data/raw/d_b")
+TARGET_ACCESS_LOG = Path("results/EXP-026/logs/target_access.log")
 LABEL_MAP_PATH = Path("configs/labels/canonical_map.yaml")
 
 # Columns that identify a record or its host. Never features.
@@ -239,4 +241,100 @@ def load_radio(path: Path | None = None, *, window: bool = True) -> Corpus:
                   out["session"].to_numpy(), "session", prov)
 
 
-__all__ = ["Corpus", "load_network", "load_radio", "load_label_map"]
+# ---------------------------------------------------------------------------
+# The shared feature space, and the target corpus.
+# ---------------------------------------------------------------------------
+
+def _log_target_access(what: str) -> None:
+    """A11: every read of the target corpus is logged, with a timestamp.
+
+    The non-negotiable is not "do not read D_B" -- it must be read to be
+    evaluated on. It is that no source-side choice may be made *after* looking at
+    it. An append-only log is what makes that auditable after the fact rather
+    than a promise in a methods section.
+    """
+    import datetime as _dt
+    TARGET_ACCESS_LOG.parent.mkdir(parents=True, exist_ok=True)
+    with TARGET_ACCESS_LOG.open("a", encoding="utf-8") as fh:
+        stamp = _dt.datetime.now().isoformat(timespec="seconds")
+        print(stamp, what, sep="\t", file=fh)
+
+
+def load_network_shared(path: Path | None = None, *, dedup: bool = True,
+                        nrows: int | None = None) -> Corpus:
+    """D_A CU flow records, projected onto the D_A/D_B shared space.
+
+    This is the SOURCE side of the transfer experiment. It deliberately does not
+    reuse ``load_network``'s full feature set: a transfer gap measured between a
+    48-column source model and an 18-column target space would be measuring the
+    projection, not the deployment.
+    """
+    from .features import shared as _sh
+
+    path = path or (RAW_DA / "Network_Dataset.csv")
+    df = pd.read_csv(path, low_memory=False, nrows=nrows)
+    n_raw = len(df)
+    prov = {"source_file": path.name, "n_rows_raw": n_raw,
+            "space": "shared_d_a_d_b", "spec": str(_sh.SPEC_PATH)}
+
+    if dedup:
+        df = df.drop_duplicates()
+        prov.update(n_exact_duplicates_removed=int(n_raw - len(df)),
+                    dedup_policy="drop exact duplicate rows only (B-007)")
+
+    lm = load_label_map()
+    category = _apply_canonical(
+        df["attack_category"], lm["corpus_d_a"]["network_layer"]["map"],
+        "D_A network (shared space)")
+    y = df["traffic_type"].to_numpy(dtype=np.int8)
+    groups = df["src_ip"].to_numpy()
+    X = _sh.from_d_a(df)
+
+    prov.update(n_rows_used=int(len(X)), n_features=int(X.shape[1]))
+    return Corpus("d_a_network_shared", X, y, category.to_numpy(),
+                  groups, "src_ip", prov)
+
+
+def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
+                    reason: str = "unspecified") -> Corpus:
+    """D_B = 5G-NIDD, the independent target corpus. TRANSFER-ONLY.
+
+    Never split, never trained on, never used to fit a scaler or pick a
+    threshold. It carries no IP addresses and no ports, so no group key exists
+    and none is needed.
+
+    Every call appends to ``results/EXP-026/logs/target_access.log``.
+    """
+    from .features import shared as _sh
+
+    path = path or (RAW_DB / "Combined.csv")
+    _log_target_access(f"load_target_d_b(nrows={nrows}) reason={reason}")
+
+    df = pd.read_csv(path, low_memory=False, nrows=nrows)
+    n_raw = len(df)
+    prov = {"source_file": path.name, "n_rows_raw": n_raw,
+            "space": "shared_d_a_d_b", "role": "transfer_only",
+            "licence": "CC-BY-4.0",
+            "obtained_from": "https://etsin.fairdata.fi/dataset/"
+                             "9d13ef28-2ca7-44b0-9950-225359afac65"}
+
+    df = df.drop_duplicates()
+    prov["n_exact_duplicates_removed"] = int(n_raw - len(df))
+
+    lm = load_label_map()["corpus_d_b"]
+    y = _apply_canonical(df[lm["binary_column"]], lm["binary_map"],
+                         "D_B binary").to_numpy(dtype=np.int8)
+    category = _apply_canonical(df[lm["category_column"]], lm["map"],
+                                "D_B category").to_numpy()
+    X = _sh.from_d_b(df)
+
+    # No group key exists here, and none is needed: D_B is evaluated whole.
+    groups = np.zeros(len(X), dtype=np.int8)
+    prov.update(n_rows_used=int(len(X)), n_features=int(X.shape[1]),
+                group_key="none (transfer-only, corpus carries no identifiers)")
+    return Corpus("d_b_5gnidd_shared", X, y, category, groups,
+                  "none", prov)
+
+
+__all__ = ["Corpus", "load_network", "load_radio", "load_label_map",
+           "load_network_shared", "load_target_d_b"]

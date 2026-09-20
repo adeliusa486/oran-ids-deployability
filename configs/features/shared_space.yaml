@@ -1,0 +1,156 @@
+# The D_A <-> D_B shared feature space.  EXP-026.
+#
+# D_A is exported by Zeek, D_B by Argus. They share ZERO column names, so the
+# space is defined by MEANING, in this table, and never inline in a script.
+#
+# ---------------------------------------------------------------------------
+# THE BYTE-SEMANTICS TRAP (D-015) -- read before changing anything here
+# ---------------------------------------------------------------------------
+# The obvious mapping src_bytes <-> SrcBytes is WRONG and was caught before it
+# reached a result. Measured, label-blind, on 200k rows of each corpus:
+#
+#   D_A src_bytes      Zeek PAYLOAD bytes            median 0
+#   D_A src_ip_bytes   Zeek IP-layer bytes           median 80   (40 B/pkt)
+#   D_B SrcBytes       Argus header-inclusive bytes  median 84   (42 B/pkt)
+#
+# Zeek's src_bytes counts application payload only, so it is 0 for the SYN/ACK
+# floods and scans that dominate both corpora. Argus's SrcBytes counts the whole
+# frame. Mapping one to the other puts a median-0 feature against a median-84
+# feature and manufactures an enormous distribution shift that has nothing to do
+# with deployment. It would have inflated every Delta_F1 in the paper.
+#
+# src_ip_bytes is the true counterpart: 40 vs 42 bytes per packet, the residual
+# being the link-layer framing Argus includes and Zeek does not. That residual
+# is real, small, and stated in the paper rather than hidden.
+#
+# ---------------------------------------------------------------------------
+version: 1
+created: 2026-09-20
+created_by: EXP-026
+decision: D-015
+
+# Applied identically to both corpora. Never fitted. Not a learned transform.
+transforms:
+  duration_floor_s: 0.001      # both sides, before any rate is divided by it
+  log1p_applied_to: [duration, src_bytes, dst_bytes, src_pkts, dst_pkts,
+                     tot_pkts, tot_bytes, mean_pkt_size, src_mean_pkt_size,
+                     dst_mean_pkt_size, bytes_per_s, pkts_per_s]
+  log1p_rationale: >
+    Every listed quantity is non-negative and spans nine orders of magnitude on
+    the source side alone (src_ip_bytes: 0 to 6.4e8). log1p is deterministic,
+    parameter-free, and applied to both corpora identically, so it cannot carry
+    target information. The choice was made from SOURCE-side marginals and is
+    recorded as D-016. Ratios and the protocol one-hot are left raw: both are
+    already bounded in [0, 1].
+
+# ---------------------------------------------------------------------------
+# BASE: quantities each exporter reports natively.
+# ---------------------------------------------------------------------------
+base_numeric:
+  duration:
+    d_a: duration
+    d_b: Dur
+    unit: seconds
+    note: >
+      Both in seconds, but the two exporters do not agree on where a flow ends.
+      Zeek's median duration is 1.9e-4 s, Argus's is 2.27 s. This is a genuine
+      exporter difference, not a unit error, and it is part of the tooling
+      confound the paper must declare.
+  src_bytes:
+    d_a: src_ip_bytes           # NOT src_bytes -- see D-015 above
+    d_b: SrcBytes
+    unit: bytes, header-inclusive
+  dst_bytes:
+    d_a: dst_ip_bytes           # NOT dst_bytes -- see D-015 above
+    d_b: DstBytes
+    unit: bytes, header-inclusive
+  src_pkts:
+    d_a: src_pkts
+    d_b: SrcPkts
+    unit: packets
+  dst_pkts:
+    d_a: dst_pkts
+    d_b: DstPkts
+    unit: packets
+  tot_pkts:
+    d_a: src_pkts + dst_pkts
+    d_b: TotPkts
+    unit: packets
+    note: "Verified on D_B: TotPkts == SrcPkts + DstPkts exactly. Collinear with
+           src_pkts + dst_pkts by construction; kept because both exporters
+           report it natively and dropping it would be an unmotivated choice."
+  tot_bytes:
+    d_a: src_ip_bytes + dst_ip_bytes
+    d_b: TotBytes
+    unit: bytes, header-inclusive
+    note: "Verified on D_B: TotBytes == SrcBytes + DstBytes exactly."
+
+base_categorical:
+  proto:
+    d_a: proto
+    d_b: Proto
+    encoding: one_hot
+    levels: [tcp, udp, icmp, other]
+    note: >
+      Levels are FIXED here, not learned from either corpus, so the matrix has
+      the same columns whichever corpus produced it. Everything outside the
+      three shared levels collapses to 'other' (D_A: unknown_transport;
+      D_B: sctp, lldp, llc, arp, ipv6-icmp, ...). The marginal distributions
+      differ sharply -- D_A is 86% tcp, D_B is 85% udp -- which is a real
+      property of the two deployments and is reported, not corrected.
+
+# ---------------------------------------------------------------------------
+# DERIVED: computed from the base columns, identically on both sides.
+# ---------------------------------------------------------------------------
+derived:
+  mean_pkt_size:      tot_bytes / max(tot_pkts, 1)
+  src_mean_pkt_size:  src_bytes / max(src_pkts, 1)
+  dst_mean_pkt_size:  dst_bytes / max(dst_pkts, 1)
+  bytes_per_s:        tot_bytes / max(duration, duration_floor_s)
+  pkts_per_s:         tot_pkts  / max(duration, duration_floor_s)
+  src_byte_ratio:     src_bytes / max(tot_bytes, 1)
+  src_pkt_ratio:      src_pkts  / max(tot_pkts, 1)
+
+# ---------------------------------------------------------------------------
+# THE HONEST COUNT.  The draft manuscript claims 24. It is not 24.
+# ---------------------------------------------------------------------------
+counts:
+  base_numeric: 7
+  base_categorical_concepts: 1
+  derived: 7
+  shared_concepts: 15
+  model_matrix_columns: 18      # 7 numeric + 4 one-hot + 7 derived
+  draft_claimed: 24
+  note: >
+    Report 15 concepts / 18 matrix columns. The 24 in the draft was never
+    derived from either schema. configs/features/shared24.yaml is superseded.
+
+# ---------------------------------------------------------------------------
+# What CANNOT be in the space, and why. Stated so the exclusion is auditable.
+# ---------------------------------------------------------------------------
+excluded:
+  d_a_only:
+    - service          # Zeek application guess; Argus has no counterpart
+    - conn_state       # Zeek TCP state string
+    - history          # Zeek-specific, hundreds of values
+    - missed_bytes     # Zeek capture-loss counter
+    - src_bytes        # payload-only; see D-015. The IP-byte column is used.
+    - dst_bytes
+    - http_trans_depth
+    - files_total_bytes
+    - is_GET_mthd
+    - http_status_error
+    - is_file_transfered
+    - src_port         # identity/deployment-specific (already excluded by D_A policy)
+    - dst_port
+  d_b_only:
+    - [sTtl, dTtl, sHops, dHops]        # TTL / hop count: no Zeek counterpart
+    - [Load, SrcLoad, DstLoad]          # Argus load estimates
+    - [Rate, SrcRate, DstRate]
+    - [Loss, SrcLoss, DstLoss, pLoss]
+    - [SrcWin, DstWin, TcpRtt, SynAck, AckDat, SrcTCPBase, DstTCPBase]
+    - [sTos, dTos, sDSb, dDSb, sVid, dVid, Cause, State, Offset, Seq, RunTime]
+    - [Mean, Sum, Min, Max]
+    - [sMeanPktSz, dMeanPktSz]          # recomputed from base instead, so the
+                                        # arithmetic is identical on both sides
+  identity_columns_in_d_b: "NONE -- D_B publishes no IP addresses and no ports."

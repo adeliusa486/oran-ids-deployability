@@ -415,3 +415,89 @@ experiments:
       construction.
     decision_if_not_executed: delete Table VIII and soften C13 to a qualitative
       observation supported by a handful of concrete cited examples.
+
+# ==========================================================================
+# CAMPAIGN 2 -- resolving the blockers the first campaign reported honestly.
+# Appended 2026-09-20. Never edit an entry above to make a result look better.
+# ==========================================================================
+campaign_2:
+  EXP-024:
+    title: Repository / remote reconciliation
+    phase: 24
+    status: complete
+    gate: PASS
+    report: reports/repository_remote_reconciliation.md
+    finding: >
+      NO DISCREPANCY. local HEAD == origin/main == faa2849, 25 commits, clean tree,
+      single branch. The reported "one commit, skeleton" web view is an exact
+      description of 6d657fe, the FIRST commit, and is best explained as a stale
+      page. No history was lost, rewritten or mispushed. No recovery action taken.
+    note: >
+      The git repository is oran-ids-deployability/ INSIDE the working folder, not
+      the folder itself. `git log` one level up reports "not a git repository",
+      which resembles a lost history and is not one.
+
+  EXP-025:
+    title: Target corpus acquisition and verification (D_B = 5G-NIDD)
+    phase: 25
+    status: complete
+    gate: PASS
+    closes: [D-011, "gate A1-target"]
+    report: reports/EXP-025_target_corpus.md
+    claims: [C2, C3, C4]
+    corpus: configs/corpora/d_b.yaml
+    provenance: data/provenance/d_b_files.json
+    route: >
+      Etsin / Fairdata, the Finnish national research data repository. Open, CC BY 4.0,
+      own citable DOI 10.23729/e80ac9df-d9fb-47e7-8d0d-01384a415361. NOT the paywalled
+      IEEE DataPort copy and NOT an unattributable third-party mirror.
+    verified:
+      checksums: "all 4 artefacts re-verified 2026-09-20; compressed sizes matched the
+                  repository's published record to the byte before extraction"
+      rows: 1215890
+      cols: 52
+      exporter: Argus
+      attack_prevalence_pct: 60.71
+      identifier_columns: none
+      canonical_coverage: [benign, dos, probe]
+      untestable_in_transfer: [ddos, bruteforce, web]
+    finding: >
+      RQ1 is UNBLOCKED. reports/RQ1_blocked.md is deliberately NOT written; that
+      branch of the decision tree does not apply.
+
+  EXP-026:
+    title: Cross-deployment transfer D_A -> D_B (RQ1, the headline)
+    phase: 26
+    status: running
+    depends_on: [EXP-025]
+    claims: [C2, C3, C4]
+    maps_to_plan: [X2]
+    runner: experiments/run_transfer.py
+    design:
+      space: configs/features/shared_space.yaml
+      n_shared_concepts: 15
+      n_matrix_columns: 18
+      draft_claimed: 24
+      source_split: group_disjoint(src_ip)
+      split_seeds: 20
+      model_seed: 11
+      threshold: 0.5
+      primary_metric: f1_macro
+      controls:
+        - source held-out in the SAME 18-column space, so the gap is not the projection
+        - trivial floor evaluated ON THE TARGET, so a collapse reads against guessing
+      directions:
+        a_to_b: primary, run and committed first
+        b_to_a: secondary symmetry check only (D-017); D_B has no group key, so its
+                own held-out reference is a RANDOM split and an optimistic bound
+    decisions: [D-015, D-016, D-017]
+    bug_caught_pre_result: >
+      D-015. The handover mapping src_bytes <-> SrcBytes was WRONG: Zeek src_bytes is
+      payload (median 0), Argus SrcBytes is header-inclusive (median 84). It would have
+      collapsed the target score across every architecture and looked exactly like the
+      generalisation failure the paper set out to find. Corrected to src_ip_bytes before
+      any transfer metric was computed. Regression test added.
+    hard_rule: >
+      Delta_F1 is an UPPER BOUND spanning an independent deployment AND an independent
+      exporter. The A3 single-exporter control is NOT applied. Never write "due to
+      deployment shift".

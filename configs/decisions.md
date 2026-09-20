@@ -726,3 +726,158 @@ holds n=20.
 Committing results early is what made this recoverable. The guard prevents
 recurrence, but the commit is what meant the damage was undoable. **Results go into
 git as soon as they exist**, not once they are final.
+
+---
+
+## D-015 — The obvious byte mapping was wrong, and would have inflated every transfer gap
+
+- **Phase:** 26
+- **Status:** `CAUGHT BEFORE IT REACHED A RESULT 2026-09-20`
+- **Severity:** would have manufactured the paper's headline finding
+
+### What happened
+
+`MEMORY.md` carried a handover table proposing the D_A/D_B feature mapping. Its
+byte rows were:
+
+```
+src bytes    D_A src_bytes   <->   D_B SrcBytes
+dst bytes    D_A dst_bytes   <->   D_B DstBytes
+```
+
+That mapping is wrong. Measured, label-blind, on 200,000 rows of each corpus:
+
+| Column | Exporter | What it counts | Median |
+|---|---|---|---:|
+| `src_bytes` | Zeek | application **payload** only | **0** |
+| `src_ip_bytes` | Zeek | IP-layer bytes, headers included | 80 |
+| `SrcBytes` | Argus | frame bytes, headers included | **84** |
+
+Zeek's `src_bytes` is payload, and both corpora are dominated by SYN floods, ACK
+floods and port scans — traffic that carries no payload at all. The column is
+therefore **zero for the majority of source rows**. Argus's `SrcBytes` counts the
+whole frame and is never zero for an observed packet.
+
+### Why it mattered so much
+
+Had this shipped, the source model would have trained on a byte feature that is
+0 almost everywhere and then been asked to score a target where the same feature
+is 84 and up. Every volumetric feature derived from it — `tot_bytes`,
+`mean_pkt_size`, `bytes_per_s`, `src_byte_ratio`, five of the eighteen columns —
+would inherit the error.
+
+The model would have collapsed on the target. The collapse would have been large,
+consistent across architectures, and statistically significant. It would have
+looked exactly like the cross-deployment generalisation failure the paper set out
+to find, and **we would have published our own preprocessing bug as RQ1's answer.**
+
+This is the same failure mode as B-A, the SLL/Ethernet link-layer bug: no
+exception, no warning, a full set of plausible numbers, and a wrong conclusion.
+
+### Decision
+
+The shared space maps `src_ip_bytes <-> SrcBytes` and `dst_ip_bytes <-> DstBytes`.
+Per packet that is 40 bytes against 42 — a bare TCP/IP header on one side and the
+same header plus link framing on the other. The 2-byte residual is a genuine
+exporter difference, it is small, and it is stated in the paper rather than
+hidden.
+
+Zeek's payload columns are **excluded from the shared space entirely**, and
+`configs/features/shared_space.yaml` says why at the top of the file.
+
+### Guard
+
+`tests/unit/test_shared_space.py::test_d_a_uses_ip_bytes_not_payload_bytes`
+asserts the projection tracks `src_ip_bytes` even when `src_bytes` is non-zero,
+so a regression cannot pass silently.
+
+### What would reverse this
+
+Evidence that this D_A release's `src_bytes` is header-inclusive after all — for
+example a datasheet stating it, or a recomputation from the raw captures showing
+`src_bytes == src_ip_bytes`. The measured medians of 0 and 80 say otherwise.
+
+### The general lesson
+
+**A handover note is a hypothesis, not a fact.** This mapping arrived in memory
+written as a table, which made it look settled. Twenty minutes of label-blind
+measurement showed two of its eight rows were wrong. Check the schema against the
+data before building on it, especially when the note was written by you.
+
+---
+
+## D-016 — log1p on the volumetric features, decided from source-side marginals
+
+- **Phase:** 26
+- **Status:** `ADOPTED 2026-09-20`
+
+### Decision
+
+Every non-negative unbounded quantity in the shared space — durations, byte
+counts, packet counts and the rates derived from them — is passed through
+`log1p`. Ratios and the protocol one-hot are left raw; both are already in [0, 1].
+
+### Why
+
+`src_ip_bytes` spans 0 to 6.4e8 on the source side alone. Under a raw
+representation a StandardScaler fitted on source data maps almost the entire
+target distribution into a handful of standard deviations near zero, so `logreg`
+and `mlp` would be compared on a representation that had already destroyed the
+signal. The transfer gap would then partly measure our own scaling choice.
+
+### Why this is not tuning on the target
+
+`log1p` is parameter-free and deterministic. Nothing is fitted, so there is
+nothing for target data to influence. It is applied to both corpora by the same
+code path, the choice was made from **source-side** marginals before any target
+metric was computed, and it is recorded here rather than discovered in a script.
+
+### What would reverse this
+
+A demonstration that the ranking of architectures on the target changes under a
+raw representation. That would make the transform a finding rather than a
+preprocessing choice, and it would have to be reported as one.
+
+---
+
+## D-017 — D_B "transfer-only" is relaxed to "no influence on the primary direction"
+
+- **Phase:** 26
+- **Status:** `ADOPTED 2026-09-20`
+
+### The tension
+
+A11 declares D_B transfer-only: never trained on. But a single-direction transfer
+result cannot distinguish two very different explanations for a collapse:
+
+1. detectors do not generalise across deployments, or
+2. D_B is simply a harder corpus than D_A.
+
+Only the reverse direction separates them. If D_B -> D_A also collapses, the
+finding is about transfer. If D_B -> D_A holds up, the finding is about D_B.
+
+### Decision
+
+The non-negotiable is restated as: **no D_B observation may influence any
+source-side choice in the primary direction.** Concretely —
+
+- `D_A -> D_B` is the primary result. It is run first, and its outputs are written
+  and committed **before** the reverse direction is run.
+- `D_B -> D_A` is a clearly-labelled secondary symmetry check. It never feeds back
+  into the shared space, the split protocol, the model ladder or the threshold.
+- Every read of D_B appends to `results/EXP-026/logs/target_access.log`, so the
+  ordering above is auditable after the fact instead of being a promise.
+
+### The cost, stated
+
+D_B publishes no identifiers, so it has **no group key**. Its own held-out
+reference in the reverse direction is a random split and is therefore an
+optimistic bound — by EXP-002's own finding, inflated. The reverse direction's
+in-distribution number must carry that caveat every time it is quoted, and its
+`Delta_F1` is consequently an over-estimate.
+
+### What would reverse this
+
+Nothing scientific; this is a scope decision. If a reviewer reads the relaxation
+as target leakage, the reverse direction can be deleted without touching the
+primary result, which is exactly why the two are computed and stored separately.
