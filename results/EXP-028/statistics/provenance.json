@@ -2,13 +2,25 @@
   "experiment": "EXP-028",
   "seeds": [
     101,
-    102
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
   ],
   "models": [
     "logreg",
-    "tree"
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp"
   ],
-  "subsample": 40000,
+  "subsample": 300000,
   "pi": 0.002,
   "lambda_b": 240000.0,
   "split": "group-disjoint three-way train/calibration/test on src_ip",
@@ -24,5 +36,5 @@
   "ece_bins": "15 equal-mass",
   "python": "3.11.9",
   "platform": "Windows-10-10.0.26120-SP0",
-  "runtime_s": 66.1
+  "runtime_s": 2660.6
 }
