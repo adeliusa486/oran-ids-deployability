@@ -1,0 +1,52 @@
+[a_to_b] loading corpora ...
+[a_to_b] source d_a_network_shared: (1640182, 18), attack 94.63%
+[a_to_b] target d_b_5gnidd_shared: (1215889, 18), attack 60.71%
+[a_to_b] target categories: ['benign', 'dos', 'probe']
+[a_to_b] untestable here: ['ddos', 'bruteforce', 'web']
+  seed 101 [1/20] majority   src 0.488 -> tgt 0.378  (delta +0.111)  1.2s
+  seed 101 [1/20] stratified src 0.499 -> tgt 0.422  (delta +0.077)  1.2s
+  seed 101 [1/20] logreg     src 0.642 -> tgt 0.464  (delta +0.178)  2.5s
+  seed 101 [1/20] tree       src 0.625 -> tgt 0.581  (delta +0.044)  1.9s
+  seed 101 [1/20] rf         src 0.690 -> tgt 0.565  (delta +0.126)  7.2s
+  seed 101 [1/20] xgboost    src 0.676 -> tgt 0.569  (delta +0.107)  5.0s
+  seed 101 [1/20] hgb        src 0.673 -> tgt 0.546  (delta +0.128)  10.9s
+  seed 101 [1/20] mlp        src 0.727 -> tgt 0.415  (delta +0.311)  41.7s
+  seed 102 [2/20] majority   src 0.488 -> tgt 0.378  (delta +0.110)  1.3s
+  seed 102 [2/20] stratified src 0.502 -> tgt 0.422  (delta +0.080)  1.3s
+  seed 102 [2/20] logreg     src 0.670 -> tgt 0.447  (delta +0.224)  2.4s
+  seed 102 [2/20] tree       src 0.504 -> tgt 0.543  (delta -0.039)  2.5s
+  seed 102 [2/20] rf         src 0.762 -> tgt 0.583  (delta +0.179)  10.0s
+  seed 102 [2/20] xgboost    src 0.705 -> tgt 0.571  (delta +0.133)  4.8s
+  seed 102 [2/20] hgb        src 0.683 -> tgt 0.554  (delta +0.129)  6.8s
+  seed 102 [2/20] mlp        src 0.784 -> tgt 0.435  (delta +0.349)  44.0s
+  seed 103 [3/20] majority   src 0.488 -> tgt 0.378  (delta +0.110)  1.4s
+  seed 103 [3/20] stratified src 0.500 -> tgt 0.418  (delta +0.081)  1.5s
+  seed 103 [3/20] logreg     src 0.727 -> tgt 0.524  (delta +0.204)  2.8s
+  seed 103 [3/20] tree       src 0.756 -> tgt 0.557  (delta +0.199)  2.7s
+  seed 103 [3/20] rf         src 0.829 -> tgt 0.576  (delta +0.253)  15.1s
+  seed 103 [3/20] xgboost    src 0.742 -> tgt 0.582  (delta +0.160)  6.7s
+  seed 103 [3/20] hgb        src 0.741 -> tgt 0.582  (delta +0.159)  10.7s
+  seed 103 [3/20] mlp        src 0.884 -> tgt 0.430  (delta +0.454)  106.7s
+  seed 104 [4/20] majority   src 0.497 -> tgt 0.378  (delta +0.119)  1.5s
+  seed 104 [4/20] stratified src 0.488 -> tgt 0.429  (delta +0.059)  1.7s
+  seed 104 [4/20] logreg     src 0.530 -> tgt 0.541  (delta -0.011)  2.9s
+  seed 104 [4/20] tree       src 0.460 -> tgt 0.507  (delta -0.048)  2.9s
+  seed 104 [4/20] rf         src 0.466 -> tgt 0.504  (delta -0.038)  15.5s
+  seed 104 [4/20] xgboost    src 0.467 -> tgt 0.301  (delta +0.166)  8.4s
+  seed 104 [4/20] hgb        src 0.467 -> tgt 0.311  (delta +0.156)  19.3s
+  seed 104 [4/20] mlp        src 0.578 -> tgt 0.364  (delta +0.214)  73.2s
+  seed 105 [5/20] majority   src 0.500 -> tgt 0.378  (delta +0.122)  2.2s
+  seed 105 [5/20] stratified src 0.481 -> tgt 0.430  (delta +0.051)  3.3s
+  seed 105 [5/20] logreg     src 0.495 -> tgt 0.539  (delta -0.044)  6.1s
+  seed 105 [5/20] tree       src 0.424 -> tgt 0.561  (delta -0.138)  4.4s
+  seed 105 [5/20] rf         src 0.450 -> tgt 0.576  (delta -0.126)  19.7s
+  seed 105 [5/20] xgboost    src 0.451 -> tgt 0.552  (delta -0.101)  12.0s
+  seed 105 [5/20] hgb        src 0.448 -> tgt 0.559  (delta -0.111)  17.2s
+  seed 105 [5/20] mlp        src 0.516 -> tgt 0.578  (delta -0.062)  198.1s
+  seed 106 [6/20] majority   src 0.490 -> tgt 0.378  (delta +0.112)  2.0s
+  seed 106 [6/20] stratified src 0.497 -> tgt 0.421  (delta +0.076)  2.1s
+  seed 106 [6/20] logreg     src 0.664 -> tgt 0.543  (delta +0.121)  5.0s
+  seed 106 [6/20] tree       src 0.648 -> tgt 0.503  (delta +0.145)  4.3s
+  seed 106 [6/20] rf         src 0.711 -> tgt 0.581  (delta +0.131)  23.3s
+  seed 106 [6/20] xgboost    src 0.667 -> tgt 0.588  (delta +0.079)  11.3s
+  seed 106 [6/20] hgb        src 0.687 -> tgt 0.580  (delta +0.108)  26.7s

@@ -169,6 +169,110 @@ def table_ppv_crossings():
            r"Model & PPV target & $\tau$ required & Recall & Alerts/h " + BS)
 
 
+def table_shared_space():
+    """The shared feature space, from the committed mapping.
+
+    Replaces the manuscript's hand-written ``tab:features``, which claimed 24
+    packet-level features in four families -- including a Timing family of seven
+    members with a measured covariate shift, on a corpus that publishes no
+    inter-arrival statistics at all.
+    """
+    import yaml
+    src = Path("configs/features/shared_space.yaml")
+    if not src.exists():
+        print("  skip shared-space table"); return
+    spec = yaml.safe_load(src.read_text(encoding="utf-8"))
+    rows = []
+    for concept, m in spec["base_numeric"].items():
+        rows.append(f"{_esc(concept)} & {_esc(m['d_a'])} & {_esc(m['d_b'])} & "
+                    f"base {BS}")
+    p = spec["base_categorical"]["proto"]
+    rows.append(f"proto & {_esc(p['d_a'])} & {_esc(p['d_b'])} & "
+                f"one-hot ({len(p['levels'])}) {BS}")
+    for concept, expr in spec["derived"].items():
+        rows.append(f"{_esc(concept)} & \\multicolumn{{2}}{{c}}{{{_esc(expr)}}} & "
+                    f"derived {BS}")
+    _write("shared_space", rows, str(src), "llll",
+           r"Concept & \DA{} (Zeek) & \DB{} (Argus) & Role " + BS)
+
+
+def table_transfer():
+    """Cross-deployment transfer. Replaces the fully synthetic ``tab:cross``."""
+    for direction, label in (("a_to_b", "d_a_to_d_b"), ("b_to_a", "d_b_to_d_a")):
+        src = RES / "EXP-026" / "processed" / f"transfer_summary__{direction}.csv"
+        if not src.exists():
+            print(f"  skip transfer table ({direction})"); continue
+        df = pd.read_csv(src)
+        order = ["logreg", "tree", "rf", "xgboost", "hgb", "mlp",
+                 "stratified", "majority"]
+        df["_o"] = df.model.map({m: i for i, m in enumerate(order)})
+        df = df.sort_values("_o")
+        rows = []
+        for _, r in df.iterrows():
+            ci = (f"[{r.delta_lo:+.3f}, {r.delta_hi:+.3f}]"
+                  if pd.notna(r.get("delta_lo")) else "--")
+            star = (r"$^{\ast}$" if r.get("significant") is True
+                    or str(r.get("significant")).lower() == "true" else "")
+            name = _esc(r.model)
+            if r.model in ("majority", "stratified"):
+                name = r"\textit{" + name + "}"     # the floor, not a competitor
+            rows.append(f"{name} & {r.source_f1:.3f} & {r.target_f1:.3f} & "
+                        f"{r.delta_f1:+.3f}{star} & {ci} & "
+                        f"{r.tgt_pr_auc:.3f} {BS}")
+        _write(f"transfer_{label}", rows, str(src), "lccccc",
+               r"Model & Source held-out & Target & $\Delta_{F_1}$ & "
+               r"95\,\% CI & Target PR-AUC " + BS)
+
+
+def table_prevalence():
+    """PPV against the base rate, pooled. The '6x' clause died here (D-018)."""
+    src = RES / "EXP-027" / "processed" / "ppv_spread_vs_prevalence.csv"
+    if not src.exists():
+        print("  skip prevalence table"); return
+    df = pd.read_csv(src)
+    for surface, g in df.groupby("surface"):
+        g = g.sort_values("pi")
+        rows = [f"{r.pi:g} & {r.ppv_min:.4f} & {r.ppv_max:.4f} & "
+                f"{r.ppv_ratio:.2f} & {r.corpus_precision_range:.4f} & "
+                f"{r.collapse_factor:,.0f} {BS}".replace(",", r"\,")
+                for _, r in g.iterrows()]
+        _write(f"prevalence_{surface}", rows, str(src), "rccccr",
+               r"$\pi$ & PPV min & PPV max & Spread & Corpus-prec.\ range & "
+               r"Collapse $\times$ " + BS)
+
+
+def table_estimator_bug():
+    """B-E. Three estimators of one quantity, so the artefact stays visible."""
+    src = RES / "EXP-027" / "processed" / "estimator_comparison.csv"
+    if not src.exists():
+        print("  skip estimator table"); return
+    df = pd.read_csv(src)
+    df = df[~df.model.isin(["majority", "stratified"])].sort_values(
+        "ppv_mean_of_folds", ascending=False)
+    rows = [f"{_esc(r.model)} & {int(r.n_folds_ppv_equals_1)} & "
+            f"{r.ppv_pooled:.4f} & {r.ppv_median_of_folds:.4f} & "
+            f"{r.ppv_mean_of_folds:.4f} {BS}"
+            for _, r in df.iterrows()]
+    _write("estimator_bug", rows, str(src), "lrccc",
+           r"Model & Folds with FPR $=0$ & Pooled & Median & Mean " + BS)
+
+
+def table_extraction():
+    """Extraction cost by implementation (EXP-030)."""
+    src = RES / "EXP-030" / "processed" / "extraction_speedup.csv"
+    if not src.exists():
+        print("  skip extraction table"); return
+    df = pd.read_csv(src).sort_values("pkts_per_flow", ascending=False)
+    rows = [f"{int(r.n_flows_declared):,} & {int(r.pkts_per_flow)} & "
+            f"{r.us_per_pkt_reference:.1f} & {r.us_per_pkt_vectorised:.1f} & "
+            f"{r.ms_per_flow_vectorised:.3f} & {r.speedup:.1f} {BS}".replace(
+                ",", r"\,")
+            for _, r in df.iterrows()]
+    _write("extraction", rows, str(src), "rrcccc",
+           r"Flows & Pkts/flow & Ref.\ \si{\micro\second}/pkt & "
+           r"Vec.\ \si{\micro\second}/pkt & Vec.\ ms/flow & Speed-up " + BS)
+
+
 def main() -> int:
     print("generating LaTeX tables...")
     table_corpora()
@@ -176,6 +280,11 @@ def main() -> int:
     table_alert_burden()
     table_latency()
     table_ppv_crossings()
+    table_shared_space()
+    table_transfer()
+    table_prevalence()
+    table_estimator_bug()
+    table_extraction()
     print("done. \\input these at TABLE level from paper/ -- never retype a value,")
     print("and never \\input them inside a tabular.")
     return 0

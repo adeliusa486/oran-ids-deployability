@@ -1,0 +1,6 @@
+2026-09-20T18:38:54	load_target_d_b(nrows=20000) reason=pipeline smoke test
+2026-09-20T18:40:06	load_target_d_b(nrows=200000) reason=EXP-026 final evaluation, direction=a_to_b
+2026-09-20T18:40:23	load_target_d_b(nrows=None) reason=EXP-026 final evaluation, direction=a_to_b
+2026-09-20T18:41:35	load_target_d_b(nrows=None) reason=EXP-026 final evaluation, direction=a_to_b
+2026-09-20T18:59:26	load_target_d_b(nrows=None) reason=EXP-026 final evaluation, direction=a_to_b
+2026-09-20T19:10:48	load_target_d_b(nrows=None) reason=EXP-026 reverse direction, direction=b_to_a

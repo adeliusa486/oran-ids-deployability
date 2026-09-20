@@ -26,11 +26,13 @@
   "lambda_primary": 240000.0,
   "tau": 0.5,
   "surfaces": [
-    "d_a_radio_heldout"
+    "d_a_network_heldout_shared",
+    "d_a_radio_heldout",
+    "d_b_target"
   ],
   "separability_verified": true,
   "max_ppv_variation_across_lambda": 2.220446049250313e-16,
-  "max_linearity_deviation": 3.725290298461914e-09,
+  "max_linearity_deviation": 7.450580596923828e-09,
   "declared_not_measured": [
     "pi",
     "lambda_b"
