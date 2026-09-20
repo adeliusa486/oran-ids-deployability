@@ -102,17 +102,45 @@ corpus_d_a:
       record-level join, over route (b).
 
 corpus_d_b:
-  status: not_yet_downloaded
-  column: label
-  note: >
-    5G-NIDD publishes DoS variants (ICMP/UDP/SYN/HTTP flood, Slowrate) and port
-    scans (SYN, TCP connect, UDP). Fill this map from the artefact in EXP-001b, not
-    from the landing page. Expected canonical coverage is {benign, dos, probe} only:
-    5G-NIDD has no bruteforce or web attacks, and no multi-source DDoS.
+  # VERIFIED against the artefact (EXP-025), not the landing page.
+  # data/raw/d_b/Combined.csv, 1,215,890 rows, Finnish national repository copy.
+  status: verified
+  verified_on: 2026-09-20
+  binary_column: Label              # 'Benign' / 'Malicious'
+  binary_map:
+    Benign: 0
+    Malicious: 1
+  category_column: "Attack Type"
+  map:
+    Benign: benign
+    UDPFlood: dos
+    HTTPFlood: dos
+    SlowrateDoS: dos
+    SYNFlood: dos
+    ICMPFlood: dos
+    TCPConnectScan: probe
+    SYNScan: probe
+    UDPScan: probe
+
+  # The prediction in the previous version of this file was correct.
+  canonical_coverage: [benign, dos, probe]
   expected_canonical_coverage: [benign, dos, probe]
+
+  coverage_caveats:
+    httpflood_is_dos_not_web: >
+      HTTPFlood is an HTTP-layer DENIAL OF SERVICE (Goldeneye/Torshammer), not a
+      web application attack. It maps to 'dos', NOT to D_A's 'web'. D_A's web
+      category is SQL injection, XSS and directory brute force, which have no
+      counterpart in D_B at all. Mapping HTTPFlood to 'web' would create a fake
+      correspondence and make a transfer result look better than it is.
+    no_ddos_category: >
+      D_B's floods are single-source. D_A separates dos from ddos; D_B cannot.
+      Anything D_B-side that resembles a flood is 'dos'.
+    untestable_in_transfer: [ddos, bruteforce, web]
+
   transfer_implication: >
-    D_A has six canonical categories, D_B is expected to have three. Cross-deployment
-    evaluation is therefore over the INTERSECTION, and the binary task is the only
-    one defined on both. Any per-category transfer result exists only for the shared
-    categories, and the categories present in D_A but absent from D_B must be
-    reported as untestable rather than silently dropped.
+    D_A has six canonical categories, D_B has three. Cross-deployment evaluation
+    is over the INTERSECTION {benign, dos, probe}, and the BINARY task is the only
+    one defined on both. Per-category transfer results exist only for the shared
+    categories; ddos, bruteforce and web are present in D_A, absent from D_B, and
+    must be reported as UNTESTABLE rather than silently dropped or averaged in.
