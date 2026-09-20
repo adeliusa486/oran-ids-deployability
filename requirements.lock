@@ -1,0 +1,19 @@
+# Exact versions of the packages this project imports, in the interpreter
+# that produced every number under results/. Generated, not curated.
+# The full `pip freeze` of that interpreter is in
+# data/provenance/pip-freeze-full.txt; it contains unrelated packages
+# because the interpreter is a shared one, and that is recorded rather
+# than tidied away.
+numpy==2.3.5
+pandas==2.3.3
+scikit-learn==1.8.0
+scipy==1.17.1
+statsmodels==0.14.6
+matplotlib==3.10.9
+pyarrow==23.0.1
+xgboost==3.2.0
+dpkt==1.9.8
+pyyaml==6.0.3
+psutil==7.2.2
+pytest==8.4.2
+torch==2.14.0

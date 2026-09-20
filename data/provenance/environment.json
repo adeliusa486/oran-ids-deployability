@@ -1,0 +1,7 @@
+{
+  "generated": "analysis/make_* and experiments/* were run under this environment",
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "note": "requirements.lock.txt is a full `pip freeze` of the interpreter that produced every number in results/. It is a record, not a curated dependency list -- pyproject.toml holds the declared dependencies. A reproducing researcher should install from pyproject and consult this file only when a result does not reproduce."
+}

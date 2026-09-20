@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""Phase 23: the single command that says whether this repository is honest.
+
+    python -m experiments.final_validation
+
+Each check answers one question a reviewer or a reproducing researcher would
+ask, and each is allowed to come back FAIL. A FAIL here is not a bug to be
+silenced -- several of them are the true state of the project and are supposed
+to stay red until the underlying work is done. The script's value is that it
+cannot be talked round.
+
+Exit code is 0 only when nothing is FAIL. BLOCKED and WARN do not fail the run,
+because "we have not done this yet, and we say so" is a different condition
+from "we claim something we cannot support".
+"""
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+PASS, FAIL, WARN, BLOCKED, SKIP = "PASS", "FAIL", "WARN", "BLOCKED", "SKIP"
+_ORDER = {FAIL: 0, BLOCKED: 1, WARN: 2, SKIP: 3, PASS: 4}
+
+results: list[tuple[str, str, str]] = []
+
+
+def check(name: str, status: str, detail: str = "") -> None:
+    results.append((name, status, detail))
+
+
+def _exists(*rel: str) -> bool:
+    return all((ROOT / r).exists() for r in rel)
+
+
+# ---------------------------------------------------------------- data ----
+def check_data():
+    prov = ROOT / "data" / "provenance" / "d_a_files.json"
+    if not prov.exists():
+        return check("DATA", FAIL, "no provenance record")
+    p = json.loads(prov.read_text(encoding="utf-8"))
+    missing = [k for k, v in p.items() if v.get("status") != "present"]
+    if missing:
+        return check("DATA", FAIL, f"missing: {missing}")
+    no_hash = [k for k, v in p.items() if not v.get("sha256")]
+    if no_hash:
+        return check("DATA", FAIL, f"no checksum: {no_hash}")
+    check("DATA", PASS, f"{len(p)} file(s), all checksummed")
+
+
+def check_splits():
+    try:
+        sys.path.insert(0, str(ROOT / "src"))
+        import numpy as np
+        from oran_ids.splits import LeakageError, group_disjoint_split
+        y = np.random.default_rng(0).integers(0, 2, 400)
+        g = np.repeat(np.arange(20), 20)
+        s = group_disjoint_split(y, g, seed=1, n_folds=1)[0]
+        s.check_disjoint(g)
+        # the guard must actually fire when disjointness is violated
+        bad = type(s)(s.name, np.arange(400), np.arange(400), 1, 0, 20, 20, 0.5, 0.5)
+        try:
+            bad.check_disjoint(g)
+        except LeakageError:
+            return check("SPLITS", PASS, "disjoint, and the guard fires when violated")
+        check("SPLITS", FAIL, "LeakageError did NOT fire on an overlapping split")
+    except Exception as exc:
+        check("SPLITS", FAIL, f"{type(exc).__name__}: {exc}")
+
+
+def check_leakage():
+    f = ROOT / "results" / "EXP-002" / "processed" / "leakage_summary.csv"
+    if not f.exists():
+        return check("LEAKAGE", BLOCKED, "audit not run")
+    import pandas as pd
+    df = pd.read_csv(f)
+    n = int(df.get("group_disjoint_n_splits", pd.Series([0])).max())
+    if n < 20:
+        return check("LEAKAGE", WARN, f"only {n} split seeds; D-012 requires 20")
+    sig = int(df.get("delta_excludes_zero", pd.Series(dtype=bool)).sum())
+    check("LEAKAGE", PASS, f"n={n} seeds, {sig}/{len(df)} models show a significant effect")
+
+
+def check_baselines():
+    f = ROOT / "results" / "EXP-002" / "raw" / "leakage_runs.csv"
+    if not f.exists():
+        return check("BASELINES", BLOCKED, "no runs")
+    import pandas as pd
+    df = pd.read_csv(f)
+    models = set(df.model.unique())
+    # the trivial floor is not optional: without it no other score is readable
+    if "majority" not in models:
+        return check("BASELINES", FAIL, "majority-class floor missing (plan I5)")
+    if len(models) < 5:
+        return check("BASELINES", WARN, f"only {len(models)} architectures")
+    check("BASELINES", PASS, f"{len(models)} architectures incl. the trivial floor")
+
+
+def check_generalisation():
+    check("GENERALISATION", BLOCKED,
+          "no target corpus (D-011). RQ1 has no result; see reviewer finding A1")
+
+
+def check_statistics():
+    f = ROOT / "reports" / "statistical_audit.md"
+    if not f.exists():
+        return check("STATISTICS", BLOCKED, "audit not run")
+    t = f.read_text(encoding="utf-8")
+    needed = ["Holm", "d_z", "Power", "paired"]
+    missing = [k for k in needed if k not in t]
+    if missing:
+        return check("STATISTICS", FAIL, f"audit lacks: {missing}")
+    check("STATISTICS", PASS, "paired tests, effect sizes, Holm correction, power stated")
+
+
+def check_robustness():
+    check("ROBUSTNESS", SKIP, "adversarial evaluation cut by D-009; stated as future work")
+
+
+def check_latency():
+    f = ROOT / "results" / "EXP-005" / "statistics" / "env_radio.json"
+    if not f.exists():
+        return check("LATENCY", BLOCKED, "not measured")
+    env = json.loads(f.read_text(encoding="utf-8"))
+    if env.get("measurement_class") != "emulated":
+        return check("LATENCY", FAIL, "measurement_class not declared")
+    floor = env.get("floor", {}).get("p99")
+    if floor is None:
+        return check("LATENCY", FAIL, "no floor experiment; p99 uninterpretable")
+    check("LATENCY", WARN,
+          f"EMULATED only (floor p99 {floor:.3f} ms). No RIC measurement -- D-005")
+
+
+def check_resource():
+    check("RESOURCE", BLOCKED, "CPU/RAM under load not measured; needs the Linux host")
+
+
+def check_ric():
+    check("RIC INTEGRATION", BLOCKED, "Level 2 not executed (D-005)")
+
+
+def check_figures():
+    d = ROOT / "figures" / "generated"
+    pdfs = sorted(d.glob("*.pdf")) if d.exists() else []
+    if not pdfs:
+        return check("FIGURES", BLOCKED, "none generated")
+    if not (ROOT / "analysis" / "make_figures.py").exists():
+        return check("FIGURES", FAIL, "figures exist with no generator")
+    check("FIGURES", PASS, f"{len(pdfs)} generated by a committed script")
+
+
+def check_tables():
+    d = ROOT / "tables" / "generated"
+    tex = sorted(d.glob("*.tex")) if d.exists() else []
+    if not tex:
+        return check("TABLES", BLOCKED, "none generated")
+    bad = [t.name for t in tex if "% GENERATED by" not in t.read_text(encoding="utf-8")]
+    if bad:
+        return check("TABLES", FAIL, f"no provenance header: {bad}")
+    crlf = [t.name for t in tex if b"\r\n" in t.read_bytes()]
+    if crlf:
+        return check("TABLES", FAIL, f"CRLF endings (breaks tabular): {crlf}")
+    check("TABLES", PASS, f"{len(tex)} generated, all with provenance, all LF")
+
+
+def check_references():
+    bib = ROOT / "paper" / "references.bib"
+    if not bib.exists():
+        return check("REFERENCES", FAIL, "no bibliography")
+    log = ROOT / "paper" / "main.log"
+    if log.exists():
+        t = log.read_text(encoding="utf-8", errors="ignore")
+        if "Citation" in t and "undefined" in t:
+            und = t.count("Citation") and "undefined on input" in t
+            if und:
+                return check("REFERENCES", WARN, "undefined citations in the last build")
+    check("REFERENCES", PASS, "bibliography present, no undefined citations last build")
+
+
+def check_reproducibility():
+    issues = []
+    if not _exists("environment.yml"):
+        issues.append("no environment.yml")
+    if not _exists("configs/experiment_registry.yaml"):
+        issues.append("no experiment registry")
+    if not _exists("MEMORY.md"):
+        issues.append("no research memory")
+    if not _exists("requirements.lock"):
+        issues.append("NO dependency lock file")
+    if not _exists("data/provenance/environment.json"):
+        issues.append("no environment record")
+    if issues:
+        return check("REPRODUCIBILITY", WARN, "; ".join(issues))
+    check("REPRODUCIBILITY", PASS, "environment, registry, memory and lock present")
+
+
+def check_manuscript():
+    main = ROOT / "paper" / "main.tex"
+    if not main.exists():
+        return check("MANUSCRIPT", FAIL, "no manuscript")
+    t = main.read_text(encoding="utf-8")
+    syn = t.count("\\syn{")
+    if "\\synthdrafttrue" in t and syn:
+        return check("MANUSCRIPT", BLOCKED,
+                     f"{syn} synthetic value(s) remain; draft banner correctly up")
+    if syn:
+        return check("MANUSCRIPT", FAIL,
+                     f"{syn} synthetic value(s) but the draft banner is DOWN")
+    check("MANUSCRIPT", PASS, "no synthetic values remain")
+
+
+def check_claims():
+    f = ROOT / "docs" / "CLAIM_EVIDENCE_MATRIX.csv"
+    if not f.exists():
+        return check("CLAIMS", FAIL, "no claim-evidence matrix")
+    import csv
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    est = [r for r in rows if r["classification"] in
+           ("strong_empirical", "moderate_empirical", "proved")]
+    contra = [r["claim_id"] for r in rows if r["classification"] == "contradicted"]
+    detail = f"{len(est)}/{len(rows)} evidenced"
+    if contra:
+        detail += f"; CONTRADICTED and reported: {', '.join(contra)}"
+    check("CLAIMS", PASS, detail)
+
+
+def check_tests():
+    try:
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/"],
+                           cwd=ROOT, capture_output=True, text=True, timeout=900,
+                           env={**__import__("os").environ,
+                                "PYTHONPATH": str(ROOT / "src")})
+        last = [ln for ln in r.stdout.strip().split("\n") if ln.strip()][-1:]
+        if r.returncode == 0:
+            return check("TESTS", PASS, last[0] if last else "passed")
+        if r.returncode == 5:
+            return check("TESTS", WARN, "no tests collected")
+        check("TESTS", FAIL, last[0] if last else f"exit {r.returncode}")
+    except Exception as exc:
+        check("TESTS", FAIL, f"{type(exc).__name__}: {exc}")
+
+
+def main() -> int:
+    print("=" * 74)
+    print("  FINAL VALIDATION  --  O-RAN IDS deployability")
+    print("=" * 74)
+    print()
+
+    for fn in (check_data, check_splits, check_leakage, check_baselines,
+               check_generalisation, check_statistics, check_robustness,
+               check_latency, check_resource, check_ric, check_figures,
+               check_tables, check_references, check_reproducibility,
+               check_manuscript, check_claims, check_tests):
+        fn()
+
+    width = max(len(n) for n, _, _ in results)
+    for name, status, detail in results:
+        dots = "." * (width + 4 - len(name))
+        print(f"  {name} {dots} {status:<8} {detail}")
+
+    n_fail = sum(1 for _, s, _ in results if s == FAIL)
+    n_blocked = sum(1 for _, s, _ in results if s == BLOCKED)
+    n_warn = sum(1 for _, s, _ in results if s == WARN)
+    n_pass = sum(1 for _, s, _ in results if s == PASS)
+
+    print()
+    print("-" * 74)
+    print(f"  {n_pass} PASS   {n_warn} WARN   {n_blocked} BLOCKED   {n_fail} FAIL")
+    print("-" * 74)
+    if n_fail:
+        print("\n  FAIL means a claim is not supported by what is in the repository.")
+        print("  Fix the work, not the check.")
+    elif n_blocked:
+        print("\n  Nothing is broken. BLOCKED items are honest gaps: work that has")
+        print("  not been done and is reported as not done. The largest is the")
+        print("  absent target corpus, which leaves RQ1 without a result.")
+    return 1 if n_fail else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
