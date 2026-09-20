@@ -173,10 +173,10 @@ Full write-up: `reports/experiments/EXP-002_004_005.md`.
 
 | Finding | Number |
 |---|---|
-| Leakage: random split inflates macro-F1 | **+0.08 to +0.13**, significant for 4 of 6 non-trivial models |
-| Leakage scales with **model capacity** | tree/ensembles +0.10-0.13, MLP +0.08, logreg +0.03, trivial ~0 |
-| Best group-disjoint macro-F1 | **0.872** (mlp), 0.871 (rf), 0.870 (hgb) |
-| Majority-class floor | **0.431** macro-F1 -- quote this next to every other F1 |
+| Leakage: random split inflates macro-F1 | **+0.093 to +0.168** (n=20), significant for **all 6** non-trivial models after Holm, d_z 0.78-1.35 |
+| Leakage tracks **model flexibility** | tree +0.168 > xgboost/hgb +0.14 > rf/mlp +0.11 > logreg +0.093 > trivial ~0 |
+| Best group-disjoint macro-F1 | **0.853** (rf), 0.849 (mlp), 0.844 (hgb) -- indistinguishable |
+| Majority-class floor | **0.434** macro-F1 -- quote this next to every other F1 |
 | Corpus precision vs deployment PPV | **0.94 -> 0.04-0.06** at pi = 0.002 |
 | Alert volume | **~52,000/hour**, ~1.25M/day, ~19 in 20 false |
 | PPV = 0.5 | **unreachable at any threshold** for hgb and mlp (score saturation) |
