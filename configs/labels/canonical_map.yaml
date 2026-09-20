@@ -1,0 +1,118 @@
+# Canonical label vocabulary (resolves B-008).
+#
+# EXP-001 found that the two layers of D_A use different spellings for the same
+# categories ('dos' vs 'DoS', 'web' vs 'Web Attacks'), and that D_A's subcategory
+# vocabulary (19 values) and its network attack_type vocabulary (15 values) have
+# ZERO exact string overlap. D_B adds a third vocabulary.
+#
+# A mapping written inline in three different scripts is how label drift enters a
+# study silently. This file is the single source of truth. Every loader maps to
+# 'canonical' on read and asserts that nothing falls through to unmapped.
+#
+# RULE: an unmapped label is an ERROR, never a silent 'other'. If a corpus adds a
+# label, it is added here deliberately, in a commit that says why.
+
+version: 1
+created: 2026-09-20
+created_by: EXP-001
+
+# ---------------------------------------------------------------------------
+# Binary target. This is what every model predicts.
+# ---------------------------------------------------------------------------
+binary:
+  column: traffic_type
+  positive: 1          # attack
+  negative: 0          # benign
+  note: >
+    Present and consistently coded in both D_A layers. D_B's published CSV uses a
+    'label' column instead; see corpus_d_b below.
+
+# ---------------------------------------------------------------------------
+# Canonical attack categories.
+# ---------------------------------------------------------------------------
+canonical_categories: [benign, dos, ddos, probe, bruteforce, web]
+
+# ---------------------------------------------------------------------------
+# Per-source mappings into the canonical vocabulary.
+# ---------------------------------------------------------------------------
+corpus_d_a:
+  radio_layer:
+    column: attack_category
+    map:
+      Benign: benign
+      DoS: dos
+      DDoS: ddos
+      Probe: probe
+      BruteForce: bruteforce
+      "Web Attacks": web
+  network_layer:
+    column: attack_category
+    map:
+      benign: benign
+      dos: dos
+      ddos: ddos
+      probe: probe
+      bruteforce: bruteforce
+      web: web
+
+  # Subcategory alignment across the two layers. The radio layer has 19 values and
+  # the network layer 15, with no exact string overlap, so this table is written by
+  # hand and is auditable. It is used ONLY for run-level association (D-008 route b,
+  # not adopted) and for reporting; the record-level join uses time, not labels.
+  subcategory_alignment:
+    # radio attack_subcategory  ->  network attack_type
+    Benign: benign
+    DoS_SYN: syn
+    DoS_ACK: tcp_ack
+    DoS_UDP: udp
+    DoS_ICMP: icmp
+    DoS_Slowloris: slowloris
+    DDoS_SYN: syn
+    DDoS_ACK: tcp_ack
+    DDoS_UDP: udp
+    DDoS_ICMP: icmp
+    DDoS_Slowloris: slowloris
+    Probe_PortScan: portscan_tcp        # see caveat below
+    Probe_OsFingerprinting: os_fingerprinting
+    BruteForce_SSH: ssh
+    BruteForce_FTP: ftp
+    Web_HTTP_Bruteforce: http_flood     # see caveat below
+    Web_Directory_Bruteforce: dir_bruteforce
+    Web_XSS: xss
+    Web_SQL_Injection: sql_injection
+
+  subcategory_alignment_caveats:
+    many_to_one: >
+      The network vocabulary does not distinguish DoS from DDoS: 'syn', 'tcp_ack',
+      'udp', 'icmp' and 'slowloris' each map from BOTH a DoS_* and a DDoS_* radio
+      subcategory. The distinction exists only at category level. Any run-level
+      association is therefore many-to-one and cannot separate DoS from DDoS.
+    portscan_split: >
+      Radio has a single Probe_PortScan; the network layer splits it into
+      portscan_tcp and portscan_udp. The mapping above collapses to portscan_tcp,
+      which is LOSSY. Do not use it for any per-subcategory result.
+    http_bruteforce_uncertain: >
+      Web_HTTP_Bruteforce -> http_flood is INFERRED, not documented. The network
+      vocabulary has no web-bruteforce value and http_flood is also the natural
+      target for a DoS HTTP flood. This mapping is the least reliable entry in the
+      table and must not carry a per-subcategory claim.
+    verdict: >
+      This table is adequate for reporting and for sanity checks. It is NOT adequate
+      as a join key, which is one more reason D-008 chose route (a), a time-based
+      record-level join, over route (b).
+
+corpus_d_b:
+  status: not_yet_downloaded
+  column: label
+  note: >
+    5G-NIDD publishes DoS variants (ICMP/UDP/SYN/HTTP flood, Slowrate) and port
+    scans (SYN, TCP connect, UDP). Fill this map from the artefact in EXP-001b, not
+    from the landing page. Expected canonical coverage is {benign, dos, probe} only:
+    5G-NIDD has no bruteforce or web attacks, and no multi-source DDoS.
+  expected_canonical_coverage: [benign, dos, probe]
+  transfer_implication: >
+    D_A has six canonical categories, D_B is expected to have three. Cross-deployment
+    evaluation is therefore over the INTERSECTION, and the binary task is the only
+    one defined on both. Any per-category transfer result exists only for the shared
+    categories, and the categories present in D_A but absent from D_B must be
+    reported as untestable rather than silently dropped.

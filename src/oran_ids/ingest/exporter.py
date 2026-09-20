@@ -29,7 +29,16 @@ from typing import Iterator
 
 # Bump on ANY change to flow keying, timeout handling, direction inference or
 # feature definitions. The value lands in the manifest and in every output file.
-EXPORTER_VERSION = "1.0.0"
+#
+# 1.1.0  Dispatch on the capture's declared link-layer type instead of assuming
+#        Ethernet. D_A's captures are DLT_LINUX_SLL (113, the Linux "cooked"
+#        header used when capturing on the `any` interface), which is 16 bytes,
+#        not 14. Parsing them as Ethernet byte-shifted every address and
+#        protocol field, producing plausible-looking but wholly fictional flows
+#        (addresses like 184.245.192.168, proto 0). Caught by the EXP-001c pilot.
+#        Both corpora must go through this same dispatch or A3 is not satisfied.
+# 1.0.0  Initial.
+EXPORTER_VERSION = "1.1.0"
 
 # Rounding applied to every floating-point feature before emission. Without this
 # the same computation on two machines can differ in the last bits and break the
@@ -197,8 +206,86 @@ def _finalise(flow: _Flow, cfg: ExporterConfig) -> dict | None:
     return row
 
 
-def _iter_packets(path: Path) -> Iterator[tuple[float, bytes]]:
-    """Yield (timestamp, ethernet frame) from a pcap or pcapng file."""
+# Link-layer types we know how to strip. A capture whose type is not here is
+# refused rather than guessed at: silently mis-parsing a header does not fail, it
+# produces confident nonsense (see the 1.1.0 note above).
+DLT_NULL, DLT_EN10MB, DLT_RAW_BSD, DLT_RAW = 0, 1, 12, 101
+DLT_LINUX_SLL, DLT_LINUX_SLL2 = 113, 276
+DLT_IPV4, DLT_IPV6 = 228, 229
+
+SUPPORTED_DATALINKS = frozenset({
+    DLT_NULL, DLT_EN10MB, DLT_RAW_BSD, DLT_RAW,
+    DLT_LINUX_SLL, DLT_LINUX_SLL2, DLT_IPV4, DLT_IPV6,
+})
+
+_ETHERTYPE_IP, _ETHERTYPE_IP6 = 0x0800, 0x86DD
+
+
+def _strip_link_layer(buf: bytes, datalink: int):
+    """Return the network-layer object, or None if this frame carries no IP.
+
+    Kept explicit rather than delegating to dpkt.ethernet so that the header
+    length for each link type is visible and testable.
+    """
+    import dpkt
+
+    if datalink == DLT_EN10MB:
+        eth = dpkt.ethernet.Ethernet(buf)
+        return eth.data if isinstance(eth.data, (dpkt.ip.IP, dpkt.ip6.IP6)) else None
+
+    if datalink in (DLT_LINUX_SLL, DLT_LINUX_SLL2):
+        if datalink == DLT_LINUX_SLL:
+            # packet type(2) ARPHRD(2) addr len(2) addr(8) protocol(2) = 16
+            if len(buf) < 16:
+                return None
+            proto = struct.unpack("!H", buf[14:16])[0]
+            payload = buf[16:]
+        else:
+            # SLL2: protocol(2) reserved(2) ifindex(4) ARPHRD(2) pkttype(1)
+            #       addr len(1) addr(8) = 20
+            if len(buf) < 20:
+                return None
+            proto = struct.unpack("!H", buf[0:2])[0]
+            payload = buf[20:]
+        if proto == _ETHERTYPE_IP:
+            return dpkt.ip.IP(payload)
+        if proto == _ETHERTYPE_IP6:
+            return dpkt.ip6.IP6(payload)
+        return None
+
+    if datalink in (DLT_RAW, DLT_RAW_BSD, DLT_IPV4, DLT_IPV6):
+        if not buf:
+            return None
+        version = buf[0] >> 4
+        if version == 4:
+            return dpkt.ip.IP(buf)
+        if version == 6:
+            return dpkt.ip6.IP6(buf)
+        return None
+
+    if datalink == DLT_NULL:
+        if len(buf) < 4:
+            return None
+        payload = buf[4:]
+        if not payload:
+            return None
+        version = payload[0] >> 4
+        if version == 4:
+            return dpkt.ip.IP(payload)
+        if version == 6:
+            return dpkt.ip6.IP6(payload)
+        return None
+
+    raise ValueError(f"unsupported datalink type {datalink}")
+
+
+def _iter_packets(path: Path) -> Iterator[tuple[float, bytes, int]]:
+    """Yield (timestamp, frame, datalink) from a pcap or pcapng file.
+
+    The datalink type is read from the file rather than assumed. D_A is
+    DLT_LINUX_SLL and D_B may well be Ethernet; both must be handled by the same
+    exporter or the A3 single-exporter control is not satisfied.
+    """
     import dpkt
 
     opener = gzip.open if path.suffix == ".gz" else open
@@ -209,8 +296,15 @@ def _iter_packets(path: Path) -> Iterator[tuple[float, bytes]]:
             reader = dpkt.pcapng.Reader(fh)
         else:
             reader = dpkt.pcap.Reader(fh)
+        datalink = reader.datalink()
+        if datalink not in SUPPORTED_DATALINKS:
+            raise ValueError(
+                f"{path.name}: unsupported datalink type {datalink}. Refusing to "
+                f"guess -- mis-stripping a link header yields confident nonsense, "
+                f"not an error. Add explicit support in _strip_link_layer()."
+            )
         for ts, buf in reader:
-            yield float(ts), buf
+            yield float(ts), buf, datalink
 
 
 def export_file(path: Path, cfg: ExporterConfig | None = None) -> list[dict]:
@@ -238,13 +332,16 @@ def export_file(path: Path, cfg: ExporterConfig | None = None) -> list[dict]:
                 done.append(row)
 
     n_seen = 0
-    for ts, buf in _iter_packets(path):
+    for ts, buf, datalink in _iter_packets(path):
         try:
-            eth = dpkt.ethernet.Ethernet(buf)
-            ip = eth.data
-            if not isinstance(ip, (dpkt.ip.IP, dpkt.ip6.IP6)):
+            ip = _strip_link_layer(buf, datalink)
+            if ip is None:
                 continue
+        except ValueError:
+            raise
         except Exception:
+            # A truncated or malformed frame is skipped; an unsupported link
+            # type is not (that re-raises above).
             continue
 
         n_seen += 1

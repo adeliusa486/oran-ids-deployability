@@ -79,7 +79,8 @@ def test_emitted_columns_match_the_declared_contract(handshake_pcap):
 
 
 def test_version_is_pinned():
-    assert EXPORTER_VERSION == "1.0.0"
+    """Changing this is intentional: it means both corpora must be re-extracted."""
+    assert EXPORTER_VERSION == "1.1.0"
 
 
 def test_config_fingerprint_changes_with_semantics():
@@ -253,3 +254,85 @@ def test_float_features_are_rounded_to_fixed_precision(tmp_path):
     for k, v in row.items():
         if isinstance(v, float):
             assert v == round(v, 9), f"{k} was not rounded"
+
+
+# --------------------------------------------------------------------------
+# link-layer handling
+#
+# D_A's captures are DLT_LINUX_SLL (113), not Ethernet. Parsing them as
+# Ethernet did not fail -- it byte-shifted every address and protocol field and
+# produced 5,851 confident, wholly fictional flows where there were 908 real
+# ones. These tests exist so that regression is loud.
+# --------------------------------------------------------------------------
+import struct  # noqa: E402
+
+from oran_ids.ingest.exporter import (  # noqa: E402
+    DLT_EN10MB,
+    DLT_LINUX_SLL,
+    DLT_LINUX_SLL2,
+    DLT_RAW,
+    SUPPORTED_DATALINKS,
+    _strip_link_layer,
+)
+
+
+def _ip_payload(src="10.0.0.1", dst="10.0.0.2") -> bytes:
+    udp = dpkt.udp.UDP(sport=1111, dport=2222, data=b"abc")
+    udp.ulen = len(bytes(udp))
+    ip = dpkt.ip.IP(src=socket.inet_aton(src), dst=socket.inet_aton(dst),
+                    p=dpkt.ip.IP_PROTO_UDP, ttl=64, data=udp)
+    ip.len = len(bytes(ip))
+    return bytes(ip)
+
+
+def _sll_frame(payload: bytes) -> bytes:
+    # pkttype(2) ARPHRD(2) addr_len(2) addr(8) protocol(2) = 16 bytes
+    return struct.pack("!HHH", 0, 1, 6) + b"\x50\x7c\x6f\x50\x98\xc4\x00\x00" + \
+        struct.pack("!H", 0x0800) + payload
+
+
+def test_linux_sll_header_is_stripped_at_16_bytes():
+    ip = _strip_link_layer(_sll_frame(_ip_payload()), DLT_LINUX_SLL)
+    assert ip is not None
+    assert socket.inet_ntop(socket.AF_INET, ip.src) == "10.0.0.1"
+    assert socket.inet_ntop(socket.AF_INET, ip.dst) == "10.0.0.2"
+
+
+def test_parsing_sll_as_ethernet_does_not_recover_the_addresses():
+    """The failure mode this guards against is silence, not an exception."""
+    frame = _sll_frame(_ip_payload())
+    as_ethernet = _strip_link_layer(frame, DLT_EN10MB)
+    if as_ethernet is not None:
+        got = socket.inet_ntop(socket.AF_INET, as_ethernet.src)
+        assert got != "10.0.0.1", "test is not exercising the bug it describes"
+
+
+def test_linux_sll2_header_is_stripped_at_20_bytes():
+    frame = struct.pack("!HHIHBB", 0x0800, 0, 1, 1, 0, 6) + \
+        b"\x50\x7c\x6f\x50\x98\xc4\x00\x00" + _ip_payload("10.1.1.1", "10.1.1.2")
+    ip = _strip_link_layer(frame, DLT_LINUX_SLL2)
+    assert ip is not None
+    assert socket.inet_ntop(socket.AF_INET, ip.src) == "10.1.1.1"
+
+
+def test_raw_ip_has_no_link_header():
+    ip = _strip_link_layer(_ip_payload("10.2.2.1", "10.2.2.2"), DLT_RAW)
+    assert ip is not None
+    assert socket.inet_ntop(socket.AF_INET, ip.src) == "10.2.2.1"
+
+
+def test_non_ip_sll_payload_is_skipped():
+    frame = struct.pack("!HHH", 0, 1, 6) + b"\x00" * 8 + struct.pack("!H", 0x0806)
+    assert _strip_link_layer(frame, DLT_LINUX_SLL) is None
+
+
+def test_unsupported_datalink_is_refused_not_guessed():
+    with pytest.raises(ValueError, match="unsupported datalink"):
+        _strip_link_layer(b"\x00" * 32, 99999)
+
+
+def test_both_corpora_link_types_are_supported():
+    """D_A is SLL; D_B is expected to be Ethernet. One exporter must take both,
+    or the A3 single-exporter control is not satisfied."""
+    assert DLT_LINUX_SLL in SUPPORTED_DATALINKS
+    assert DLT_EN10MB in SUPPORTED_DATALINKS
