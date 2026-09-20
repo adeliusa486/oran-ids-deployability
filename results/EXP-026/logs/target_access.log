@@ -4,3 +4,8 @@
 2026-09-20T18:41:35	load_target_d_b(nrows=None) reason=EXP-026 final evaluation, direction=a_to_b
 2026-09-20T18:59:26	load_target_d_b(nrows=None) reason=EXP-026 final evaluation, direction=a_to_b
 2026-09-20T19:10:48	load_target_d_b(nrows=None) reason=EXP-026 reverse direction, direction=b_to_a
+2026-09-20T19:16:39	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-20T19:26:58	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-20T19:28:27	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-20T19:30:42	load_target_d_b(nrows=None) reason=EXP-028 NaN diagnostic
+2026-09-20T19:31:29	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only

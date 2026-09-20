@@ -199,3 +199,110 @@ results/EXP-026/statistics/provenance__a_to_b.json
 results/EXP-026/logs/target_access.log
 tables/generated/transfer_d_a_to_d_b.tex
 ```
+
+---
+
+## 11. The reverse direction: `D_B -> D_A` (added after §9 was written)
+
+Run as a symmetry check under D-017, after the primary direction was committed.
+Runtime 4,464 s, 20 split seeds, the same shared space and the same threshold.
+
+### 11.1 The caveat, stated before the numbers
+
+`D_B` publishes no identifier columns, so it has **no group key**. Its own
+held-out reference is therefore a **random split**, which by this project's own
+Finding 1 is the inflated protocol. The `source_f1` column below is an
+**optimistic bound** and every `Delta_F1` in this direction is consequently an
+**over-estimate**. It is reported because the comparison it enables does not
+depend on it — see §11.3.
+
+### 11.2 Result
+
+| Model | Source held-out (optimistic) | **Target (`D_A`)** | `Delta_F1` | d_z | p (Holm) |
+|---|---:|---:|---:|---:|---:|
+| logreg | 0.7081 | **0.5631** | +0.1450 | 28.3 | 0.0000 |
+| xgboost | 0.7526 | 0.4971 | +0.2555 | 12.5 | 0.0000 |
+| mlp | 0.7144 | 0.4981 | +0.2163 | 4.5 | 0.0000 |
+| hgb | 0.7526 | 0.4883 | +0.2643 | 5.0 | 0.0000 |
+| tree | 0.7522 | **0.3430** | +0.4092 | 4.2 | 0.0000 |
+| rf | 0.7298 | **0.3365** | +0.3933 | 11.1 | 0.0000 |
+| *majority* | *0.3774* | *0.4862* | — | — | — |
+| *stratified* | *0.5023* | *0.4171* | — | — | — |
+
+All six non-trivial architectures degrade significantly after Holm correction.
+
+### 11.3 The comparison that does not depend on the caveat
+
+The **target-side scores are protocol-independent.** How `D_B` was split affects
+what the model learned, not how the trivial floors on `D_A` behave. So the
+distance from the floor is directly readable even though `Delta_F1` is inflated.
+
+On `D_A`, the majority floor is **0.4862** and the stratified floor is **0.4171**.
+
+| Model | Target macro-F1 | vs majority | vs stratified |
+|---|---:|---:|---:|
+| logreg | 0.5631 | **+0.077** | +0.146 |
+| mlp | 0.4981 | +0.012 | +0.081 |
+| xgboost | 0.4971 | +0.011 | +0.080 |
+| hgb | 0.4883 | +0.002 | +0.071 |
+| **tree** | **0.3430** | **−0.143** | **−0.074** |
+| **rf** | **0.3365** | **−0.150** | **−0.081** |
+
+**Two architectures fall below both trivial floors**, and three more beat the
+majority classifier by between 0.002 and 0.012 of macro-F1. Only logistic
+regression clears it by a margin worth the name.
+
+The forward direction put one architecture below the floor. The reverse puts two
+below and three within a rounding error of it. **Transfer fails in both
+directions**, which is what the symmetry check existed to establish: the finding
+is about transfer, not about `D_B` being an intrinsically harder corpus.
+
+### 11.4 Where the failure lands: unseen categories are invisible
+
+Per-category on `D_A`, mean over 20 seeds. `benign` is specificity, the rest
+recall. This direction has **no untestable categories** — `D_A` contains
+everything `D_B` does and more — which is what makes the table informative.
+
+| Model | benign | ddos | dos | probe | bruteforce | **web** |
+|---|---:|---:|---:|---:|---:|---:|
+| logreg | 0.706 | 0.963 | 0.854 | 0.923 | 0.568 | **0.298** |
+| xgboost | 0.887 | 0.852 | 0.729 | 0.885 | 0.354 | **0.011** |
+| hgb | 0.875 | 0.826 | 0.719 | 0.866 | 0.335 | **0.013** |
+| mlp | 0.855 | 0.865 | 0.768 | 0.781 | 0.417 | **0.004** |
+| tree | 0.818 | 0.481 | 0.437 | 0.474 | 0.431 | **0.129** |
+| rf | 0.890 | 0.490 | 0.405 | 0.550 | 0.341 | **0.005** |
+
+The structure is clean and it explains the aggregate.
+
+**Categories present in the training corpus transfer.** `D_B` contains floods and
+scans, and on `D_A` the boosted models detect `ddos` at 0.83–0.87, `dos` at
+0.72–0.77 and `probe` at 0.87–0.89. That is real transfer of a real capability.
+
+**Categories absent from the training corpus do not.** `D_B` contains no web
+attacks, and on `D_A` web recall is **0.004 to 0.013** for four of six
+architectures — the random forest detects half of one percent of SQL injection,
+XSS and directory brute force. `bruteforce`, also absent from `D_B`, sits at
+0.33–0.57.
+
+This is not a subtle distributional effect. A detector does not recognise an
+attack class it has never been shown, it fails silently rather than noisily, and
+the aggregate macro-F1 conceals the difference between an architecture that
+transfers its competence and one that does not.
+
+It also explains why the **linear model transfers best in both directions**.
+Logistic regression is the only architecture with non-trivial web recall (0.298)
+and the best bruteforce recall (0.568), because it generalises coarsely instead
+of fitting the source corpus's particular attack signatures. Its cost is the
+worst benign specificity in the table (0.706). That trade — worse on the class
+you have, better on the class you have never seen — is the whole of the
+generalisation argument in one row.
+
+### 11.5 Consequence for the paper
+
+| Item | Consequence |
+|---|---|
+| "`D_B` is simply a harder corpus" | **Ruled out.** Failure is symmetric |
+| Severity | The reverse direction is **worse**: 2 architectures below both floors |
+| The mechanism | Unseen attack categories are essentially undetected (web: 0.004–0.013) |
+| Why logreg wins | Coarse generalisation, paid for in benign specificity |
+| Reporting rule | The reverse `Delta_F1` must always carry its optimistic-bound caveat; the **target-side distance from the floor must not**, because it does not depend on the source split |
