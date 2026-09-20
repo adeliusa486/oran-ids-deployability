@@ -311,12 +311,29 @@ def check_references():
         return check("REFERENCES", FAIL, "no bibliography")
     log = ROOT / "paper" / "main.log"
     if log.exists():
+        import re as _re
         t = log.read_text(encoding="utf-8", errors="ignore")
-        if "Citation" in t and "undefined" in t:
-            und = t.count("Citation") and "undefined on input" in t
-            if und:
-                return check("REFERENCES", WARN, "undefined citations in the last build")
-    check("REFERENCES", PASS, "bibliography present, no undefined citations last build")
+        # Match the citation and reference warnings specifically. The previous
+        # test looked for "Citation" and "undefined" anywhere in the log, which
+        # fires on `LaTeX Font Warning: Font shape ... undefined` -- a cosmetic
+        # small-caps-italic substitution that has nothing to do with the
+        # bibliography. A guard that cries wolf gets ignored, which is worse
+        # than not having it.
+        cites = _re.findall(r"Citation `([^']+)' on page .* undefined", t)
+        refs = _re.findall(r"Reference `([^']+)' on page .* undefined", t)
+        if cites or refs:
+            bits = []
+            if cites:
+                bits.append("%d undefined citation(s): %s"
+                            % (len(set(cites)), ", ".join(sorted(set(cites))[:3])))
+            if refs:
+                bits.append("%d undefined ref(s): %s"
+                            % (len(set(refs)), ", ".join(sorted(set(refs))[:3])))
+            return check("REFERENCES", WARN, "; ".join(bits))
+    n_entries = bib.read_text(encoding="utf-8", errors="ignore").count("\n@")
+    check("REFERENCES", PASS,
+          "%d bib entries, no undefined citations or refs in the last build"
+          % n_entries)
 
 
 def check_reproducibility():
@@ -366,6 +383,30 @@ def check_claims():
     check("CLAIMS", PASS, detail)
 
 
+def check_withdrawn():
+    """A claim is not withdrawn until no sentence in the paper asserts it.
+
+    analysis/make_tables.py made numbers structural -- they arrive by \input and
+    cannot be retyped. This does the same for retired prose, because the same
+    failure happened three times in one session and each time it was caught by
+    reading rather than by a check: a methods section describing a leak we do not
+    commit, a conclusion asserting a claim withdrawn two phases earlier, and a
+    feature count contradicted by the pipeline in three places.
+    """
+    script = ROOT / "scripts" / "check_withdrawn_claims.py"
+    paper = ROOT / "paper" / "main.tex"
+    if not script.exists() or not paper.exists():
+        return check("WITHDRAWN CLAIMS", BLOCKED, "guard or manuscript absent")
+    r = subprocess.run([sys.executable, str(script), str(paper)],
+                       cwd=ROOT, capture_output=True, text=True, timeout=120)
+    first = (r.stdout.strip().splitlines() or [""])[0]
+    if r.returncode == 0:
+        return check("WITHDRAWN CLAIMS", PASS, first)
+    n = first.split()[1] if len(first.split()) > 1 else "?"
+    check("WITHDRAWN CLAIMS", FAIL,
+          "%s retired claim(s) still asserted; run the guard for line numbers" % n)
+
+
 def check_tests():
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/"],
@@ -394,7 +435,7 @@ def main() -> int:
                check_robustness, check_latency, check_extraction,
                check_resource, check_ric, check_figures, check_tables,
                check_references, check_reproducibility, check_manuscript,
-               check_claims, check_tests):
+               check_claims, check_withdrawn, check_tests):
         fn()
 
     width = max(len(n) for n, _, _ in results)

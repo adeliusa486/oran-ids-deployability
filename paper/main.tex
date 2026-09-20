@@ -300,7 +300,11 @@ Two transforms are applied, both parameter-free and both applied identically to 
 
 \subsection{Detector Family and Objective}
 
-We evaluate five architectures spanning the range typically reported in this literature: a random forest \cite{breiman2001random}, gradient-boosted trees \cite{chen2016xgboost,ke2017lightgbm}, a multilayer perceptron, a one-dimensional convolutional network, and an LSTM sequence model. All are trained on the same windows with the same splits. Class imbalance is handled with a weighted binary cross-entropy objective,
+We evaluate eight architectures, and they are \emph{subjects rather than competitors}: no claim here is that one beats another, only that a particular thing happens to all of them. Six are non-trivial --- logistic regression, a depth-limited decision tree, a random forest \cite{breiman2001random}, two independent gradient-boosting implementations \cite{chen2016xgboost,ke2017lightgbm}, and a multilayer perceptron. The remaining two are trivial floors: a majority-class predictor and a stratified sampler of the training prior.
+
+The floors are not decoration. On a corpus that is \measured{94.63}\% attack, a majority-class classifier achieves that accuracy by construction, and without the floor on the page no other number on it can be read. They also serve as a control: a classifier with no capacity to memorise cannot benefit from a leaky evaluation protocol, so if the floors gain nothing where the others gain, the mechanism is memorisation.
+
+Every architecture receives the same preprocessing, the same class-imbalance policy and the same tuning budget. Under-tuning the more flexible models would inflate every gap we report and is the first thing a reviewer should attack, so uniformity of treatment is the defence rather than a per-model search. Class imbalance is handled with a weighted binary cross-entropy objective,
 \begin{equation}
 \begin{split}
 \mathcal{L}(\theta) = -\frac{1}{N}\sum_{i=1}^{N}\Big[ &w_{+}\, y_{i}\log \hat{p}_{i} \\[-2pt]
@@ -319,26 +323,35 @@ Fig.~\ref{fig:pipeline} shows the pipeline. A single trained model is carried un
 \begin{tikzpicture}[
   font=\scriptsize, node distance=4mm,
   st/.style={draw=blue!55!black, fill=blue!8, rounded corners=2pt, minimum width=2.35cm, minimum height=6.5mm, align=center, inner sep=2pt},
-  ev/.style={draw=red!60!black, fill=red!8, rounded corners=2pt, minimum width=2.35cm, minimum height=6.5mm, align=center, inner sep=2pt},
+  ev/.style={draw=red!60!black, fill=red!8, rounded corners=2pt, minimum width=2.6cm, minimum height=6.5mm, align=center, inner sep=2pt},
+  % An arm that was designed and never executed. Drawn obviously inactive rather
+  % than deleted: showing what was intended and not achieved is more honest than
+  % silently omitting it.
+  blk/.style={draw=black!40, dashed, fill=black!6, rounded corners=2pt, minimum width=2.6cm, minimum height=6.5mm, align=center, inner sep=2pt, text=black!55},
   ar/.style={-{Latex[length=1.8mm]}, thick, draw=gray!65!black}
 ]
-\node[st] (da)   at (0,3.35) {\DA{}: O-RAN testbed\\{\tiny packets $+$ radio KPIs}};
-\node[st] (harm) at (0,2.30) {Feature harmonisation\\{\tiny 32 total, 24 shared}};
-\node[st] (tr)   at (0,1.25) {Train $f_{\theta}$\\{\tiny 5 architectures, 5 seeds}};
-\node[st] (pack) at (0,0.20) {Package as xApp\\{\tiny ONNX, container image}};
+\node[st] (da)   at (0,3.35) {\DA{}: O-RAN testbed\\{\tiny Zeek flow records $+$ radio KPIs}};
+\node[st] (harm) at (0,2.30) {Shared feature space\\{\tiny 15 concepts, 18 columns}};
+\node[st] (spl)  at (0,1.25) {Group-disjoint split\\{\tiny \texttt{src\_ip}, 20 split seeds}};
+\node[st] (tr)   at (0,0.20) {Train\\{\tiny 8 architectures incl.\ 2 floors}};
 
-\node[ev] (e1) at (3.55,2.30) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DA{} test split\\{\tiny in-distribution}};
-\node[ev] (e2) at (3.55,1.25) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DB{}: 5G-NIDD\\{\tiny cross-deployment}};
-\node[ev] (e3) at (3.55,0.20) {\textcircled{\raisebox{-0.2pt}{\tiny 2}}\textcircled{\raisebox{-0.2pt}{\tiny 3}} Live RIC\\{\tiny alerts $+$ latency}};
+\node[ev] (e1) at (3.75,3.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} Held-out \DA{}\\{\tiny in-distribution reference}};
+\node[ev] (e2) at (3.75,2.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} Time-disjoint \DA{}\\{\tiny early runs $\rightarrow$ late runs}};
+\node[ev] (e3) at (3.75,1.05) {\textcircled{\raisebox{-0.2pt}{\tiny 1}} \DB{}: 5G-NIDD\\{\tiny independent, evaluated once}};
+\node[ev] (e4) at (3.75,0.05) {\textcircled{\raisebox{-0.2pt}{\tiny 2}} Operational\\{\tiny base rate, threshold, burden}};
+\node[blk] (e5) at (3.75,-1.05) {\textcircled{\raisebox{-0.2pt}{\tiny 3}} Live Near-RT RIC\\{\tiny \textbf{NOT EXECUTED}}};
 
 \draw[ar] (da) -- (harm);
-\draw[ar] (harm) -- (tr);
-\draw[ar] (tr) -- (pack);
-\draw[ar] (tr.east)   -- (e1.west);
-\draw[ar] (tr.east)   -- (e2.west);
-\draw[ar] (pack.east) -- (e3.west);
+\draw[ar] (harm) -- (spl);
+\draw[ar] (spl) -- (tr);
+\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.55] {reference} (e1.west);
+\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.55] {$-0.27\,F_1$} (e2.west);
+\draw[ar] (tr.east) -- node[above, font=\tiny, pos=0.6] {to the floor} (e3.west);
+\draw[ar] (tr.east) -- node[below, font=\tiny, pos=0.55] {PPV $0.93\!\rightarrow\!0.006$} (e4.west);
+\draw[ar, dashed, draw=black!40] (tr.south) |- (e5.west);
+\node[font=\tiny, text=black!55, anchor=west] at (1.15,1.05) {once; access logged};
 \end{tikzpicture}
-\caption{Experimental pipeline. One trained model is evaluated three ways: on a held-out split of its own corpus, on an independently collected corpus, and as a deployed xApp under offered load. The circled markers correspond to the measurement points of Fig.~\ref{fig:arch}.}
+\caption{Experimental pipeline. One trained model is evaluated under four protocols of increasing realism, and each step away from the conventional protocol costs performance: a group-disjoint held-out split, a time-disjoint split of the same corpus, an independently collected corpus evaluated once, and an operational analysis over a swept attack base rate. Arrow labels are measured degradations relative to the in-distribution reference. The live-RIC arm was \textbf{not executed} (Section~\ref{sec:limitations}). Circled markers correspond to the measurement points of Fig.~\ref{fig:arch}.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -377,7 +390,11 @@ Algorithm~\ref{alg:xapp} gives the xApp control loop. Two details matter for the
 % [SYNTHETIC] --- hardware and hyperparameters describe an intended, not executed, setup
 The edge data centre node is a dual-socket server with two Intel Xeon Gold 6338 processors (32 cores each at 2.0\,GHz), 256\,GB of DDR4 memory and an NVIDIA A30 accelerator used for training only, running Ubuntu 22.04 and Kubernetes 1.28. The near-real-time RIC is deployed from the O-RAN Software Community Helm charts; the RAN side uses srsRAN with a FlexRIC-based E2 agent \cite{gomez2016srslte,schmidt2021flexric}, with E2AP v2.03 and E2SM-KPM v3.0. The xApp is a Python 3.10 container using ONNX Runtime 1.17 for inference, with models trained using scikit-learn 1.4 \cite{pedregosa2011scikit}, XGBoost 2.0.3 and PyTorch 2.2. Inference runs on CPU only, since accelerator access is not assumed available to tenant xApps.
 
-\DA{} is split 70/10/20 into training, validation and test partitions, stratified by attack family and disjoint by device identifier so that no device contributes to more than one partition. \DB{} is never used for training or model selection and is consumed only once, at final evaluation. Every configuration is trained with five random seeds and we report the mean; the standard deviation is below 0.31 points of $F_{1}$ for in-distribution results and below 2.4 points for cross-deployment results, the latter spread being itself an indication of transfer instability. Hyperparameters are given in Table~\ref{tab:hyper} and were selected on the \DA{} validation partition alone.
+\DA{} is split \emph{group-disjointly}: whole groups go to exactly one side, and a guard raises if a group is ever found on both. The grouping key is the capture run on the radio layer (\measured{30} recovered runs) and the source address on the network layer. Device-disjoint splitting, which an earlier version of this protocol specified, is \textbf{not supportable on this corpus}: \texttt{ue\_id} takes nine values and one of them holds \measured{60.8}\% of records, so a device-disjoint split is not a split.
+
+Uncertainty is reported over \measured{20} split seeds, as paired $t$-intervals over split means rather than as percentile bootstraps. The choice is not stylistic: at small $n$ a percentile bootstrap resampling a handful of split means can only span the observed values, so it understates uncertainty, and in an earlier version of this work it reported four significant effects that the correct paired test does not support. The two-level seed design is deliberate, because the dominant variance is which groups land in which fold, not which random state the model used.
+
+\DB{} is never used for training, for model selection, for fitting any transform or for choosing any threshold, and it is consumed once, at final evaluation. Every read of it is timestamped in an append-only access log so that this is auditable after the fact rather than asserted. Hyperparameters are given in Table~\ref{tab:hyper}; none was tuned per architecture.
 
 % [SYNTHETIC]
 \begin{table}[t]
@@ -389,17 +406,29 @@ The edge data centre node is a dual-socket server with two Intel Xeon Gold 6338 
 \toprule
 \textbf{Model} & \textbf{Settings} \\
 \midrule
-Random forest & 200 trees, depth 24, min leaf 2, $\sqrt{d}$ features \\
-XGBoost       & 400 trees, depth 8, $\eta=0.08$, subsample 0.8, \\
-              & colsample 0.8, min child weight 4, early stop 30 \\
-MLP           & 256--128--64, ReLU, dropout 0.2, Adam $10^{-3}$, \\
-              & batch 512, 60 epochs \\
-1D-CNN        & 64/128/128 filters, kernel 3, BN, GAP, \\
-              & Adam $5\times10^{-4}$, batch 256, 80 epochs \\
-LSTM          & 2 layers, hidden 128, dropout 0.3, seq.\ len.\ 16, \\
-              & Adam $10^{-3}$, batch 256, 60 epochs \\
+\multicolumn{2}{l}{\emph{Level 1 --- trivial floors}} \\
+Majority class & predicts the training majority \\
+Stratified     & samples the training prior \\
 \midrule
-Shared        & weighted loss \eqref{eq:loss}, $\gamma=10^{-4}$, 5 seeds \\
+\multicolumn{2}{l}{\emph{Level 2 --- conventional}} \\
+Logistic regression & \texttt{max\_iter} 2000, balanced class weight, \\
+              & standardised inside the pipeline \\
+Decision tree & depth 12, balanced class weight \\
+Random forest & 200 trees, unbounded depth, min leaf 2, \\
+              & balanced subsample weighting \\
+XGBoost       & 300 trees, depth 6, $\eta=0.1$, subsample 0.8, \\
+              & colsample 0.8, \texttt{hist}, \texttt{scale\_pos\_weight} \\
+              & set from the \emph{training} prior at each fit \\
+Hist.\ gradient boosting & 300 iterations, depth 6, $\eta=0.1$, \\
+              & balanced class weight \\
+\midrule
+\multicolumn{2}{l}{\emph{Level 3 --- neural}} \\
+MLP           & 128--64, Adam, early stopping, patience 10, \\
+              & standardised inside the pipeline \\
+\midrule
+Shared        & 20 split seeds; identical class-imbalance policy \\
+              & for every family; scaler fitted inside the \\
+              & pipeline on training data only \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -413,26 +442,19 @@ For the alert-burden measurement we use a benign-only capture segment from the \
 
 \subsection{In-Distribution Performance}
 
-Table~\ref{tab:indist} reports performance on the \DA{} test split using the full 32-feature space. All five architectures exceed 98\% on every metric, and the spread between best and worst is roughly one point of $F_{1}$ --- within twice the width of the confidence intervals. This is the result the existing literature reports, and on its own it separates the models neither statistically nor operationally.
+Before any transfer question can be posed, the in-distribution number has to be pinned to a protocol, because the protocol moves it more than the architecture does. Table~\ref{tab:indist} reports macro-$F_{1}$ on \DA{} under two protocols that differ only in how the split is drawn: a random split over flow records, which is what most of this literature reports, and a run-disjoint split in which whole capture runs go to exactly one side.
 
-% [SYNTHETIC] --- all values below derived from placeholder confusion matrices
+The difference is large and it is not a constant offset. It spans \measured{+0.09} to \measured{+0.17} of macro-$F_{1}$, and it \emph{tracks model flexibility}: a single depth-12 tree gains most, the boosted ensembles next, the linear model least. The two trivial baselines gain nothing at all, and that is the control which identifies the mechanism. A classifier with no capacity to memorise cannot profit from a leaky split, so the gain is memorisation rather than a change in task difficulty.
+
+The consequence for a reader of this literature is direct: a published random-split score is inflated \emph{most} for exactly the flexible architectures most likely to be published, so the inflation cannot be mentally subtracted as a fixed correction.
+
 \begin{table}[t]
-\caption{In-distribution performance on the \DA{} test split (32 features). All values in percent; means over five seeds with 95\,\% confidence intervals on $F_{1}$.}
+\caption{Evaluation-protocol sensitivity on \DA{} (radio layer). Macro-$F_{1}$ under a random split and under a run-disjoint split, with the paired difference; \measured{20} split seeds, paired $t$-intervals over split means, $^{\ast}$ significant after Holm correction. The two trivial baselines are the control: they gain nothing.}
 \label{tab:indist}
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{$F_{1}$ (95\,\% CI)} \\
-\midrule
-Random forest & 99.45 & 99.12 & 98.94 & 99.03 $\pm$ 0.22 \\
-XGBoost       & \textbf{99.57} & \textbf{99.28} & \textbf{99.21} & \textbf{99.25 $\pm$ 0.17} \\
-MLP           & 98.99 & 98.33 & 98.11 & 98.22 $\pm$ 0.36 \\
-1D-CNN        & 99.37 & 98.96 & 98.83 & 98.88 $\pm$ 0.26 \\
-LSTM          & 99.24 & 98.61 & 98.70 & 98.66 $\pm$ 0.32 \\
-\bottomrule
-\end{tabular}
+\input{../tables/generated/leakage_radio}
 \end{table}
 
 \subsection{Cross-Deployment Generalisation}
@@ -454,28 +476,8 @@ That last observation generalises. The architecture ranked first on the source r
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=\columnwidth, height=5.1cm,
-  ybar, bar width=6.5pt,
-  enlarge x limits=0.14,
-  ymin=0, ymax=124,
-  ylabel={$F_{1}$ score (\%)},
-  symbolic x coords={RF,XGB,MLP,CNN,LSTM},
-  xtick=data,
-  ymajorgrids, grid style={dashed, gray!28},
-  tick label style={font=\scriptsize},
-  label style={font=\scriptsize},
-  legend style={at={(0.5,1.02)}, anchor=south, legend columns=2, draw=none, font=\scriptsize, column sep=4pt},
-  nodes near coords,
-  every node near coord/.append style={font=\tiny, rotate=90, anchor=west}
-]
-\addplot[fill=blue!55, draw=blue!65!black] coordinates {(RF,99.03) (XGB,99.25) (MLP,98.22) (CNN,98.88) (LSTM,98.66)};
-\addplot[fill=orange!70, draw=orange!70!black] coordinates {(RF,68.34) (XGB,71.39) (MLP,63.48) (CNN,66.21) (LSTM,61.61)};
-\legend{In-distribution (\DA{}), Cross-deployment (\DB{})}
-\end{axis}
-\end{tikzpicture}
-\caption{The gap that single-dataset evaluation hides. In-distribution scores span barely one point across five architectures; cross-deployment scores span ten points and sit roughly thirty points lower.}
+\includegraphics[width=\columnwidth]{../figures/generated/fig_transfer.pdf}
+\caption{The gap a single-corpus evaluation hides, and the line that makes it readable. Bars are macro-$F_1$ on held-out \DA{} and on \DB{}, over \measured{20} split seeds. The dashed line is what a stratified random classifier scores on \DB{}. Architectures are ordered by their \emph{source} score: the leftmost is the best model in distribution and the worst under transfer, landing beneath the floor.}
 \label{fig:gen}
 \end{figure}
 
