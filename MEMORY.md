@@ -177,9 +177,9 @@ Full write-up: `reports/experiments/EXP-002_004_005.md`.
 | Leakage tracks **model flexibility** | tree +0.168 > xgboost/hgb +0.14 > rf/mlp +0.11 > logreg +0.093 > trivial ~0 |
 | Best group-disjoint macro-F1 | **0.853** (rf), 0.849 (mlp), 0.844 (hgb) -- indistinguishable |
 | Majority-class floor | **0.434** macro-F1 -- quote this next to every other F1 |
-| Corpus precision vs deployment PPV | **0.94 -> 0.04-0.06** at pi = 0.002 |
-| Alert volume | **~52,000/hour**, ~1.25M/day, ~19 in 20 false |
-| PPV = 0.5 | **unreachable at any threshold** for hgb and mlp (score saturation) |
+| Corpus precision vs deployment PPV | **0.926-0.933 -> 0.036-0.219** at pi = 0.002 (n=20). Corpus precision is flat within 0.007 across all five detectors; the operational metric separates them 6x |
+| Alert volume | **53,000-63,000/hour**, 1.3-1.5M/day, large majority false |
+| PPV = 0.5 | **unreachable at any threshold for 4 of 5 detectors** (n=20). Only rf and logreg reach it, at recall 0.418 and 0.189 |
 | Latency p99 (EMULATED) | tree 4.76, logreg 6.51, xgboost 7.29, mlp 8.17, hgb 94.6, rf 378 ms |
 | Platform floor p99 | 0.103 ms -- two orders below the tightest budget, so not an artefact |
 | Conformance at B = 10 ms | **4 of 6** architectures, fastest is a plain decision tree |

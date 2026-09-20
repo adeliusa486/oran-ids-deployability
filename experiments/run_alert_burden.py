@@ -40,7 +40,7 @@ from oran_ids.splits import group_disjoint_split  # noqa: E402
 warnings.filterwarnings("ignore")
 
 OUT = Path("results/EXP-004")
-SPLIT_SEEDS = [101, 102, 103, 104, 105]
+SPLIT_SEEDS = list(range(101, 121))   # matched to EXP-002 after D-012
 MODEL_SEED = 11
 
 # Declared deployment parameters (configs/base.yaml). Neither is measured here.
