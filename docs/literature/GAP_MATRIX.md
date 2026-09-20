@@ -230,3 +230,95 @@ What this statement does **not** claim, and must never be edited to claim:
 3. Nine entries are title-only. Their `N` cells are currently `?`, and the strength grades of G4, G5 and G7 depend on resolving them.
 4. The NetsLab descriptor PDF has not been read; record counts, label columns, run/device identifiers and CU–DU time synchronisation are unknown and are all prerequisites for split design (A4) and windowing (A12).
 5. No systematic screening protocol has been executed for Track D / claim C13. Until it is, Table VIII of the manuscript remains unevidenced (see A9).
+
+---
+
+# ADDENDUM — Literature pass 2 (2026-09-20, during EXP-001)
+
+P03's full text was read and P05 was recovered from two independent detailed search
+snippets. Two gaps change. **One of them is withdrawn.**
+
+## G4 is WITHDRAWN — p99 *is* reported
+
+The original entry read: *"Tail latency (p99) is not reported by any retrieved O-RAN
+IDS study."* **That is false.** P05 reports **p99 ≈ 140 ms** for its selected LSTM.
+
+The claim was graded "Moderate" on the basis that nine matrix entries were title-only
+and absence was unproven. It turned out to be wrong not because of a title-only entry
+but because of an entry we had already looked at and could not fully retrieve. The
+lesson is the obvious one: a `?` cell is not evidence of absence, and G4 should have
+been graded weak, not moderate.
+
+**Withdrawn. Do not use it, and do not write "no prior work reports tail latency".**
+
+## G3 is STRENGTHENED, and is now quantified rather than argued
+
+P05's single measurement, p99 ≈ 140 ms, sits inside the O-RAN near-real-time range:
+
+| Budget chosen | Verdict on the same measurement |
+|---|---|
+| `B = 1000 ms` (P05's choice) | **passes**, by 7× |
+| `B = 10 ms` (P04's and our draft's choice) | **fails**, by 14× |
+
+One number, two opposite deployability verdicts, decided entirely by which end of the
+specified 10 ms – 1 s range the author picks. G3 no longer rests on a comparison of two
+studies with different models; it rests on a single measurement that flips.
+
+This makes **I11 (sweep `B`, report each architecture's crossing point)** the strongest
+methodological contribution the gap analysis supports. It is no longer a hedge against
+an arbitrary choice; it is the only way to turn the verdict into a measurement.
+
+## G1 survives, with one qualification
+
+P05 reports p99 and P05 reports a cross-*layer* comparison (O-CU against O-DU, with the
+Autoencoder degrading F1 0.9644 → 0.9115). It does **not** report cross-*deployment*
+transfer, alert burden at a realistic base rate, or CPU/RAM. The conjunction in G1 is
+intact. But the wording must be exact: several of the individual criteria now have at
+least one prior report, so only "not reported **together, for the same artefact**" is
+defensible.
+
+## G6 is now directly supported by the prior work's own conclusion
+
+P03's authors state that NetsLab-5GORAN-IDD is the only public O-RAN corpus with paired
+CU flow records and DU radio telemetry, and that **confirming whether their patterns
+transfer beyond this testbed requires new paired captures from independent
+deployments**. The nearest prior work names our RQ1 as its open question. That is the
+strongest form of gap evidence available short of doing the experiment.
+
+## New finding: P03 supplies the method our D-008 route (a) needs
+
+P03 aligns the two modalities by **run-relative timestamps** taken from the **raw
+per-category archives**, not from the published summary CSV. Where DoS traces lack
+telemetry timestamps they assign time from the sample index at 1 Hz. Windows are
+sliding, W ∈ {5, 10} s, stride 2 s, discarding windows with no Zeek flows; this yields
+68–72 network features and 44 radio features per window over **42 runs**.
+
+Two consequences for us:
+
+1. EXP-001's finding that the join is impossible applies to the **published summary
+   artefacts only**. The join exists in the raw data and prior work has performed it.
+   Route (a) in D-008 is an existence proof, not a hope.
+2. P03 reports **fusion instability at this sample size** — stacked-fusion ROC-AUC
+   standard deviation ±0.171 to ±0.182 for TCN and Transformer over 42 runs. Our own
+   small-sample warning (2,808 windows, ~30 sessions) is corroborated by prior work on
+   the same corpus. Any fusion result we produce must carry seed-level variance, and a
+   fusion "gain" smaller than ±0.17 ROC-AUC is not a gain.
+
+## Quantified in-distribution reference from P03
+
+Radio-only ROC-AUC 0.925–0.961 against network-only 0.827–0.851 — a radio advantage of
+**8.5 to 11.7 ROC-AUC points**. This is the number claim C5's in-distribution half must
+now cite rather than re-derive.
+
+## Revised gap strengths
+
+| # | Gap | Was | Now |
+|---|---|---|---|
+| G1 | the conjunction, for the same artefact | Strong | **Strong**, with exact wording required |
+| G2 | no cross-deployment evaluation of an O-RAN IDS | Moderate | **Moderate-Strong** — P03's authors name it as their open question |
+| G3 | the budget is treated as a constant and decides the verdict | Strong | **Strong and quantified** — 140 ms flips on the choice |
+| G4 | p99 unreported | Moderate | **WITHDRAWN — false** |
+| G5 | alert volume at a realistic base rate | Moderate | Moderate, unchanged |
+| G6 | radio accuracy/transfer trade-off | Moderate, contingent | **Moderate-Strong**, still contingent on D-008 |
+| G7 | no adversarial evaluation of an O-RAN IDS | Weak | Weak, unchanged. Still do not claim |
+| G8 | container-attributed energy | Weak | Weak. Still do not claim |

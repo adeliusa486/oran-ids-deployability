@@ -211,6 +211,30 @@ The five that matter:
 alert burden and swept-budget tail latency for the same artefacts under one protocol.
 Nothing stronger.
 
+### Pass 2 (2026-09-20, during EXP-001) — one gap WITHDRAWN, one quantified
+
+- **G4 "no O-RAN IDS study reports p99" is FALSE and is withdrawn.** P05 reports
+  **p99 ~140 ms** for its selected LSTM. Never write "no prior work reports tail
+  latency".
+- **G3 is now quantified by a single number.** That same 140 ms **passes** a 1000 ms
+  budget by 7x and **fails** a 10 ms budget by 14x. One measurement, two opposite
+  verdicts, decided only by which end of the O-RAN 10 ms - 1 s range an author picks.
+  I11 (sweep `B`) is therefore the strongest methodological contribution available.
+- **P03 full text supplies the method D-008 route (a) needs.** They align the layers by
+  **run-relative timestamps from the RAW per-category archives**, not the summary CSV;
+  DoS traces without telemetry timestamps get time from the sample index at 1 Hz;
+  sliding windows W in {5,10} s, stride 2 s; 68-72 network and 44 radio features over
+  **42 runs**. EXP-001's "join impossible" finding applies to the PUBLISHED SUMMARIES
+  ONLY. The join exists in the raw data and has been done.
+- **P03 in-distribution reference, to cite rather than re-derive:** radio-only ROC-AUC
+  0.925-0.961 against network-only 0.827-0.851, a radio advantage of 8.5-11.7 points.
+- **P03 corroborates our small-sample warning.** Stacked fusion is unstable at 42 runs:
+  ROC-AUC sd +/-0.171 to 0.182 for TCN and Transformer. **A fusion "gain" smaller than
+  ~0.17 ROC-AUC is not a gain.**
+- **P03's authors name our RQ1 as their open question:** confirming whether their
+  patterns transfer beyond this testbed needs paired captures from independent
+  deployments. G2 strengthens to Moderate-Strong.
+
 ---
 
 ## Important Decisions
@@ -379,6 +403,12 @@ withdrawn, not weakened.
 - **Do not quote the ~1.5 TB corpus size.** It was wrong. The record is 16.85 GB.
 - **Do not draw a split on the network layer before the dedup and uid-namespacing
   policy is declared** (B-007) — 6.94% of Zeek `uid`s are duplicated.
+- **Do not claim that no prior work reports p99.** P05 reports ~140 ms. Gap G4 is
+  withdrawn as false.
+- **Do not call a fusion improvement a gain unless it exceeds ~0.17 ROC-AUC.** P03
+  measured that much seed-to-seed variance on this corpus at this sample size.
+- **Do not say the modalities cannot be joined, full stop.** They cannot be joined from
+  the published summaries. Prior work joined them from the raw archives.
 
 ---
 
