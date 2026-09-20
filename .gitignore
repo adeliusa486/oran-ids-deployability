@@ -41,3 +41,9 @@ paper/*.log
 paper/*.out
 paper/*.fls
 paper/*.fdb_latexmk
+
+# LaTeX build products beyond those already listed
+paper/_probe.tex
+paper/*.bbl
+paper/*.synctex.gz
+paper/*.toc

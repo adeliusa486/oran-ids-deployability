@@ -1,0 +1,17 @@
+# Generated LaTeX must stay LF on every platform.
+#
+# These files are produced by analysis/make_tables.py with explicit LF endings.
+# If git checks them out as CRLF on Windows, a stray carriage return inside a
+# tabular reintroduces the "Misplaced \noalign" failure that cost real time to
+# diagnose once already. Pin them.
+tables/generated/*.tex text eol=lf
+paper/*.tex            text eol=lf
+*.py                   text eol=lf
+*.sh                   text eol=lf
+
+# Binary, never touch.
+*.pdf   binary
+*.png   binary
+*.db    binary
+*.pcap  binary
+*.zip   binary
