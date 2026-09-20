@@ -648,3 +648,33 @@ corrected statement, pending the n=20 re-run, is:
 > +0.13 macro-F1, ordered by model capacity), but n = 5 split seeds is underpowered
 > to establish it: no non-trivial model reaches significance under a paired t-test,
 > before or after Holm correction.
+
+---
+
+## D-013 — The network-layer leakage audit stays at n=5, as a directional cross-check only
+
+- **Phase:** 2
+- **Status:** `DECIDED 2026-09-20`
+
+The network-layer audit was launched before D-012 raised the seed count, so it runs
+at n=5 and, per D-012's own reasoning, cannot establish significance. It will **not**
+be re-run at n=20, for a reason that is about validity rather than compute:
+
+**The network layer's group key is `src_ip`**, so "group-disjoint" there means
+*host*-disjoint. In a small testbed, hosts map almost one-to-one onto attack roles —
+one machine runs the floods, another the scans. A host-disjoint split is therefore
+closer to *attack*-disjoint than to *deployment*-disjoint, and the gap it measures
+conflates the two. More seeds would give a tighter interval around a quantity that is
+partly the wrong quantity.
+
+The radio layer does not have this problem. Its `session` key is a recovered capture
+run, all 30 are label-pure, and 20 seeds are already in hand. **The radio layer
+carries the leakage claim.**
+
+The network result is reported as a **directional cross-check**: same sign, same
+rough magnitude, on a different layer with a different grouping. That is worth
+reporting and is all it can support. It will be labelled n=5 and explicitly described
+as not establishing significance.
+
+This also becomes a stated limitation, because it is the honest answer to a reviewer
+who asks why the two layers were not treated identically.

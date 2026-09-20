@@ -1,0 +1,194 @@
+% =====================================================================
+%  MEASURED RESULTS
+%
+%  Everything in this file comes from a generated table under
+%  tables/generated/ or a generated figure under figures/generated/.
+%  No value here was typed by hand. Each \input has a provenance header
+%  naming the result file and the git commit it was produced from.
+%
+%  This file is kept separate from the synthetic body of main.tex on
+%  purpose: while \synthdrafttrue is set, a reader must be able to tell
+%  at a glance which numbers are real. Values here are wrapped in
+%  \measured{} rather than \syn{}.
+%
+%  Regenerate with:  make aggregate figures tables
+% =====================================================================
+
+\section{Measured Results}
+\label{sec:measured}
+
+This section reports measurements taken on the radio-telemetry layer of
+\DA{} under the run-disjoint protocol of Section~\ref{sec:setup}. Unless
+stated otherwise every figure is a mean over \measured{20} split seeds,
+with intervals given as paired $t$-intervals over split means. Model
+seeds are nested inside split seeds and averaged before testing, so the
+effective sample size is the number of splits, not the number of fits.
+
+\subsection{Evaluation Protocol Effects}
+\label{sec:measured:leakage}
+
+We first quantify how much of a reported score is attributable to the
+split protocol rather than to the detector. The same models, features and
+seeds are evaluated twice: once under a random split over windows, the
+convention in much of the intrusion-detection literature, and once under a
+split in which whole capture runs are held out.
+
+\begin{table}[t]
+\caption{Effect of the split protocol on macro-$F_{1}$, \DA{} radio layer.
+Differences are paired over \measured{20} split seeds; $^{\ast}$ marks
+significance after Holm correction within the family of eight models.}
+\label{tab:m_leakage}
+\centering
+\input{../tables/generated/leakage_radio.tex}
+\end{table}
+
+Table~\ref{tab:m_leakage} and Fig.~\ref{fig:m_leakage} show the result. Every
+non-trivial architecture scores materially higher under the random split,
+and all six differences survive Holm correction. The effect is not small:
+it ranges from \measured{9.3} to \measured{16.8} points of macro-$F_{1}$,
+with paired effect sizes $d_{z}$ between \measured{0.78} and
+\measured{1.35}.
+
+Two features of the pattern matter more than its magnitude. First, the
+ordering tracks model flexibility. A single depth-12 decision tree gains
+most, the boosted ensembles next, the random forest and the multilayer
+perceptron less, and logistic regression least. Second, the two trivial
+baselines gain nothing: the majority-class classifier shows
+$\Delta=\measured{-0.002}$ with $p=\measured{0.40}$. A classifier with no
+capacity to memorise cannot profit from a leaky split, which is what
+identifies the mechanism as memorisation rather than as a change in task
+difficulty.
+
+The practical consequence is that the inflation cannot be treated as a
+constant offset. It is largest for precisely the flexible architectures
+that are most often reported, so a reader cannot mentally discount a
+published random-split figure by a fixed amount.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/generated/fig_leakage_radio.pdf}
+\caption{Macro-$F_{1}$ under a random split and a run-disjoint split.
+Bars are means over \measured{20} split seeds.}
+\label{fig:m_leakage}
+\end{figure}
+
+\subsection{Operational Alert Burden}
+\label{sec:measured:alerts}
+
+Criterion 2 asks what the detector costs an operator rather than how it
+scores on a corpus. Table~\ref{tab:m_alerts} reports both quantities side by
+side at the default threshold, under the declared deployment parameters
+$\pi=0.002$ and $\lambda_{b}=240{,}000$ benign flows per hour.
+
+\begin{table}[t]
+\caption{Corpus precision against operational precision, \DA{} radio
+layer, $\tau=0.5$. Both $\pi$ and $\lambda_{b}$ are declared deployment
+parameters, not measurements; Fig.~\ref{fig:m_alerts} sweeps them.}
+\label{tab:m_alerts}
+\centering
+\input{../tables/generated/alert_burden.tex}
+\end{table}
+
+The two precision columns are the criterion in one line. Corpus precision
+sits between \measured{0.926} and \measured{0.933} for all five detectors,
+a spread of \measured{0.007}. Once a realistic base rate is applied, the
+operational precision of the same five spans \measured{0.036} to
+\measured{0.218}, a factor of six. The metric a paper would report cannot
+distinguish these detectors; the metric an operator lives with separates
+them sharply. Absolute volumes are \measured{53{,}000} to
+\measured{63{,}000} alerts per hour, the large majority of them false.
+
+None of this is a new statistical result. The base-rate argument is
+Axelsson's, and it is a quarter of a century old. What is new is its
+quantification for a specific detector under a protocol that holds capture
+runs out, reported alongside the tail-latency measurement for the same
+model artefacts.
+
+A second and less expected finding concerns the operator's only runtime
+control. Sweeping the decision threshold to recover precision,
+Table~\ref{tab:m_ppvcross} shows that $\text{PPV}=0.5$ is
+\emph{unreachable at any threshold} for four of the five detectors. The
+scores of the boosted models and the perceptron saturate near unity under
+a run-disjoint split, so raising $\tau$ barely moves the alert volume: the
+histogram-boosted ensemble still emits \measured{53{,}632} alerts per hour
+at $\tau=\measured{0.99}$. Only the random forest and the linear model
+reach $\text{PPV}=0.5$, and both do so by collapsing recall, to
+\measured{0.418} and \measured{0.189} respectively. This is a calibration
+failure with an immediate operational consequence, and it is invisible in
+accuracy, $F_{1}$ or AUC.
+
+\begin{table}[t]
+\caption{Decision threshold required to reach a usable operational
+precision, and its cost in recall and alert volume.}
+\label{tab:m_ppvcross}
+\centering
+\input{../tables/generated/ppv_crossings.tex}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{../figures/generated/fig_alert_burden.pdf}
+\caption{Operational precision and alert volume against the attack base
+rate $\pi$. Both panels share one vertical scale each; the vertical rule
+marks the $\pi$ assumed in Table~\ref{tab:m_alerts}.}
+\label{fig:m_alerts}
+\end{figure*}
+
+\subsection{Decision Latency Against a Swept Budget}
+\label{sec:measured:latency}
+
+\begin{table}[t]
+\caption{Per-decision latency, \DA{} radio layer, \measured{1500}
+repetitions after warm-up. The last column gives the smallest near-real-time
+budget each architecture's 99th percentile conforms to.
+\textbf{These are emulated measurements}; see Section~\ref{sec:limitations}.}
+\label{tab:m_latency}
+\centering
+\input{../tables/generated/latency_budget.tex}
+\end{table}
+
+O-RAN specifies the near-real-time control loop over a range of 10\,ms to
+1\,s rather than at a single value. Reporting conformance against one
+chosen point inside that range makes the verdict an artefact of the
+choice. Table~\ref{tab:m_latency} and Fig.~\ref{fig:m_latency} therefore report,
+for each architecture, the smallest budget its 99th percentile conforms to.
+
+The floor experiment was run first. A no-op model on the same path yields
+$p_{99}=\measured{0.103}$\,ms, two orders of magnitude below the tightest
+budget considered, so the ordering below is a property of the models rather
+than of the measurement platform.
+
+The verdict moves with the budget. At \measured{1}\,ms no architecture
+conforms. At \measured{5}\,ms only the single decision tree does. At
+\measured{10}\,ms four of six conform. At \measured{1000}\,ms all of them
+do. One set of measurements thus supports four different conclusions,
+separated only by where the line is drawn, which is the reason to report
+the crossing point instead of a pass-fail column.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/generated/fig_latency_budget.pdf}
+\caption{99th-percentile decision latency per architecture. Vertical rules
+mark three points inside the specified near-real-time range.}
+\label{fig:m_latency}
+\end{figure}
+
+Decomposing the path shows where the time goes. Model inference accounts
+for \measured{0.18} to \measured{0.96}\,ms for the four architectures that
+conform at 10\,ms, whereas constructing features from packets costs a
+median \measured{6.90}\,ms per flow, ranging from \measured{4.49} to
+\measured{37.34}\,ms across captures. For those architectures feature
+construction is between \measured{7} and \measured{39} times the cost of
+inference. The relation inverts for the random forest and the
+histogram-boosted ensemble, whose own inference exceeds extraction, so the
+observation is architecture-dependent and is stated as such.
+
+Two caveats bound this. The exporter is a reference implementation in
+Python running at \measured{1.1} to \measured{4.3}\,MB/s, and a native
+implementation would be substantially faster; the defensible claim is
+therefore that feature construction is of the same order as or larger than
+inference for every architecture that meets a 10\,ms budget, so optimising
+the model alone addresses the smaller part of the budget. Per-flow cost
+also varies roughly eightfold across captures because it is driven by
+packets per flow rather than by flow count, which is why the range is
+reported beside the median.

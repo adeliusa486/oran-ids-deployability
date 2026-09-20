@@ -47,6 +47,11 @@
 % \syn{} marks a headline synthetic figure; it is a no-op typographically
 % but makes every fabricated number greppable in the source.
 \newcommand{\syn}[1]{#1}
+% \measured{} is the complement of \syn{}: it marks a value that came from a
+% generated table or figure under tables/generated/ or figures/generated/.
+% While the draft banner is up, every number in the paper should be wrapped in
+% exactly one of the two, so "is this real?" is answered by grep, not memory.
+\newcommand{\measured}[1]{#1}
 % -----------------------------------------------------------------------
 
 \newcommand{\DA}{\ensuremath{\mathcal{D}_{A}}}
@@ -728,6 +733,11 @@ LSTM          & 1.42 & 5.62 & 0.66 & 8.1 & 23.4 & 38.1$^{\dagger}$        & $<25
 \caption{Tail latency against offered load. Only the gradient-boosted ensemble remains inside the near-real-time budget, and only up to roughly 2{,}300 decisions per second; the sequence models never conform at any measured load.}
 \label{fig:latency}
 \end{figure}
+
+% Measured results live in their own file so that real and synthetic numbers
+% cannot be confused while the draft banner is up. Everything it reports comes
+% from a generated table or figure; nothing in it was typed by hand.
+\input{measured_results}
 
 \section{Comparative Analysis}
 \label{sec:comparative}

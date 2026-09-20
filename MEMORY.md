@@ -288,6 +288,8 @@ Full register: `configs/decisions.md`.
 | **D-004** | **Published features on both sides; A3 single-exporter control NOT applied** | **DECIDED 2026-09-20.** Mitigations M1 and M2 are mandatory |
 | **D-005** | **Track C at Level 2: real Near-RT RIC + synthetic E2 load, on a Linux host** | **DECIDED 2026-09-20** |
 | D-006 | Report p50/p95/p99; never mean alone; per-stage breakdown | decided |
+| D-012 | n raised 5 -> 20; paired t-intervals, not bootstrap below n=30 | decided |
+| D-013 | Network-layer audit stays n=5, directional cross-check only (src_ip grouping confound) | decided |
 | D-007 | The floor experiment runs before any model is timed | decided |
 
 New improvements from EXP-000: **I11** sweep `B` over [10 ms, 1 s]; **I12** test
