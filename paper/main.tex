@@ -487,7 +487,9 @@ The reverse direction, \DB{} to \DA{}, is reported separately as a symmetry chec
 
 We do not report a fine-tuning result. Few-shot adaptation on labelled target data is a different experiment, it is already published for these corpora~\cite{abraheem2026bidirectional}, and it relocates the problem rather than solving it: it means each deployment requires its own labelled attack data, which is exactly the cost a pre-trained detection xApp was supposed to avoid.
 
-The degradation is statistically unambiguous. A paired $t$-test across the five seeds rejects the null hypothesis of equal in-distribution and cross-deployment $F_{1}$ for every architecture at $p<0.001$, and a Wilcoxon signed-rank test gives the same conclusion without the normality assumption; both remain significant after Bonferroni correction for the five comparisons. Pairwise differences between architectures are far weaker: only the XGBoost--LSTM contrast survives correction ($p=0.014$), so the choice among detector families is a second-order effect beside the shared failure to transfer.
+The degradation is statistically unambiguous. A paired $t$-test over \measured{20} split seeds rejects the null hypothesis of equal held-out and cross-deployment macro-$F_{1}$ for **all six** non-trivial architectures, and every one survives Holm correction across the family ($p_{\text{Holm}} \le \measured{0.0069}$). Effect sizes are large, with $d_{z}$ between \measured{0.68} and \measured{1.86}.
+
+The choice among detector families is a second-order effect beside the shared failure to transfer, and this is the more useful way to read the table: the spread across architectures on the target, \measured{0.149} of macro-$F_{1}$ from best to worst, is smaller than the distance any of them has fallen, and the ordering is not the source ordering.
 
 Fig.~\ref{fig:conf} shows the cross-deployment confusion matrix for the best model. The error is asymmetric and dominated by missed attacks: \syn{277{,}563} attack flows are classified benign, more than a third of the attack population.
 
@@ -525,7 +527,15 @@ Fig.~\ref{fig:conf} shows the cross-deployment confusion matrix for the best mod
 \subsection{Score Calibration and Prior Shift}
 \label{sec:calibration}
 
-All three deployment criteria depend on the score $\hat{p}$ behaving as a probability, because \eqref{eq:ppv} and \eqref{eq:tau} both operate on a threshold applied to it. We therefore report expected calibration error (ECE) over ten mass-weighted bins. In distribution the models are well calibrated, with ECE between \syn{0.021} (XGBoost) and \syn{0.067} (LSTM). Under transfer they are not: cross-deployment ECE rises to \syn{0.187} for XGBoost and \syn{0.271} for the LSTM, and Fig.~\ref{fig:calib} shows that the error is concentrated at the confident end of the range, where scores near \syn{0.95} correspond to an empirical attack frequency of only \syn{0.72}.
+All three deployment criteria depend on the score $\hat{p}$ behaving as a probability, because \eqref{eq:ppv} and \eqref{eq:tau} both operate on a threshold applied to it. We therefore report expected calibration error over fifteen \emph{equal-mass} bins; equal-width bins are misleading here, because scores pile up near 1.0 and most equal-width bins are then empty.
+
+In distribution the models are reasonably calibrated, with ECE between \measured{0.028} and \measured{0.185}. Under transfer they are not: target ECE rises to between \measured{0.251} and \measured{0.396}. That is the expected finding, and it suggested an obvious remedy --- calibrate on held-out source data and recover the operating point. We tested it, and the remedy fails in an instructive way.
+
+Fitting Platt scaling or isotonic regression on a group-disjoint source calibration fold halves both Brier score and ECE, exactly as advertised, and simultaneously makes the operating point far worse. For logistic regression on the source, Brier falls from \measured{0.1023} to \measured{0.0486} while deployment PPV falls from \measured{0.0174} to \measured{0.0025} and the alert queue grows from \measured{35{,}330} to \measured{216{,}846} per hour. A calibrator fitted on a corpus that is \measured{94.63}\% attack learns to map scores onto that prior, so applied anywhere it pushes almost every score past $\tau=0.5$ and the detector flags nearly everything.
+
+There is a stronger statement available, and it explains why no calibrator could have worked. Every method tested here is a monotone transform, so none changes the model's ranking of examples and none changes the set of achievable operating points. We verify this rather than assert it: Platt and temperature scaling preserve ROC-AUC to within $10^{-5}$ for five of six architectures. **Threshold saturation is therefore not a calibration failure but a discriminability limit.** Target ROC-AUC lies between \measured{0.537} and \measured{0.691}, and no threshold, under any calibration, extracts a usable operating point from a curve that close to the diagonal.
+
+One methodological warning follows, because it nearly produced a positive result from nothing. Temperature scaling appears in our sweep to rescue two architectures that raw scores cannot rescue. It preserves the ROC exactly, so it rescues nothing: it rescales the scores so that a \emph{fixed grid} of swept thresholds lands on a different part of the same curve. Any comparison of monotone calibrators over a fixed threshold grid can manufacture this artefact, and the ROC should be reported alongside the grid.
 
 This compounds the earlier findings rather than merely adding to them. The remedy suggested by Fig.~\ref{fig:alerts} --- raising the threshold to suppress alert volume --- assumes that a high score means high confidence, and under transfer it does not, so the operating point chosen on the source deployment does not carry over even in the ordering it induces.
 
@@ -670,7 +680,11 @@ Two points deserve emphasis because they run against the intuition the source co
 
 Table~\ref{tab:latency} reports the latency decomposition of \eqref{eq:latency} at an offered load of 1{,}000 decisions per second, together with sustainable throughput under the p99 constraint of \eqref{eq:budget} and container resource consumption. Fig.~\ref{fig:latency} shows how the 99th percentile grows with load.
 
-Three observations follow. First, median latency is a misleading summary: every model except the LSTM has a median comfortably inside the 10\,ms budget, but only XGBoost keeps its 99th percentile there. Second, the sustainable throughput under the tail constraint differs by an order of magnitude across models that were within one point of each other on accuracy --- \syn{2{,}300} decisions per second for XGBoost against under \syn{250} for the sequence models. Third, and least expected, inference is not the bottleneck for the tree ensembles: feature construction accounts for \syn{55}\% of the median XGBoost budget. Optimisation effort directed at model compression would therefore address the smaller half of the problem.
+Three observations follow. First, median latency is a misleading summary. Four of the six architectures sit inside a 10\,ms budget at $p_{50}$ and stay inside it at $p_{99}$; the two that do not --- histogram gradient boosting and the random forest --- miss it by an order of magnitude, with $p_{99}$ of \measured{94.62} and \measured{378.05}\,ms against medians of \measured{53.16} and \measured{93.41}\,ms. The tail, not the median, decides conformance.
+
+Second, the verdict depends on where the budget is drawn, and O-RAN specifies the near-real-time loop over a range spanning two orders of magnitude. At 1\,ms nothing conforms; at 5\,ms the decision tree alone; at 10\,ms the tree, logistic regression, XGBoost and the MLP; at 100\,ms all but the random forest; at 1\,s everything. Asserting a single budget converts an authoring choice into an apparent measurement, so we report the crossing point per architecture instead.
+
+Third, and least expected, inference is not the bottleneck. Packet-level feature extraction costs a median \measured{6.90}\,ms per flow against \measured{0.18} to \measured{0.96}\,ms of inference for the four architectures light enough to meet a 10\,ms budget. We re-implemented the exporter with bulk array extraction and measured a speed-up of \measured{2.3} to \measured{12.1} times, verified to produce identical flow records; extraction still costs \measured{0.058}\,ms per flow at best. Set against a deployed implementation rather than a prototype --- \measured{1}--\measured{5}\,$\mu$s for logistic regression inside a real Near-RT RIC~\cite{obiuwevwi2026realtime} --- extraction is not merely the larger half of the budget but essentially the whole of it. Optimisation effort directed at model compression addresses the smaller part of the problem, and the ranking of architectures by prototype latency is a statement about the prototype's toolchain rather than about the architectures.
 
 % WITHDRAWN (C15). An energy-per-decision comparison appeared here. RAPL reports
 % package and DRAM energy for a whole socket and cannot attribute it to a
@@ -679,58 +693,19 @@ Three observations follow. First, median latency is a misleading summary: every 
 % indefensible claim. See configs/decisions.md and docs/claims.yaml C15.
 
 % [SYNTHETIC]
-\begin{table*}[t]
-\caption{Runtime behaviour of the packaged xApp at an offered load of 1{,}000 decisions per second. Latency components and percentiles in milliseconds; $T_{\max}$ is the highest load sustaining $q_{0.99}(L)\le 10$\,ms. Entries violating the budget are marked $\dagger$.}
+\begin{table}[t]
+\caption{Decision latency in milliseconds. \textbf{Measurement class: EMULATED} --- a Windows host, no CPU isolation, a single Python process, and no RIC in the path. These figures support relative ordering and stage decomposition; they support \emph{no} conformance claim. The no-op FLOOR runs first (D-007): its $p_{99}$ of \measured{0.103}\,ms is two orders of magnitude below the tightest budget, so nothing below it is a platform artefact. The final column is the smallest budget from the swept set $\{1,5,10,100,500,1000\}$\,ms at which the architecture's $p_{99}$ conforms.}
 \label{tab:latency}
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4.5pt}
-\begin{tabular}{lccccccccccc}
-\toprule
-\multirow{2}{*}{\textbf{Model}} & \multicolumn{3}{c}{\textbf{Component (p50)}} & \multicolumn{3}{c}{\textbf{End-to-end}} & \multirow{2}{*}{$T_{\max}$ (dec.\,s$^{-1}$)} & \multirow{2}{*}{\textbf{vCPU}} & \multirow{2}{*}{\textbf{RSS (MB)}} & \multirow{2}{*}{\textbf{mJ\,/\,dec.}} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
- & $t_{\text{feat}}$ & $t_{\text{inf}}$ & $t_{\text{ind}}{+}t_{\text{act}}$ & \textbf{p50} & \textbf{p95} & \textbf{p99} & & & & \\
-\midrule
-XGBoost       & 1.42 & 0.31 & 0.66 & 2.6 & 4.4  & \textbf{6.8}            & \textbf{2{,}300} & 0.91 & 412     & \textbf{0.42} \\
-Random forest & 1.42 & 1.24 & 0.66 & 3.6 & 7.1  & 11.8$^{\dagger}$        & 680              & 1.34 & 738     & 1.31 \\
-MLP           & 1.42 & 1.09 & 0.66 & 3.4 & 8.2  & 13.6$^{\dagger}$        & 560              & 1.52 & 596     & 1.18 \\
-1D-CNN        & 1.42 & 3.47 & 0.66 & 5.9 & 16.1 & 26.4$^{\dagger}$        & $<250$           & 2.68 & 1{,}340 & 3.81 \\
-LSTM          & 1.42 & 5.62 & 0.66 & 8.1 & 23.4 & 38.1$^{\dagger}$        & $<250$           & 3.11 & 1{,}610 & 5.64 \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\input{../tables/generated/latency_budget}
+\end{table}
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.94\columnwidth, height=5.2cm,
-  xmode=log, log basis x=2, ymode=log,
-  xmin=200, xmax=5000, ymin=3, ymax=160,
-  xtick={250,500,1000,2000,4000},
-  xticklabels={250,500,1000,2000,4000},
-  xlabel={Offered load (decisions\,s$^{-1}$)},
-  ylabel={99th-percentile latency (ms)},
-  tick label style={font=\scriptsize}, label style={font=\scriptsize},
-  ymajorgrids, xmajorgrids, grid style={dashed, gray!28},
-  legend style={at={(0.02,0.97)}, anchor=north west, draw=none, font=\tiny,
-                legend columns=2, column sep=2pt, fill=white, fill opacity=0.85, text opacity=1}
-]
-\addplot[thick, mark=*,         mark size=1.5pt, color=blue!70!black]      coordinates {(250,3.6) (500,4.9) (1000,6.8) (2000,9.4) (4000,15.7)};
-\addlegendentry{XGBoost}
-\addplot[thick, mark=square*,   mark size=1.4pt, color=OliveGreen!70!black] coordinates {(250,6.1) (500,8.0) (1000,11.8) (2000,17.9) (4000,29.6)};
-\addlegendentry{Random forest}
-\addplot[thick, mark=triangle*, mark size=1.7pt, color=Plum]               coordinates {(250,7.2) (500,9.4) (1000,13.6) (2000,20.7) (4000,34.8)};
-\addlegendentry{MLP}
-\addplot[thick, mark=diamond*,  mark size=1.6pt, color=orange!85!black]    coordinates {(250,12.9) (500,17.8) (1000,26.4) (2000,41.2) (4000,72.5)};
-\addlegendentry{1D-CNN}
-\addplot[thick, mark=pentagon*, mark size=1.5pt, color=red!70!black]       coordinates {(250,18.4) (500,25.1) (1000,38.1) (2000,60.3) (4000,104.7)};
-\addlegendentry{LSTM}
-\addplot[very thick, dashed, black] coordinates {(200,10) (5000,10)};
-\addlegendentry{budget $B=10$\,ms}
-\end{axis}
-\end{tikzpicture}
-\caption{Tail latency against offered load. Only the gradient-boosted ensemble remains inside the near-real-time budget, and only up to roughly 2{,}300 decisions per second; the sequence models never conform at any measured load.}
+\includegraphics[width=\columnwidth]{../figures/generated/fig_latency_budget.pdf}
+\caption{The conformance verdict is an authoring choice, not a measurement. O-RAN specifies the near-real-time loop over 10\,ms to 1\,s, and the same measurements support four different conclusions depending on where in that range the budget is drawn. Reporting the crossing point per architecture converts the choice back into a measurement. \textbf{Emulated}; see Table~\ref{tab:latency}.}
 \label{fig:latency}
 \end{figure}
 

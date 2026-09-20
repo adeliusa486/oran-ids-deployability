@@ -58,15 +58,25 @@
 >
 > ### THE NEXT TASKS, precisely
 >
-> 1. **EXP-026 completion.** When `results/EXP-026/processed/transfer_summary__*.csv`
->    exist, write the report, regenerate figures/tables, re-run EXP-027 so the
->    target surfaces enter the prevalence sweep.
-> 2. **EXP-029 parts A and B** (grouping confound). Part C is done: fold
->    composition does **not** explain the FPR range. Part A was interrupted; it
->    reads the whole 227 MB CSV and takes several minutes.
-> 3. **Phases not yet started:** 28 calibration, 32 resource scaling,
->    33 adversarial, 34 drift, 35 Pareto, 37 manuscript, 38 reviewer attack,
->    39 reproducibility, 40 release.
+> **All campaign-2 experiments are COMPLETE.** Validation: 19 PASS, 1 WARN,
+> 3 BLOCKED, 0 FAIL. See "Campaign 2 — final results" at the end of this file.
+>
+> 1. **Manuscript.** 27 synthetic values remain and the draft banner is still up.
+>    The remaining ones are in the ablation section (C5 is WITHDRAWN, so that
+>    section should be deleted rather than filled), the confusion-matrix figure
+>    and the reliability figure. Run `python scripts/check_withdrawn_claims.py`
+>    before and after every editing pass.
+> 2. **EXP-029 part B** — the only experiment left unrun. Does `src_ip` grouping
+>    SCORE like grouping by attack type? Part A predicts it should not, because
+>    the alignment is only 20.6% of the oracle. Until it runs, that is a
+>    prediction and is labelled as one.
+> 3. **Re-run the network leakage audit at n=20.** D-019 promoted the network
+>    layer to co-primary but D-013's n=5 constraint still stands, so no
+>    network-layer claim may carry a significance mark yet.
+> 4. **BLOCKED and staying blocked here:** real RIC runtime and CPU/RAM under
+>    load. Both need a Linux host with isolated cores. See EXP-031 — the blocker
+>    is one uninstalled Windows feature plus a reboot, so it is cheap to close
+>    later and should not be designed around permanently.
 >
 > ### Do not repeat the mistakes already made
 >
@@ -935,3 +945,108 @@ landing page. **D-004 must be settled inside EXP-001, before any feature is comp
   quoting the wording results *would* carry once measured, and an automated
   summary had already repeated it as a result. It now says plainly that no real
   RIC measurement exists.
+
+---
+
+## Campaign 2 — final results (all experiments complete, 2026-09-20)
+
+### EXP-026 reverse — `D_B -> D_A`, the symmetry check
+
+- **Status:** complete, 20 seeds, 4,464 s
+- **Result:** all six non-trivial architectures degrade significantly (Holm
+  p = 0.0000). **Transfer fails in both directions**, so "D_B is simply harder"
+  is ruled out.
+- **The reverse is the worse direction.** On `D_A` the majority floor is 0.4862
+  and the stratified floor 0.4171. **`tree` (0.3430) and `rf` (0.3365) fall below
+  BOTH floors.** `xgboost`, `hgb` and `mlp` beat the majority classifier by
+  0.002-0.012. Only `logreg` (0.5631) clears it meaningfully.
+- **Caveat that must always travel with the reverse `Delta_F1`:** `D_B` has no
+  group key, so its held-out reference is a random split and every reverse
+  `Delta_F1` is an over-estimate. **The target-side distance from the floor does
+  NOT carry this caveat** — how `D_B` was split does not affect how the floors on
+  `D_A` behave.
+- **The mechanism, and it is clean:** categories present in the training corpus
+  transfer (`ddos` 0.83-0.87, `dos` 0.72-0.77, `probe` 0.87-0.89 for the boosted
+  models); categories absent from it do not. `D_B` has no web attacks, and web
+  recall on `D_A` is **0.004-0.013** for four of six architectures. `bruteforce`,
+  also absent, is 0.33-0.57.
+- **Why `logreg` wins both directions:** it is the only architecture with
+  non-trivial web recall (0.298) and the best bruteforce recall (0.568), because
+  it generalises coarsely instead of fitting source-specific signatures. It pays
+  with the worst benign specificity (0.706).
+
+### EXP-028 — calibration
+
+- **Status:** complete, 10 seeds, 6 models, 2,661 s
+- **Answer: NO.** Calibration improves every calibration metric and destroys the
+  operating point. `logreg` source: Brier 0.1023 -> 0.0486 and ECE 0.1852 ->
+  0.0866, while PPV goes 0.0174 -> 0.0025 and alerts/hour 35,330 -> 216,846.
+- **Mechanism:** a calibrator fitted on a corpus that is 94.63% attack maps
+  scores onto that prior, pushes nearly everything past 0.5, and the detector
+  flags everything.
+- **The stronger result:** every calibrator here is **monotone**, so none changes
+  the achievable operating points. Verified: Platt and temperature preserve
+  ROC-AUC to **under 1e-5** for five of six models. **Threshold saturation is a
+  discriminability limit, not a calibration failure.** Target ROC-AUC is
+  0.537-0.691.
+- **A near-miss worth remembering:** temperature scaling appears to rescue two
+  architectures in the reachability table. It preserves the ROC exactly, so it
+  rescues nothing — it moves where a **fixed threshold grid** lands on the same
+  curve. Any comparison of monotone calibrators over a fixed grid can manufacture
+  this. Report the ROC beside the grid.
+- **Oracle prior correction does not beat raw scores** on precision, even knowing
+  the target prior. It cuts the queue (19,551 -> 3,285/h) at half the remaining
+  recall. Prior shift is real, helps the queue, and is **not** what limits
+  precision.
+
+### EXP-033 — adversarial and degraded telemetry
+
+- **Status:** complete, 5 seeds, 6 models, 6 attacks x 6 magnitudes, 3,558 s
+- **NOT first** — O-RAN adversarial ML is prior art. The contribution is the
+  operational reading.
+- **Detection barely moves; the queue moves 2-4x.** `logreg` loses 0.014 macro-F1
+  under missing telemetry and gains 135,000 false alerts/hour.
+- **Stale telemetry is nearly harmless** (±0.004 at every magnitude). A delayed
+  E2 indication is far less serious than a missing one.
+- **Constrained evasion makes attacks MORE detectable** for the tree ensembles
+  (`rf` +0.057 at eps=0.50): attack traffic already has higher volumetric
+  features, so padding moves further from benign. **Report the constrained
+  number; the unconstrained one is an upper bound that points the wrong way.**
+- **Missing telemetry is the dominant fault, and it is about WHICH feature.** One
+  zeroed feature costs `logreg` 0.240 macro-F1; two cost 0.014. The subset is
+  resampled per cell, so variance across identity exceeds the trend in count.
+  Reported unsmoothed.
+- **Poisoning orders by capacity:** `rf` −0.181 at 25%, `xgboost` −0.148,
+  `logreg` −0.054. **The MLP improves** (+0.034) — label noise regularising an
+  over-fitted model.
+
+### EXP-035 — deployability, final
+
+Nine axes, all six architectures Pareto-efficient. Per-axis winners:
+
+| Model | Wins |
+|---|---|
+| `rf` | target F1, distance above floor, Brier |
+| `logreg` | deployment PPV, false alerts/hour |
+| `mlp` | **source F1** (the metric a paper reports), drift |
+| `tree` | p99 latency |
+| `hgb` | worst-case robustness |
+| `xgboost` | nothing |
+
+### Final validation state
+
+```
+19 PASS   1 WARN   3 BLOCKED   0 FAIL
+```
+
+BLOCKED: real RIC runtime, CPU/RAM under load (both need a Linux host with
+isolated cores), manuscript (27 synthetic values remain, draft banner up).
+WARN: latency is EMULATED.
+
+### A guard added this campaign
+
+`scripts/check_withdrawn_claims.py`, wired into `final_validation`. A claim is
+not withdrawn until no sentence in the manuscript asserts it. It found **17**
+surviving assertions on its first run, including a 1D-CNN and an LSTM reported
+with full hyperparameters, accuracy figures and latency percentiles across three
+tables and two figures — **neither model exists in `models/zoo.py`**. Now 0.

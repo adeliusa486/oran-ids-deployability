@@ -468,7 +468,23 @@ campaign_2:
   EXP-026:
     title: Cross-deployment transfer D_A -> D_B (RQ1, the headline)
     phase: 26
-    status: running
+    status: negative_result
+    gate: PASS
+    report: reports/EXP-026_cross_deployment_transfer.md
+    outcome: >
+      COMPLETE, both directions, 20 seeds each. Transfer largely FAILS and the
+      result is preserved, not re-run. Forward: 6/6 significant after Holm, best
+      architecture clears the stratified floor by 0.148, mlp lands BELOW it at
+      0.4223 with balanced accuracy 0.4966. Reverse: 6/6 significant, and WORSE --
+      tree (0.3430) and rf (0.3365) fall below BOTH floors on D_A. Symmetry rules
+      out "D_B is simply harder".
+    rank_finding: >
+      In-distribution score does not predict transfer. The source-best
+      architecture ranks LAST of six on the target; Spearman rho +0.143, p 0.787.
+    mechanism: >
+      Categories present in the training corpus transfer; categories absent from
+      it do not. D_B has no web attacks, and web recall on D_A is 0.004-0.013 for
+      four of six architectures.
     depends_on: [EXP-025]
     claims: [C2, C3, C4]
     maps_to_plan: [X2]

@@ -137,10 +137,21 @@ def prior_correct(p: np.ndarray, pi_src: float, pi_tgt: float) -> np.ndarray:
     Reported as an upper bound on what prior correction could buy; never as a
     deployable method and never attached to a claim.
     """
-    p = np.clip(p, 1e-9, 1 - 1e-9)
+    # float64 FIRST, and only then clip. Isotonic regression returns exactly
+    # 1.0 for its top block, and it inherits float32 from the score array. In
+    # float32, 1 - 1e-9 rounds to 1.0, so the clip is a no-op, 1 - p is 0, the
+    # odds are +inf and inf/(1+inf) is NaN. The symptom was a crash three
+    # functions downstream in sklearn, which is the good outcome -- the same
+    # bug in a metric that tolerates NaN would have quietly poisoned a mean.
+    p = np.clip(np.asarray(p, dtype=np.float64), 1e-12, 1 - 1e-12)
     r = (pi_tgt / (1 - pi_tgt)) / (pi_src / (1 - pi_src))
     odds = p / (1 - p) * r
-    return odds / (1 + odds)
+    out = odds / (1 + odds)
+    if not np.isfinite(out).all():
+        raise FloatingPointError(
+            "prior_correct produced %d non-finite values; the clip above should "
+            "make that impossible" % int((~np.isfinite(out)).sum()))
+    return out
 
 
 def ppv_at(tpr: float, fpr: float, pi: float = PI) -> float:
