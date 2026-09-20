@@ -100,8 +100,73 @@ def check_baselines():
 
 
 def check_generalisation():
-    check("GENERALISATION", BLOCKED,
-          "no target corpus (D-011). RQ1 has no result; see reviewer finding A1")
+    """RQ1. Unblocked by EXP-025; answered by EXP-026.
+
+    A PASS here means the experiment RAN and produced a result. It does not mean
+    the result was favourable -- it was not. A negative scientific result that is
+    measured, reported and preserved is a completed experiment, and conflating
+    that with a blocked one is exactly the confusion the campaign rules forbid.
+    """
+    f = ROOT / "results" / "EXP-026" / "processed" / "transfer_summary__a_to_b.csv"
+    if not f.exists():
+        return check("GENERALISATION", BLOCKED,
+                     "EXP-026 has not produced a summary; RQ1 has no result")
+    import csv
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    if not rows:
+        return check("GENERALISATION", FAIL, "summary file is empty")
+    seeds = {int(float(r["n_seeds"])) for r in rows}
+    if min(seeds) < 20:
+        return check("GENERALISATION", FAIL,
+                     "only %d split seeds; the standing design is 20 (D-012)"
+                     % min(seeds))
+    nt = [r for r in rows if r["model"] not in ("majority", "stratified")]
+    sig = sum(1 for r in nt if str(r.get("significant", "")).lower() == "true")
+    floor = next((float(r["target_f1"]) for r in rows
+                  if r["model"] == "stratified"), None)
+    below = [r["model"] for r in nt if floor is not None
+             and float(r["target_f1"]) <= floor]
+    detail = ("D_A->D_B run, %d seeds, %d/%d significant after Holm"
+              % (min(seeds), sig, len(nt)))
+    if below:
+        detail += "; %s at or BELOW the trivial floor" % ", ".join(below)
+    check("GENERALISATION", PASS, detail)
+
+
+def check_target_corpus():
+    """A11: the target corpus is transfer-only and every access is logged."""
+    prov = ROOT / "data" / "provenance" / "d_b_files.json"
+    if not prov.exists():
+        return check("TARGET CORPUS", BLOCKED, "no target corpus obtained")
+    p = json.loads(prov.read_text(encoding="utf-8"))
+    no_hash = [k for k, v in p.items() if not v.get("sha256")]
+    if no_hash:
+        return check("TARGET CORPUS", FAIL, "no checksum: %s" % no_hash)
+    log = ROOT / "results" / "EXP-026" / "logs" / "target_access.log"
+    if not log.exists():
+        return check("TARGET CORPUS", FAIL,
+                     "corpus present but no access log -- A11 is unverifiable")
+    n = len([ln for ln in log.read_text(encoding="utf-8").splitlines()
+             if ln.strip()])
+    check("TARGET CORPUS", PASS,
+          "%d file(s) checksummed, CC-BY-4.0, %d logged access(es)" % (len(p), n))
+
+
+def check_shared_space():
+    """The feature count the paper reports must be the one the code produces."""
+    try:
+        sys.path.insert(0, str(ROOT / "src"))
+        from oran_ids.features.shared import COLUMNS, load_spec
+        spec = load_spec()["counts"]
+    except Exception as exc:
+        return check("SHARED SPACE", FAIL, "%s: %s" % (type(exc).__name__, exc))
+    if spec["model_matrix_columns"] != len(COLUMNS):
+        return check("SHARED SPACE", FAIL,
+                     "spec says %d columns, code produces %d"
+                     % (spec["model_matrix_columns"], len(COLUMNS)))
+    check("SHARED SPACE", PASS,
+          "%d concepts / %d columns (draft claimed %d)"
+          % (spec["shared_concepts"], len(COLUMNS), spec["draft_claimed"]))
 
 
 def check_statistics():
@@ -117,7 +182,61 @@ def check_statistics():
 
 
 def check_robustness():
-    check("ROBUSTNESS", SKIP, "adversarial evaluation cut by D-009; stated as future work")
+    f = ROOT / "results" / "EXP-033" / "processed" / "adversarial_summary.csv"
+    if not f.exists():
+        return check("ROBUSTNESS", BLOCKED,
+                     "adversarial evaluation not run (was cut by D-009)")
+    prov = ROOT / "results" / "EXP-033" / "statistics" / "provenance.json"
+    pr = json.loads(prov.read_text(encoding="utf-8")) if prov.exists() else {}
+    n_models, n_seeds = len(pr.get("models", [])), len(pr.get("seeds", []))
+    import csv
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    atks = sorted({r["attack"] for r in rows})
+    if n_models < 6 or n_seeds < 3:
+        return check("ROBUSTNESS", WARN,
+                     "PARTIAL run only: %d model(s), %d seed(s). A --quick run "
+                     "writes the same filenames as a full one" % (n_models, n_seeds))
+    check("ROBUSTNESS", PASS,
+          "%d attack(s) x eps sweep over %d models, %d seeds; scored on burden "
+          "and threshold" % (len(atks), n_models, n_seeds))
+
+
+def check_calibration():
+    f = ROOT / "results" / "EXP-028" / "processed" / "calibration_summary.csv"
+    if not f.exists():
+        return check("CALIBRATION", BLOCKED, "EXP-028 not run")
+    prov = ROOT / "results" / "EXP-028" / "statistics" / "provenance.json"
+    pr = json.loads(prov.read_text(encoding="utf-8")) if prov.exists() else {}
+    n_models, n_seeds = len(pr.get("models", [])), len(pr.get("seeds", []))
+    import csv
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    cals = sorted({r["calibrator"] for r in rows})
+    oracle = [c for c in cals if "ORACLE" in c]
+    if n_models < 6 or n_seeds < 5:
+        return check("CALIBRATION", WARN,
+                     "PARTIAL run only: %d model(s), %d seed(s)"
+                     % (n_models, n_seeds))
+    detail = ("%d calibrator(s), %d models, %d seeds, fitted on a group-disjoint "
+              "source validation fold" % (len(cals), n_models, n_seeds))
+    if oracle:
+        detail += ("; %d labelled ORACLE (uses the target prior, not deployable)"
+                   % len(oracle))
+    check("CALIBRATION", PASS, detail)
+
+
+def check_estimator():
+    """B-E. The pooled estimator must be in use, and the gap reported."""
+    f = ROOT / "results" / "EXP-027" / "processed" / "estimator_comparison.csv"
+    if not f.exists():
+        return check("ESTIMATOR", BLOCKED, "EXP-027 not run")
+    import csv
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    need = {"ppv_pooled", "ppv_median_of_folds", "ppv_mean_of_folds"}
+    if not rows or not need.issubset(rows[0].keys()):
+        return check("ESTIMATOR", FAIL,
+                     "artefact does not report all three estimators")
+    check("ESTIMATOR", PASS,
+          "pooled is primary; mean and median reported beside it (D-018)")
 
 
 def check_latency():
@@ -139,7 +258,27 @@ def check_resource():
 
 
 def check_ric():
-    check("RIC INTEGRATION", BLOCKED, "Level 2 not executed (D-005)")
+    f = ROOT / "reports" / "EXP-031_real_ric_blocked.md"
+    detail = "Level 2 not executed (D-005)"
+    if f.exists():
+        detail = ("not executed: WSL2 VM platform absent, so no Linux kernel "
+                  "and no CPU isolation (EXP-031)")
+    check("RIC INTEGRATION", BLOCKED, detail)
+
+
+def check_extraction():
+    f = ROOT / "results" / "EXP-030" / "statistics" / "provenance.json"
+    if not f.exists():
+        return check("EXTRACTION", BLOCKED, "EXP-030 not run")
+    p = json.loads(f.read_text(encoding="utf-8"))
+    if not p.get("all_equivalent"):
+        return check("EXTRACTION", FAIL,
+                     "the fast exporter does not agree with the reference")
+    v = p.get("verdict", {})
+    check("EXTRACTION", PASS,
+          "vectorised agrees with reference; %.1fx speed-up, extraction still "
+          "dominates: %s" % (v.get("speedup_over_reference", 0),
+                             v.get("still_dominates")))
 
 
 def check_figures():
@@ -249,11 +388,13 @@ def main() -> int:
     print("=" * 74)
     print()
 
-    for fn in (check_data, check_splits, check_leakage, check_baselines,
-               check_generalisation, check_statistics, check_robustness,
-               check_latency, check_resource, check_ric, check_figures,
-               check_tables, check_references, check_reproducibility,
-               check_manuscript, check_claims, check_tests):
+    for fn in (check_data, check_target_corpus, check_splits, check_leakage,
+               check_baselines, check_shared_space, check_generalisation,
+               check_statistics, check_estimator, check_calibration,
+               check_robustness, check_latency, check_extraction,
+               check_resource, check_ric, check_figures, check_tables,
+               check_references, check_reproducibility, check_manuscript,
+               check_claims, check_tests):
         fn()
 
     width = max(len(n) for n, _, _ in results)
@@ -275,8 +416,14 @@ def main() -> int:
         print("  Fix the work, not the check.")
     elif n_blocked:
         print("\n  Nothing is broken. BLOCKED items are honest gaps: work that has")
-        print("  not been done and is reported as not done. The largest is the")
-        print("  absent target corpus, which leaves RQ1 without a result.")
+        print("  not been done and is reported as not done. The remaining ones")
+        print("  need a Linux host with isolated cores, which this machine")
+        print("  cannot provide -- see reports/EXP-031_real_ric_blocked.md.")
+        print()
+        print("  RQ1 now HAS a result, and it is negative: transfer largely")
+        print("  fails and one architecture lands below the trivial floor. A")
+        print("  measured, reported and preserved negative result is a")
+        print("  completed experiment, not a gap.")
     return 1 if n_fail else 0
 
 

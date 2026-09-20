@@ -1,0 +1,6 @@
+source (1640182, 18) attack 0.9463 | target (1215889, 18) attack 0.6071
+  seed 101 logreg   done 9.5s
+  seed 101 tree     done 8.4s
+  seed 101 rf       done 15.8s
+  seed 101 xgboost  done 12.6s
+  seed 101 hgb      done 30.8s

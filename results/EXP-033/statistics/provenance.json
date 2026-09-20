@@ -1,0 +1,59 @@
+{
+  "experiment": "EXP-033",
+  "seeds": [
+    101,
+    102
+  ],
+  "models": [
+    "logreg",
+    "tree"
+  ],
+  "subsample": 40000,
+  "eps_grid": [
+    0.0,
+    0.01,
+    0.05,
+    0.1,
+    0.25,
+    0.5
+  ],
+  "poison_grid": [
+    0.0,
+    0.01,
+    0.05,
+    0.1,
+    0.25
+  ],
+  "attacks": [
+    "gaussian_noise",
+    "missing_telemetry",
+    "stale_telemetry",
+    "scaling_attack",
+    "evasion_unconstrained",
+    "evasion_constrained"
+  ],
+  "pi": 0.002,
+  "lambda_b": 240000.0,
+  "never_perturbed": [
+    "proto_tcp",
+    "proto_udp",
+    "proto_icmp",
+    "proto_other"
+  ],
+  "monotone_up": [
+    "duration",
+    "src_bytes",
+    "src_pkts",
+    "tot_pkts",
+    "tot_bytes",
+    "mean_pkt_size",
+    "src_mean_pkt_size",
+    "bytes_per_s",
+    "pkts_per_s"
+  ],
+  "threat_model_note": "evasion_unconstrained is an UPPER BOUND and is not realisable: it permits reducing bytes and packets already sent. evasion_constrained is the realistic number.",
+  "not_first": "adversarial attacks on O-RAN ML are prior art; this experiment reports the operational reading, not primacy",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 17.5
+}
