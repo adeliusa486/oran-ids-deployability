@@ -1,0 +1,34 @@
+{
+  "Combined.zip": {
+    "status": "present",
+    "bytes": 28028224,
+    "sha256": "07531b251f3f35be70bf1d3dcca2e27274bd1b267c5a057c0fcea18668b9293d",
+    "source": "https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65",
+    "licence": "CC-BY-4.0",
+    "note": "Finnish national research repository (open). NOT the IEEE DataPort copy, which is paywalled."
+  },
+  "Encoded.zip": {
+    "status": "present",
+    "bytes": 30635901,
+    "sha256": "62de4b513e1f294d86b1d8c3a189401e3df3c7910d636d33920e940d8d263df0",
+    "source": "https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65",
+    "licence": "CC-BY-4.0",
+    "note": "Finnish national research repository (open). NOT the IEEE DataPort copy, which is paywalled."
+  },
+  "Combined.csv": {
+    "status": "present",
+    "bytes": 275265610,
+    "sha256": "fa36f80859585f474504ca69eb951a079b35145537976c86b00aae3aab46ee59",
+    "source": "https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65",
+    "licence": "CC-BY-4.0",
+    "note": "Finnish national research repository (open). NOT the IEEE DataPort copy, which is paywalled."
+  },
+  "Encoded.csv": {
+    "status": "present",
+    "bytes": 489226785,
+    "sha256": "7c238e2d5dabbc1afcd01c50db91372d6f6808f7572bb92baeb2df03a18af90c",
+    "source": "https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65",
+    "licence": "CC-BY-4.0",
+    "note": "Finnish national research repository (open). NOT the IEEE DataPort copy, which is paywalled."
+  }
+}

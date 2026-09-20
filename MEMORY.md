@@ -1,5 +1,80 @@
 # O-RAN IDS Research Memory
 
+> ## START HERE (new session)
+>
+> **Read this file top to bottom, then `configs/decisions.md`, then
+> `reports/SESSION_REPORT.md`. Then run `python -m experiments.final_validation`
+> to see the live state rather than trusting this file.**
+>
+> ### Where we are, 2026-09-20
+>
+> Repository is at commit `479372f`+ on `main`, working tree clean, 24 commits.
+> Validation: 11 PASS, 1 WARN, 4 BLOCKED, 0 FAIL.
+>
+> **Three findings are measured and hold up.** One draft claim (C9) is
+> contradicted by our own measurement. Two claims are withdrawn under
+> pre-registered criteria. See section "Current Best Results".
+>
+> ### THE NEXT TASK, precisely
+>
+> **`D_B` has just arrived and is verified. The transfer experiment (RQ1, the
+> paper's headline) has never been run. That is the next thing to do.**
+>
+> Files on disk, checksummed in `data/provenance/d_b_files.json`:
+> ```
+> data/raw/d_b/Combined.csv    275.27 MB   1,215,890 flows, 52 cols, 60.71% attack
+> data/raw/d_b/Encoded.csv     489.23 MB   pre-encoded; DO NOT USE, it fights the pipeline
+> ```
+> Source: https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65
+> Open, CC BY 4.0. **Not** the IEEE DataPort copy, which is paywalled.
+>
+> **Step 1 — build the shared feature space.** The two corpora were processed by
+> different tools and share no column names. They must be mapped by meaning, in
+> an explicit committed table, not inline in a script:
+>
+> | Concept | `D_A` (Zeek) | `D_B` (Argus) |
+> |---|---|---|
+> | duration | `duration` | `Dur` |
+> | src bytes | `src_bytes` | `SrcBytes` |
+> | dst bytes | `dst_bytes` | `DstBytes` |
+> | src packets | `src_pkts` | `SrcPkts` |
+> | dst packets | `dst_pkts` | `DstPkts` |
+> | total packets | `src_pkts`+`dst_pkts` | `TotPkts` |
+> | total bytes | `src_bytes`+`dst_bytes` | `TotBytes` |
+> | protocol | `proto` / `ip_proto` | `Proto` |
+>
+> Derived on both sides: mean packet size, bytes/s, packets/s, byte ratio,
+> packet ratio. **Report the TRUE feature count.** The draft claims 24; the
+> honest number is likely 8 base plus a handful derived. Do not inflate it.
+>
+> `D_B` has **no IP or port columns at all**, which removes an identity-leakage
+> risk and also means no group key is needed there (it is transfer-only).
+> `D_A` columns absent from `D_B`: `service`, `conn_state`, `history`,
+> `missed_bytes`, all HTTP fields. `D_B` columns absent from `D_A`: TTL, Load,
+> Rate, TCP window/RTT. None of these can be in the shared space.
+>
+> **Step 2 — run transfer.** Train on `D_A` network layer, evaluate once on
+> `D_B`. Report `Delta_F1` per architecture with the trivial floor beside it.
+>
+> **Step 3 — MANDATORY wording.** The A3 single-exporter control is NOT applied
+> (D-004, D-010). Zeek and Argus are different exporters, so every `Delta_F1`
+> is an UPPER BOUND on deployment shift and must be described as spanning "an
+> independently collected deployment AND an independent feature-extraction
+> pipeline". Never "due to deployment shift".
+>
+> **Step 4 — then** regenerate figures/tables/paper and re-run final_validation.
+>
+> ### Do not repeat the mistakes already made
+>
+> - Do NOT use `bootstrap_ci` below n=30. It is anti-conservative and it already
+>   produced a wrong significance claim once (D-012). Use t-intervals. 20 split
+>   seeds is the standing choice.
+> - Do NOT `\input` a LaTeX table body inside a `tabular`. It silently breaks.
+>   Generators emit complete tabular environments.
+> - Do NOT let two experiment runs write the same output path (D-014).
+> - Do NOT quote any `\syn{}` number from `paper/main.tex`. 51 remain synthetic.
+
+
 > Permanent research memory. Read this and `configs/experiment_registry.yaml` before
 > starting any phase. Never rewrite history here — append corrections instead.
 > Last updated: 2026-09-20 (EXP-000)
@@ -215,7 +290,7 @@ Added by EXP-000: **I13**, a non-learned cross-layer consistency baseline (from 
 | Role | Corpus | Status |
 |---|---|---|
 | Source `D_A` | **NetsLab-5GORAN-IDD** | **VERIFIED (partial) by EXP-001.** Downloaded, checksummed, profiled. Radio: 45,244 records, 1 Hz, 53-day span, group key `session` (n=30, 100% label-pure), 2,808 windows at 0.70% drop. Network: 1,723,817 Zeek flows, **no time column**, 4.85% duplicate rows, 6.94% duplicate uids, `src_ip` n=318. **CU/DU record-level join impossible.** Whole Zenodo record is **16.85 GB**, not 1.5 TB. Original landing-page notes: DOI `10.1109/IEEEDATA.2025.3614167`; Zenodo 18923275; Kaggle `10.34740/kaggle/ds/7416931`; CC-BY-4.0. Raw `.pcap` at O-CU + 22 PHY/MAC radio metrics from O-DU over E2 + Zeek logs. 6 classes. OAI testbed at UCD: 1 O-CU, 2 O-DU, 1 O-RU, Dell Precision 7920, 2 physical UEs. **~1.5 TB total**; `Network_Dataset.csv` 227 MB, `Lower_Layer_Data.db` 5.4 MB |
-| Target `D_B` | **5G-NIDD** | resolved, not downloaded. DOI `10.21227/xtep-hv36`. Raw pcapng published (BS1 2.2 GB, BS2 1.45 GB) — this is what makes the A3 single-exporter control feasible. No radio KPIs. `group_key: src_ip`. `role: transfer_only` |
+| Target `D_B` | **5G-NIDD** | **DOWNLOADED AND VERIFIED 2026-09-20.** `Combined.csv`, 1,215,890 flows, 52 Argus columns, **60.71% attack** (8 attack types + benign), 1 duplicate row, **no IP/port columns**. SHA-256 in `data/provenance/d_b_files.json`. Obtained free from the Finnish national repository under CC BY 4.0. Original landing-page notes: DOI `10.21227/xtep-hv36`. Raw pcapng published (BS1 2.2 GB, BS2 1.45 GB) — this is what makes the A3 single-exporter control feasible. No radio KPIs. `group_key: src_ip`. `role: transfer_only` |
 | External | **O-RAN E2SM-KPM DoS dataset** | candidate for Phase 13. `10.5281/zenodo.21198102`, MIT, 69.8 MB, University of Regina. Zenodo record has no description; feature overlap unknown |
 
 **Resolved by EXP-001:** record counts, label columns, timestamps, run identifiers,

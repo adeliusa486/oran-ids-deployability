@@ -530,7 +530,7 @@ and therefore no paper.
 ## D-011 — Target corpus for RQ1 is unresolved; Phase 2 proceeds on `D_A` regardless
 
 - **Phase:** 1/2
-- **Status:** `OPEN — blocks X2 only`
+- **Status:** `RESOLVED 2026-09-20` — the owner obtained 5G-NIDD from the Finnish national repository (open, CC BY 4.0), avoiding the IEEE paywall entirely. Route 1 in the table below, at zero cost. X2 is unblocked.
 - **Raised:** 2026-09-20
 
 ### Problem

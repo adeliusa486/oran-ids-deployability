@@ -5,8 +5,50 @@ descriptor_doi: "10.1109/IEEEDATA.2025.3592888"
 source_url: "https://ieee-dataport.org/documents/5g-nidd-comprehensive-network-intrusion-detection-dataset-generated-over-5g-wireless"
 # A3: use the published pcapng, NOT the published CSV.
 use_artefact: pcapng
-source_sha256: null       # fill from download, then commit
-group_key: src_ip         # A4: declared per corpus
+# VERIFIED 2026-09-20. Full record: data/provenance/d_b_files.json
+source_sha256:
+  Combined.zip: "07531b251f3f35be"     # truncated; full hash in provenance json
+  Combined.csv: "fa36f80859585f47"
+
+# Obtained free from the Finnish national research repository under CC BY 4.0.
+# NOT the IEEE DataPort copy, which requires a paid subscription for the same data.
+obtained_from: "https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65"
+fairdata_doi: "10.23729/e80ac9df-d9fb-47e7-8d0d-01384a415361"
+
+verified:
+  file: Combined.csv
+  n_rows: 1215890
+  n_cols: 52
+  exporter: "Argus (flow records, GTP layer removed, both base stations concatenated)"
+  attack_prevalence_pct: 60.71
+  duplicate_rows: 1
+  label_column: Label            # Benign / Malicious
+  type_column: "Attack Type"     # 8 attack types + Benign
+  tool_column: "Attack Tool"
+  attack_types:
+    UDPFlood: 457340
+    HTTPFlood: 140812
+    SlowrateDoS: 73124
+    TCPConnectScan: 20052
+    SYNScan: 20043
+    UDPScan: 15906
+    SYNFlood: 9721
+    ICMPFlood: 1155
+    Benign: 477737
+  attack_tools: [Hping3, Goldeneye, Torshammer, Nmap, Slowloris]
+  identifier_columns: "NONE -- no IP addresses or ports in this file"
+  note_on_identifiers: >
+    The absence of IPs and ports is a benefit, not a gap. It removes the
+    identity-leakage route where a model memorises which host attacks, and it
+    means no group key is needed here because D_B is transfer-only and is never
+    split for training.
+  do_not_use:
+    Encoded.csv: >
+      Pre-encoded and one-hot expanded, 489 MB. It drops original field names,
+      so it cannot be mapped onto D_A's Zeek columns. Combined.csv is the one
+      to use.
+group_key: null           # A4: not needed. D_B is transfer-only, never split
+                          # for training, and this file carries no IPs anyway.
 has_radio_kpis: false
 label_column: label
 role: transfer_only       # A11: enforced by audit/guard.py

@@ -245,6 +245,11 @@ experiments:
     gate: G3
 
   EXP-004:
+    unblocked: "2026-09-20 -- D_B obtained and verified; this is now the NEXT experiment"
+    prerequisite: >
+      Build the shared feature space FIRST, from an explicit committed mapping
+      table. D_A is Zeek, D_B is Argus; they share no column names and must be
+      mapped by meaning. Report the TRUE feature count, not the draft's claimed 24.
     title: Cross-deployment generalisation, A to B and B to A
     phase: 4
     maps_to_plan: [E1b, E1c]
