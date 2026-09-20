@@ -70,10 +70,28 @@
 >
 > ### Do not repeat the mistakes already made
 >
-> - **Do NOT `git stash -u` while a background job is running.** It deletes
->   untracked output directories out from under an open file handle and kills the
->   job silently. It destroyed a 20-seed transfer run this session, and the log
->   restored by `stash pop` made the job look alive for fifteen minutes.
+> - **Do NOT `git stash -u` while a background job is running.** It removes
+>   untracked output directories out from under an open file handle. The job
+>   keeps its handle and keeps writing to the now-orphaned file, so **output
+>   stops appearing at that path and the job looks dead**. `stash pop` then
+>   restores the log frozen at the moment of the stash, which makes it look
+>   deader.
+>   **CORRECTION, and it matters:** the run was *not* killed. It completed all 20
+>   seeds normally. What went wrong next was worse and was entirely mine —
+> - **`Get-Process python` is NOT a liveness check on this host.** The Windows
+>   Store Python does not run as `python.exe`, so the filter matched nothing and
+>   reported "no python processes" while three were running. On that evidence a
+>   duplicate transfer run was started, and for eleven minutes **two processes
+>   wrote the same output paths** — the exact D-014 collision, self-inflicted.
+>   Use this instead, and read the command line:
+>   ```powershell
+>   Get-CimInstance Win32_Process -Filter "Name LIKE '%python%'" |
+>     ForEach-Object { "{0} {1} {2}" -f $_.ProcessId, $_.CreationDate, $_.CommandLine }
+>   ```
+> - **Never "restart" a job without first confirming the original is dead by its
+>   command line**, and never let two runs share an output path or a log path.
+>   Two writers with `>` on one log produced an interleaved file that told a
+>   coherent-looking but false story about progress.
 > - Do NOT average a non-linear functional of a rate across folds. **Pool the
 >   counts.** See D-018 -- it cost us a published finding.
 > - Do NOT trust a handover table. D-015 was written in this file as settled fact
