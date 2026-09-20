@@ -47,9 +47,13 @@ gates:
       - label column, group key and time field identified in the artefact
       - CU-DU synchronisation tolerance established
       - licence permits redistribution of derived features
-      - D-004 (subsampling policy) decided and recorded before any feature is computed
+      - the Zeek/Argus semantically-comparable feature intersection is ENUMERATED and its size reported
     status: BLOCKED
     blocked_on: artefact not yet downloaded
+    note: >
+      D-004 decided 2026-09-20 in favour of published features on both sides, so the A3
+      single-exporter control is not applied. Mitigations M1 and M2 are mandatory and
+      M1 becomes an experiment in its own right -- see EXP-001b.
 
   G2:  {phase: 2,  name: Leakage-safe deterministic pipeline,     status: BLOCKED, blocked_on: G1}
   G3:  {phase: 3,  name: Baseline ladder established,             status: BLOCKED, blocked_on: G2}
@@ -58,7 +62,7 @@ gates:
   G6:  {phase: 6,  name: Base rate and alert burden,              status: BLOCKED, blocked_on: G4}
   G7:  {phase: 7,  name: Calibration and threshold,               status: BLOCKED, blocked_on: G4}
   G8:  {phase: 8,  name: Adversarial robustness,                  status: BLOCKED, blocked_on: G4}
-  G9:  {phase: 9,  name: Latency and resource measurement,        status: BLOCKED, blocked_on: [G3, D-005]}
+  G9:  {phase: 9,  name: Latency and resource measurement,        status: BLOCKED, blocked_on: [G3, linux-measurement-host]}
   G10: {phase: 10, name: RIC integration,                         status: BLOCKED, blocked_on: G9}
 
 # --------------------------------------------------------------------------
@@ -130,8 +134,37 @@ experiments:
     failure_criteria:
       - no usable group key  -> D-001 reverses, fall back to plan option A1-c
       - CU-DU join impossible -> claim C5 is withdrawn, not weakened
-    decisions_required: [D-004]
+    decisions_required: []
     gate: G1
+
+  EXP-001b:
+    title: "Exporter-confound bound (mitigation M1 for D-004)"
+    phase: 1
+    maps_to_plan: [T-A3]
+    claims: [C2]
+    status: planned
+    depends_on: [EXP-001]
+    research_question: >
+      How much of a measured Delta_F1 can a change of flow exporter alone produce, on
+      data where deployment shift is zero by construction?
+    hypothesis: >
+      H0-exporter: per-feature agreement between a pinned exporter's output and D_B's
+      published Argus CSV is high (median correlation >= 0.9) on the features we use.
+    baseline: D_B's published Argus CSV
+    method:
+      - download D_B raw pcapng (BS1 2.2 GB, BS2 1.45 GB)
+      - recompute features with one pinned exporter at one pinned version
+      - align on the same flows; report per-feature correlation and distributional distance
+      - train and evaluate the ladder on each feature set separately, same splits
+      - report the Delta_F1 attributable to the exporter change alone
+    success_criteria:
+      - the exporter-only Delta_F1 is reported with a CI, whatever its size
+    failure_criteria:
+      - "median per-feature correlation below 0.9: D-004 option (b) is not interpretable
+        and must be reversed, or the contribution reframed away from a Delta_F1 magnitude"
+    reporting_rule: >
+      Low agreement is evidence, not a defect. Report it. It is what makes the headline
+      number interpretable under D-004 option (b).
 
   EXP-002:
     title: Deterministic pipeline and leakage audit

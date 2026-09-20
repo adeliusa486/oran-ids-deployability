@@ -155,8 +155,8 @@ Full register: `configs/decisions.md`.
 | D-001 | Adopt NetsLab-5GORAN-IDD as `D_A` (plan option A1-b) | decided, provisional |
 | D-002 | `D_B` = 5G-NIDD, transfer-only, enforced in code | decided |
 | D-003 | `source` normalisation primary; report all three modes | decided |
-| **D-004** | **`D_A` subsampling policy for the single-exporter control** | **OPEN — blocking for Phase 2** |
-| **D-005** | **Track C fallback level** | **OPEN — decide before any runtime work** |
+| **D-004** | **Published features on both sides; A3 single-exporter control NOT applied** | **DECIDED 2026-09-20.** Mitigations M1 and M2 are mandatory |
+| **D-005** | **Track C at Level 2: real Near-RT RIC + synthetic E2 load, on a Linux host** | **DECIDED 2026-09-20** |
 | D-006 | Report p50/p95/p99; never mean alone; per-stage breakdown | decided |
 | D-007 | The floor experiment runs before any model is timed | decided |
 
@@ -181,10 +181,15 @@ baseline; **I14** per-stage latency breakdown; **I15** widen or bound the threat
 
 ## Known Limitations
 
-1. **Track C cannot run on this host.** Windows 11; `docs/RUNTIME.md` requires
-   `isolcpus`, `nohz_full`, `cpupower`, `pidstat` — all Linux. D-005 is unavoidable.
-2. **A3 single-exporter control is in tension with `D_A`'s size.** 1.5 TB versus 3.65 GB.
-   D-004 must resolve this before any feature is computed.
+1. **Track C runs at Level 2** (D-005): a real Near-RT RIC with a **synthetic** E2
+   load generator, no gNB, on a separate Linux host. Real-RAN arrival process and
+   over-the-air effects are out of scope and belong in Limitations. Permitted phrasing:
+   "measured on a real Near-RT RIC under synthetic E2 load". Never "real deployment".
+2. **The A3 single-exporter control is NOT applied** (D-004, decided 2026-09-20).
+   `Δ_F1` therefore conflates deployment shift with Zeek-vs-Argus exporter differences
+   and is an **upper bound** on true deployment shift, not an estimate of it. Every
+   statement of `Δ_F1` must carry that qualifier. Mitigations M1 (measure the confound
+   on `D_B`) and M2 (intersection sensitivity) are mandatory, not optional.
 3. **Literature depth.** 0 full texts. Absence claims are provisional.
 4. **P05 unretrievable** (HTTP 403) — one of only two latency comparators.
 5. **Energy (C15) is not measurable** with the planned method (A8), and no retrieved

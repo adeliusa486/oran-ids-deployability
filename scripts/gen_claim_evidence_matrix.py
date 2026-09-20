@@ -48,9 +48,9 @@ add(claim_id="C2",
     literature_support="P14 (2026) reports cross-domain generalisation failure for lightweight IDS on IIoT corpora; a large NIDS literature reports the same phenomenon",
     literature_constraint="The phenomenon is NOT novel. Only its measurement for an O-RAN detector, jointly with the deployment criteria, is ours. P14 further reports the evaluation protocol can reverse which target appears harder, so the ordering across architectures may be unstable",
     falsified_if="the 95% CI on delta_f1 includes 0 for any architecture",
-    limitation="the magnitude is confounded with exporter differences unless D-004 resolves in favour of a single exporter",
+    limitation="D-004 decided (2026-09-20) against the single-exporter control, so the magnitude CONFLATES deployment shift with Zeek-vs-Argus exporter differences. Delta_F1 is an UPPER BOUND on deployment shift, not an estimate of it. Mitigations M1 (measure the exporter-only Delta_F1 on D_B, where deployment shift is zero by construction) and M2 (intersection sensitivity) are mandatory",
     allowed_wording_today="none - do not state a number or a range",
-    action_required="resolve D-004; run EXP-004; add the I12 ordering-stability test")
+    action_required="run EXP-001b (M1) BEFORE quoting any Delta_F1; run EXP-004; add the I12 ordering-stability test. Claim text must say 'across an independently collected deployment AND an independent feature-extraction pipeline', never 'due to deployment shift'")
 
 add(claim_id="C3",
     claim_text_in_manuscript="Degradation is not an artefact of one corpus (reverse transfer is comparably poor)",
@@ -130,9 +130,9 @@ add(claim_id="C9",
     literature_support="P04 (ICCCN 2026) measures a real FlexRIC xApp against the same 10 ms budget and reports p95 compliance; P05 measures ~600-850 ms against a 1000 ms budget",
     literature_constraint="CRITICAL RESCOPE. P04 and P05 reach opposite-magnitude results because they pick opposite ends of the 10 ms - 1 s near-RT range. A single-value budget makes this verdict an authoring choice rather than a measurement",
     falsified_if="the floor experiment p99 is already near B, which would make the comparison uninformative",
-    limitation="cannot be measured on the current Windows host; requires the D-005 fallback decision. A non-real-RIC result must be labelled 'emulated deployment'",
+    limitation="D-005 decided: Level 2, a real Near-RT RIC under SYNTHETIC E2 load on a separate Linux host, no gNB. Permitted phrasing is 'measured on a real Near-RT RIC under synthetic E2 load'. Real-RAN arrival process and over-the-air effects are out of scope and belong in Limitations",
     allowed_wording_today="none",
-    action_required="adopt I11 (sweep B over [10 ms, 1 s] and report each architecture's crossing point); decide D-005; run the floor experiment first")
+    action_required="adopt I11 (sweep B over [10 ms, 1 s] and report each architecture's crossing point); provision the Linux measurement host; run the floor experiment first; record the synthetic arrival process as a reported parameter, since a Poisson and a periodic generator produce different tails")
 
 add(claim_id="C10",
     claim_text_in_manuscript="Feature extraction dominates latency, not inference",

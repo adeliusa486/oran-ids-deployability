@@ -19,13 +19,19 @@ source corpus. It is a *candidate*: nothing has been downloaded or checked.
 The blocking item is now **artefact-level verification (EXP-001)**, not corpus
 discovery. See `configs/corpora/d_a.yaml` and `configs/decisions.md` D-001.
 
-Two decisions are open and block later phases:
+Two structural decisions were taken on 2026-09-20 (`configs/decisions.md`):
 
-- **D-004** — `D_A` raw captures total ~1.5 TB against `D_B`'s ~3.65 GB, so the
-  "one exporter over both corpora" control (A3) needs a pre-registered
-  subsampling policy. Blocking for Phase 2.
-- **D-005** — Track C needs Linux CPU isolation tooling; the development host is
-  Windows. The fallback level must be chosen before any runtime work.
+- **D-004** — published features are used on **both** sides (`D_A` Zeek/CSV,
+  `D_B` Argus CSV). The A3 single-exporter control is **not** applied, because
+  `D_A`'s raw captures total ~1.5 TB. Consequence: `Δ_F1` conflates deployment
+  shift with exporter differences and is an **upper bound**, not an estimate.
+  Mitigations M1 (measure the exporter-only `Δ_F1` on `D_B`, where deployment
+  shift is zero by construction — EXP-001b) and M2 (feature-intersection
+  sensitivity) are mandatory, and M1 must run before any `Δ_F1` is quoted.
+- **D-005** — Track C runs at **Level 2**: a real Near-RT RIC under a
+  **synthetic** E2 load generator, no gNB, on a separate Linux host. Results are
+  described as "measured on a real Near-RT RIC under synthetic E2 load", never as
+  a real deployment.
 
 Start here: `MEMORY.md`, then `configs/experiment_registry.yaml`.
 
