@@ -435,3 +435,147 @@ confidence intervals, and generated tables.
 
 Scope reduction is about **how many questions we ask**, never about how carefully we
 answer the ones we keep.
+
+---
+
+## D-010 — Bulk pcap download stopped; C5 withdrawn; multi-pair transfer adopted instead
+
+- **Phase:** 1
+- **Status:** `DECIDED 2026-09-20`
+- **Decided by:** project owner ("yes don't need to download")
+
+### What was stopped
+
+The 16.4 GB raw-archive download, at 3.7 GB. Kept on disk: `Web.zip` (0.59 GB) and
+`DDOS.zip` (3.09 GB), both complete. Deleted: partial `DoS.zip` and `BruteForce.zip`.
+Never started: `Benign.zip`.
+
+### Direct consequence: claim C5 is WITHDRAWN
+
+This is the pre-registered outcome from EXP-001, recorded before the data was seen:
+
+> *"CU–DU join impossible → claim C5 is withdrawn, not weakened."*
+
+The join itself is not the problem — EXP-001c proved it works at a 96.2% median rate.
+The problem is coverage. The two complete archives are **Web and DDoS, both attack-only**.
+`Benign.zip` was never fetched, so there are **no benign joined windows**, and a detector
+cannot be trained or evaluated without them.
+
+**C5 is withdrawn, not weakened, and the manuscript's Section VI-C is deleted rather than
+softened.** What must NOT happen is a rescue attempt: reporting a fusion result on
+attack-only data, or quietly redefining C5 as something the available data can support.
+
+### What survives as an observation, clearly labelled as one
+
+One structural point remains and costs nothing: **`D_B` exports no radio telemetry at
+all.** The modality that helps most in-distribution (P03: radio beats flow by 8.5–11.7
+ROC-AUC points, on this same corpus) is the one least likely to exist in another
+deployment. That is a real deployability argument and prior work does not make it.
+
+It must be written as a **structural observation with prior work cited for the
+in-distribution half**, never as our measured ablation. No number of ours attaches to it.
+
+### The replacement, and it is a better experiment
+
+`docs/IMPLEMENTATION_PLAN.md` §21, risk **R4**, anticipated exactly this situation:
+
+> *"Two corpora cannot establish a general claim. [...] Add corpus pairs if A1-c is
+> chosen — with packet-only corpora, three or four pairs is cheap and materially
+> strengthens the claim."*
+
+Adopted. **X3 is replaced by X3′: cross-deployment transfer over multiple corpus
+pairs** rather than one. Rationale:
+
+| | X3 (fusion ablation) | X3′ (multi-pair transfer) |
+|---|---|---|
+| Data cost | 16.4 GB of pcap | tens of MB of published CSV per corpus |
+| Strengthens | one secondary claim | **the paper's headline claim, RQ1** |
+| Reviewer risk addressed | none | **R4, a listed major threat** |
+| Generality | one deployment pair | three or four pairs |
+
+A single A→B pair supports "transfer failed between these two". Three or four pairs
+support "transfer failure is the normal case, and here is how much it varies", which is
+a materially stronger and more defensible claim for the same effort.
+
+### Cost this incurs: A3 returns
+
+Without `D_A`'s pcaps we cannot run our own exporter on `D_A`, so the single-exporter
+control (A3, plan priority "Must fix") is **not** satisfied. `Δ_F1` reverts to an
+**upper bound** on deployment shift, conflated with exporter differences.
+
+This is the one genuinely uncomfortable consequence and it must be stated in the paper,
+not buried. Mitigations, in order of preference:
+
+1. **M1 still runs** where a corpus publishes both raw captures and its own derived CSV.
+   Recomputing one corpus's features with our exporter and comparing against its
+   published CSV bounds the exporter term on data where deployment shift is zero by
+   construction. This needs only that corpus's captures, not `D_A`'s 16 GB.
+2. **M2 retained**: report `Δ_F1` on the full shared feature space and on a conservative
+   sub-intersection restricted to features whose definitions are unambiguous across
+   exporters (packet and byte counts, duration) and which are therefore least
+   exporter-sensitive.
+3. Wording discipline: every `Δ_F1` is described as spanning *an independently collected
+   deployment **and** an independent feature-extraction pipeline*. That is the honest
+   description, and it is arguably the more realistic deployment condition anyway — an
+   operator inheriting a model also inherits somebody else's exporter.
+
+### Small downloads are not affected
+
+"No downloads" is read as "no multi-gigabyte packet captures". Published feature CSVs of
+tens of megabytes remain in scope: without at least one target corpus there is no RQ1
+and therefore no paper.
+
+---
+
+## D-011 — Target corpus for RQ1 is unresolved; Phase 2 proceeds on `D_A` regardless
+
+- **Phase:** 1/2
+- **Status:** `OPEN — blocks X2 only`
+- **Raised:** 2026-09-20
+
+### Problem
+
+RQ1 (cross-deployment transfer) needs a second, independently collected corpus.
+`D_B` = 5G-NIDD is published on IEEE DataPort behind a login, and no anonymous direct
+CSV route was found. The obvious alternative, the University of Queensland NF-* NetFlow
+family, sits behind a JavaScript portal whose file API did not resolve to a public
+endpoint.
+
+### Why the NF-* family is worth pursuing anyway
+
+It would solve two problems at once, and it is what plan §21 risk **R4** recommends:
+
+> *"Add corpus pairs if A1-c is chosen — with packet-only corpora, three or four pairs
+> is cheap and materially strengthens the claim."*
+
+NF-UNSW-NB15, NF-ToN-IoT, NF-BoT-IoT and NF-CSE-CIC-IDS2018 (v1, 12 features) were all
+regenerated **with one tool, nProbe, onto one identical schema**. That means:
+
+1. **Four corpora, twelve ordered pairs** instead of a single A→B claim.
+2. **The A3 exporter control comes for free**, because the exporter is held constant
+   across every pair by construction. Better still, it gives an *empirical bound* on the
+   exporter confound: if `Δ_F1` is large with the exporter fixed, the exporter cannot be
+   the explanation for a large `Δ_F1` in our O-RAN pair. That is a stronger answer to
+   reviewer risk R1 than any agreement study.
+
+### Options, in preference order
+
+| # | Route | Cost | Note |
+|---|---|---|---|
+| 1 | Owner downloads 5G-NIDD from IEEE DataPort with institutional access | minutes | Smallest artefacts are `Encoded.zip` (29 MB) and the combined CSV. Keeps the 5G framing |
+| 2 | Owner downloads the NF-* v1 CSVs from the UQ portal in a browser | minutes | Unlocks the multi-pair design and the exporter control |
+| 3 | Find a provenance-clean mirror | uncertain | Third-party HuggingFace/Kaggle re-uploads exist but are **unverified**. Using one would reintroduce exactly the provenance problem this project exists to avoid |
+
+### Decision for now
+
+**Do not block on it.** X1 (in-distribution baselines), the leakage audit, X4 (alert
+burden) and X5 (latency) all run on `D_A` alone and are the majority of the work. X2 is
+the only experiment that waits.
+
+`D_A` supports a full Phase 2 immediately: 1,723,817 network flows with an `src_ip`
+group key (318 groups) and 45,244 radio records with a recovered `session` group key
+(30 label-pure runs).
+
+**Do not substitute an unverified mirror to unblock X2.** An unattributable corpus is
+worse than a missing experiment: the missing experiment is a stated limitation, the
+unattributable one is a reproducibility failure.
