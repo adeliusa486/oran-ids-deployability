@@ -12,7 +12,12 @@
 
 meta:
   project: oran-ids-deployability
-  registry_version: 1
+  registry_version: 2
+  scope: >
+    Cut to a Q1 paper by D-009 on 2026-09-20. Five core experiments (X1-X5) plus the
+    statistical spine. Seven experiments are marked CUT with the cost of each cut
+    recorded in configs/decisions.md. Scope reduction changes how many questions we
+    ask, never how carefully we answer the ones we keep.
   created: 2026-09-20
   created_by: EXP-000
   repository: https://github.com/adeliusa486/oran-ids-deployability
@@ -296,6 +301,9 @@ experiments:
     gate: G7
 
   EXP-008:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- adversarial robustness. Gap G7 was graded weak, so it was never a novelty claim. Future work
     title: Adversarial and perturbation robustness
     phase: 8
     maps_to_plan: [new]
@@ -333,6 +341,9 @@ experiments:
     gate: G9
 
   EXP-010:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- RIC fault injection. X5 still measures latency on a real Near-RT RIC
     title: RIC integration and fault behaviour
     phase: 10
     maps_to_plan: [new]
@@ -342,9 +353,20 @@ experiments:
     fault_tests: [ric_restart, xapp_restart, telemetry_interruption, high_load, missing_feature, malformed_telemetry, model_failure]
     gate: G10
 
-  EXP-011: {title: Model efficiency and compression,        phase: 11, status: blocked, depends_on: [EXP-009]}
-  EXP-012: {title: Drift and longitudinal robustness,       phase: 12, status: blocked, depends_on: [EXP-004]}
+  EXP-011:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- model compression. A separate paper
+    inline: {title: Model efficiency and compression,        phase: 11, status: blocked, depends_on: [EXP-009]}
+  EXP-012:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- longitudinal drift. The corpus HAS a 53-day span that would support it; recorded as the single best follow-up
+    inline: {title: Drift and longitudinal robustness,       phase: 12, status: blocked, depends_on: [EXP-004]}
   EXP-013:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- third external corpus. Two corpora is the honest limitation and is already stated
     title: External-dataset validation
     phase: 13
     status: blocked
@@ -354,7 +376,11 @@ experiments:
       University of Regina). Different site and team, so genuinely independent.
       Feature overlap with our shared space is UNKNOWN and must be checked first.
     hard_rule: another split of D_A or D_B is not external validation
-  EXP-014: {title: Complete ablation programme,             phase: 14, status: blocked, depends_on: [EXP-005]}
+  EXP-014:
+    status_override: CUT
+    cut_reason: >
+      folded into X3 by D-009 -- the feature-family ablation IS the ablation programme
+    inline: {title: Complete ablation programme,             phase: 14, status: blocked, depends_on: [EXP-005]}
   EXP-015: {title: Statistical audit,                       phase: 15, status: blocked, depends_on: [EXP-004]}
   EXP-016: {title: Computational reproducibility,           phase: 16, status: blocked}
   EXP-017: {title: Figure generation,                       phase: 17, status: blocked, depends_on: [EXP-015]}
@@ -366,6 +392,9 @@ experiments:
   EXP-023: {title: Final clean reproduction,                phase: 23, status: blocked, depends_on: [EXP-022]}
 
   EXP-D01:
+    status_override: CUT
+    cut_reason: >
+      cut by D-009 -- Table VIII is DELETED and C13 becomes a qualitative observation (plan A9's own recommendation)
     title: "Track D -- systematic reporting-practice survey"
     phase: parallel
     maps_to_plan: [E9]

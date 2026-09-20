@@ -6,6 +6,28 @@
 
 ---
 
+## Scope (set by D-009, 2026-09-20)
+
+**This is a Q1 journal paper, not a thesis.** Five core experiments plus the
+statistical spine. Seven experiments are CUT; the cost of each cut is recorded in
+`configs/decisions.md` D-009.
+
+| ID | Experiment | Answers |
+|---|---|---|
+| X1 | In-distribution baselines on `D_A`, incl. majority-class floor | reference point |
+| X2 | Cross-deployment transfer `D_A -> D_B` | **RQ1, the headline** |
+| X3 | Radio / network / fusion ablation | the one novel claim we still own |
+| X4 | Alert burden over a base-rate sweep | RQ2 |
+| X5 | Latency p50/p95/p99 over a **swept** budget | RQ3 |
+
+CUT: adversarial robustness, RIC fault injection, compression, longitudinal drift,
+third external corpus, the systematic reporting survey (Table VIII **deleted**),
+energy per decision, few-shot adaptation.
+
+**Not negotiable despite the cut:** multiple seeds and CIs, run-disjoint splitting,
+the trivial baseline, and reporting negative results. Scope reduction changes how many
+questions we ask, never how carefully we answer the ones we keep.
+
 ## Current Phase
 
 Phase 1 in progress. EXP-000 and EXP-001 complete. **Phase 2 is blocked** on the

@@ -381,3 +381,57 @@ not work on one category it will not work on five, and the pilot costs 4% of the
 the OneDrive-synced project tree, so that 16 GB of packet captures is not uploaded to
 the owner's cloud storage. The path is recorded in provenance; nothing in the repository
 depends on its value.
+
+---
+
+## D-009 — Cut the experimental programme to a Q1 paper, not a thesis
+
+- **Phase:** 1
+- **Status:** `DECIDED 2026-09-20`
+- **Decided by:** project owner ("we don't need so big experiments, do those which are
+  easily acceptable in a normal Q1 research paper")
+
+### Problem
+
+The registry held 27 experiments across 23 phases. That is a multi-year programme. A Q1
+journal paper needs a defensible core, not exhaustive coverage, and an over-scoped plan
+mostly produces half-finished experiments that a reviewer reads as padding.
+
+### What we keep — the core five
+
+Each is kept because a reviewer would ask for it, not because it is available.
+
+| Keep | Why a reviewer requires it |
+|---|---|
+| **X1 In-distribution baselines** on `D_A` | Without it no other number has a reference. Includes the trivial majority-class floor, which is what shows the task is non-trivial |
+| **X2 Cross-deployment transfer** `D_A -> D_B` | The headline. RQ1. This is the paper |
+| **X3 Radio / network / fusion ablation** | The only genuinely novel claim we still own (the transfer half of the sign-flip). Requires the raw-archive join, which is already validated |
+| **X4 Alert burden over a base-rate sweep** | Pure post-processing of X2. Near-zero cost, and it is the criterion that turns an accuracy result into a deployability result |
+| **X5 Latency with p50/p95/p99 over a swept budget** | RQ3, and the swept budget is our strongest methodological contribution (a single 140 ms measurement passes a 1 s budget and fails a 10 ms one) |
+
+Plus the statistical spine that makes them citable: multiple seeds, run-disjoint splits,
+confidence intervals, and generated tables.
+
+### What we cut, and what each cut costs
+
+| Cut | Was | Cost of cutting |
+|---|---|---|
+| Adversarial robustness (Phase 8) | EXP-008 | None to this paper. Gap G7 was graded **weak** anyway, so it was never a novelty claim. Becomes future work |
+| RIC fault-injection tests (Phase 10) | EXP-010 | Low. X5 still measures latency on a real Near-RT RIC; we simply do not also test restart and recovery |
+| Model compression / quantisation (Phase 11) | EXP-011 | Low. Interesting, but a separate paper |
+| Longitudinal drift (Phase 12) | EXP-012 | Moderate, and genuinely a shame: the corpus has a 53-day span that would support it. Recorded as the single best follow-up |
+| Third external corpus (Phase 13) | EXP-013 | Moderate. Two corpora is the honest limitation and is already in the Limitations section |
+| Systematic reporting survey (Track D) | EXP-D01 | None. It had no evidence behind it. **Table VIII is deleted** and claim C13 becomes a qualitative observation with a few named examples, which is what plan A9 recommended anyway |
+| Energy per decision | E5d | None. Already recommended for withdrawal under I9: RAPL cannot attribute energy to a container |
+| Few-shot adaptation | EXP-012/E7 | Low. Mentioned as future work |
+
+### What does NOT get cut, however tempting
+
+- Multiple seeds and confidence intervals. A single-seed result is not publishable.
+- Run-disjoint splitting. A random split would inflate every number.
+- The trivial majority-class baseline. Without it the transfer result cannot be
+  interpreted.
+- Reporting negative results.
+
+Scope reduction is about **how many questions we ask**, never about how carefully we
+answer the ones we keep.
