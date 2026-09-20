@@ -1,0 +1,309 @@
+# Experiment Registry
+#
+# Two identifier schemes exist in this project and both are kept:
+#   EXP-nnn  execution unit  -- one protocol run, one report, one commit
+#   E<n><x>  scientific experiment -- as enumerated in IMPLEMENTATION_PLAN.md section 13
+# An EXP may execute one or several E-experiments. Every E-experiment must map to a
+# claim in docs/claims.yaml. Anything that maps to no claim is deleted, not run.
+#
+# status: planned | blocked | running | complete | failed_technical | negative_result
+# A negative scientific result is 'negative_result', never 'failed_technical'.
+# Never edit an entry to make a result look better; append a correction instead.
+
+meta:
+  project: oran-ids-deployability
+  registry_version: 1
+  created: 2026-09-20
+  created_by: EXP-000
+  repository: https://github.com/adeliusa486/oran-ids-deployability
+  rule: >
+    No experiment may start until its predecessors' gates are PASS or
+    PASS_WITH_LIMITATIONS, and until MEMORY.md and this registry have been read.
+
+# --------------------------------------------------------------------------
+# Phase gates. An experiment inherits the gate of its phase.
+# --------------------------------------------------------------------------
+gates:
+  G0:
+    phase: 0
+    name: Repository and literature reconstruction
+    criteria:
+      - repository audited against measured state, not claimed state
+      - literature matrix exists with per-cell verification provenance
+      - gap matrix distinguishes supported gaps from unsupported ones
+      - claim-to-evidence matrix exists
+      - decision register exists
+      - all four repository guards executed and their real output preserved
+    status: PASS_WITH_LIMITATIONS
+    limitation: >
+      Literature pass read zero full texts. 9 of 25 matrix entries are title-only.
+      Absence-based gaps (G4, G7 in GAP_MATRIX.md) are provisional.
+
+  G1:
+    phase: 1
+    name: Source corpus resolved and verified at artefact level
+    criteria:
+      - D_A downloaded and checksummed
+      - label column, group key and time field identified in the artefact
+      - CU-DU synchronisation tolerance established
+      - licence permits redistribution of derived features
+      - D-004 (subsampling policy) decided and recorded before any feature is computed
+    status: BLOCKED
+    blocked_on: artefact not yet downloaded
+
+  G2:  {phase: 2,  name: Leakage-safe deterministic pipeline,     status: BLOCKED, blocked_on: G1}
+  G3:  {phase: 3,  name: Baseline ladder established,             status: BLOCKED, blocked_on: G2}
+  G4:  {phase: 4,  name: Cross-deployment generalisation,         status: BLOCKED, blocked_on: G3}
+  G5:  {phase: 5,  name: Multimodal / cross-layer ablation,       status: BLOCKED, blocked_on: G4}
+  G6:  {phase: 6,  name: Base rate and alert burden,              status: BLOCKED, blocked_on: G4}
+  G7:  {phase: 7,  name: Calibration and threshold,               status: BLOCKED, blocked_on: G4}
+  G8:  {phase: 8,  name: Adversarial robustness,                  status: BLOCKED, blocked_on: G4}
+  G9:  {phase: 9,  name: Latency and resource measurement,        status: BLOCKED, blocked_on: [G3, D-005]}
+  G10: {phase: 10, name: RIC integration,                         status: BLOCKED, blocked_on: G9}
+
+# --------------------------------------------------------------------------
+# Experiments
+# --------------------------------------------------------------------------
+experiments:
+
+  EXP-000:
+    title: Repository and literature reconstruction
+    phase: 0
+    maps_to_plan: [P0, P1]
+    claims: []
+    status: complete
+    date: 2026-09-20
+    research_question: >
+      What is the measured state of the repository, what does the literature
+      actually establish, and is gate A1 resolvable?
+    hypothesis: n/a (audit, not a hypothesis test)
+    baseline: n/a
+    method: repository measurement plus a bounded targeted literature search
+    dataset: none
+    seeds: n/a
+    success_criteria:
+      - repository state established by command output rather than by README assertion
+      - at least one candidate D_A corpus identified or A1-b definitively excluded
+      - every literature cell carries a verification status
+    outcome: >
+      Repository is 0 LOC of research code with four live and correctly failing guards.
+      Gate A1 provisionally resolved via NetsLab-5GORAN-IDD. Four manuscript claims
+      require rescoping (C5, C9, C10, C13). Two new improvements raised (I11, I12).
+    artefacts:
+      - docs/literature/LITERATURE_MATRIX.csv
+      - docs/literature/GAP_MATRIX.md
+      - docs/CLAIM_EVIDENCE_MATRIX.csv
+      - reports/repository_audit.md
+      - reports/literature_audit.md
+      - reports/experiments/EXP-000.md
+      - configs/decisions.md
+      - configs/experiment_registry.yaml
+      - MEMORY.md
+      - results/EXP-000/logs/{smoke,pytest,placeholders,validate}.log
+    gate: G0
+
+  EXP-001:
+    title: Resolve and verify the source corpus at artefact level
+    phase: 1
+    maps_to_plan: [P6-partial]
+    claims: []
+    status: planned
+    depends_on: [EXP-000]
+    research_question: >
+      Does NetsLab-5GORAN-IDD actually contain what its descriptor implies, at the
+      granularity our split design and windowing require?
+    hypothesis: >
+      H0-data: the corpus exposes a per-record device or run identifier, a usable
+      timestamp, and CU-DU alignment sufficient to join flow records to radio telemetry.
+    baseline: n/a (verification)
+    method:
+      - download the smallest sufficient subset (Network_Dataset.csv, Lower_Layer_Data.db)
+      - record SHA-256 of every downloaded file in data/provenance/
+      - enumerate columns, dtypes, null rates, label values and class counts
+      - identify candidate group keys and test their cardinality and disjointness
+      - test CU-DU join feasibility and quantify the time-alignment error
+      - measure duplicate rate and exact-duplicate-across-class rate
+    success_criteria:
+      - a group key exists with enough distinct values to support 5 disjoint splits
+      - CU-DU join succeeds for a stated fraction of records, and that fraction is reported
+      - label semantics are unambiguous
+    failure_criteria:
+      - no usable group key  -> D-001 reverses, fall back to plan option A1-c
+      - CU-DU join impossible -> claim C5 is withdrawn, not weakened
+    decisions_required: [D-004]
+    gate: G1
+
+  EXP-002:
+    title: Deterministic pipeline and leakage audit
+    phase: 2
+    maps_to_plan: [E0-infra]
+    claims: []
+    status: blocked
+    depends_on: [EXP-001]
+    research_question: Does the pipeline produce identical output on rerun, with zero target contamination?
+    baseline: a simple leakage-safe classical detector
+    method: fixed-seed rebuild, manifest hash comparison, TargetCorpusGuard access log, four split protocols compared
+    success_criteria:
+      - byte-identical feature manifests across two clean runs
+      - zero target-corpus reads outside a run tagged final_eval
+      - the random-split result is reported alongside the run-disjoint one as a leakage-magnitude measurement
+    gate: G2
+
+  EXP-003:
+    title: Baseline ladder, in distribution
+    phase: 3
+    maps_to_plan: [E1a]
+    claims: [C1]
+    status: blocked
+    depends_on: [EXP-002]
+    baseline: "B0 majority class -- the floor that proves the task is non-trivial (plan I5)"
+    subjects: [majority, decision_tree, isolation_forest, logistic_regression, random_forest, xgboost, mlp, cnn, lstm]
+    note: >
+      The architectures are SUBJECTS, not competitors. Tune all of them equally.
+      Under-tuning any of them inflates the headline transfer gap and is the first
+      thing a reviewer will attack.
+    seeds: {split_seeds: 5, model_seeds: 3}
+    gate: G3
+
+  EXP-004:
+    title: Cross-deployment generalisation, A to B and B to A
+    phase: 4
+    maps_to_plan: [E1b, E1c]
+    claims: [C2, C3, C4]
+    status: blocked
+    depends_on: [EXP-003]
+    primary_metric: delta_f1  # fixed BEFORE evaluation, per the master protocol
+    baseline: the same models under an in-distribution run-disjoint split
+    falsified_if: the 95% CI on delta_f1 includes 0 for any architecture
+    additional_test: >
+      I12 -- test whether the per-architecture ordering of delta_f1 is stable across
+      prevalence conventions. P14 (2026) reports that the evaluation protocol can
+      reverse which target appears harder.
+    gate: G4
+
+  EXP-005:
+    title: Feature-family ablation and the accuracy/transfer trade-off
+    phase: 5
+    maps_to_plan: [E2]
+    claims: [C5]
+    status: blocked
+    depends_on: [EXP-004]
+    rescoped_by: EXP-000
+    rescope_note: >
+      The in-distribution half of C5 is prior work (Fard et al., IEEE CSR 2026, on this
+      same corpus). Only the sign-flip under transfer is ours. State it that way.
+    falsified_if: the in-distribution and cross-deployment deltas share a sign
+    gate: G5
+
+  EXP-006:
+    title: Alert burden and base-rate sensitivity
+    phase: 6
+    maps_to_plan: [E4, E8]
+    claims: [C8]
+    status: blocked
+    depends_on: [EXP-004]
+    primary_metric: alerts_per_hour at the declared lambda_b, plus PPV over the pi sweep
+    reporting_rule: >
+      Report alerts per 10^5 benign flows as well as absolute alerts per hour, so the
+      number is portable to a deployment with a different flow rate (plan A6).
+    framing_rule: >
+      Axelsson (2000) established the base-rate result. Cite it to frame. The novelty is
+      the O-RAN quantification under measured transfer degradation, never the fallacy.
+    gate: G6
+
+  EXP-007:
+    title: Calibration and threshold selection
+    phase: 7
+    maps_to_plan: [E3a, E3b]
+    claims: [C6, C7]
+    status: blocked
+    depends_on: [EXP-004]
+    hard_rule: no threshold may be selected using final test results
+    gate: G7
+
+  EXP-008:
+    title: Adversarial and perturbation robustness
+    phase: 8
+    maps_to_plan: [new]
+    claims: []
+    status: blocked
+    depends_on: [EXP-004]
+    justification: >
+      P11 (2025) shows black-box evasion succeeds against O-RAN ML apps and against
+      prominent adversarial-ML defences. P12 (2025) shows the SDL input path is
+      manipulable. This is necessary diligence, NOT a novelty claim -- see GAP_MATRIX
+      G7, graded weak.
+    conditions: [feature_noise, feature_masking, missing_modality, telemetry_delay, bounded_manipulation, label_poisoning, black_box_evasion]
+    gate: G8
+
+  EXP-009:
+    title: Latency, tail latency and resource scaling
+    phase: 9
+    maps_to_plan: [E5a, E5b, E5c, E6, E10]
+    claims: [C9, C10, C11]
+    status: blocked
+    depends_on: [EXP-003, D-005]
+    rescoped_by: EXP-000
+    rescope_note: >
+      I11 -- sweep the near-RT budget B over [10 ms, 1 s] and report the crossing point
+      per architecture, instead of asserting B = 10 ms. P04 assumes 10 ms and P05
+      assumes 1000 ms; both reach positive verdicts five orders of magnitude apart.
+      I14 -- report latency per pipeline stage. P04 measures a C-exported linear model
+      at 1-5 microseconds, so an inference-cost story is already answered.
+    required_percentiles: [p50, p95, p99]
+    preferred_percentiles: [p99.9, max]
+    precondition: "the floor experiment (a null model returning a constant score) runs first"
+    labelling_rule: >
+      If measurement is not on a real RIC, the result is labelled 'emulated deployment',
+      never 'real deployment'.
+    gate: G9
+
+  EXP-010:
+    title: RIC integration and fault behaviour
+    phase: 10
+    maps_to_plan: [new]
+    claims: []
+    status: blocked
+    depends_on: [EXP-009]
+    fault_tests: [ric_restart, xapp_restart, telemetry_interruption, high_load, missing_feature, malformed_telemetry, model_failure]
+    gate: G10
+
+  EXP-011: {title: Model efficiency and compression,        phase: 11, status: blocked, depends_on: [EXP-009]}
+  EXP-012: {title: Drift and longitudinal robustness,       phase: 12, status: blocked, depends_on: [EXP-004]}
+  EXP-013:
+    title: External-dataset validation
+    phase: 13
+    status: blocked
+    depends_on: [EXP-004]
+    candidate_corpus: >
+      O-RAN E2SM-KPM DoS Detection Dataset (Zenodo 10.5281/zenodo.21198102, MIT, 69.8 MB,
+      University of Regina). Different site and team, so genuinely independent.
+      Feature overlap with our shared space is UNKNOWN and must be checked first.
+    hard_rule: another split of D_A or D_B is not external validation
+  EXP-014: {title: Complete ablation programme,             phase: 14, status: blocked, depends_on: [EXP-005]}
+  EXP-015: {title: Statistical audit,                       phase: 15, status: blocked, depends_on: [EXP-004]}
+  EXP-016: {title: Computational reproducibility,           phase: 16, status: blocked}
+  EXP-017: {title: Figure generation,                       phase: 17, status: blocked, depends_on: [EXP-015]}
+  EXP-018: {title: Table generation,                        phase: 18, status: blocked, depends_on: [EXP-015]}
+  EXP-019: {title: Claim audit,                             phase: 19, status: blocked, depends_on: [EXP-018]}
+  EXP-020: {title: Novelty audit (fresh literature pass),   phase: 20, status: blocked, depends_on: [EXP-019]}
+  EXP-021: {title: Citation and reference audit,            phase: 21, status: blocked, depends_on: [EXP-020]}
+  EXP-022: {title: Full reviewer attack,                    phase: 22, status: blocked, depends_on: [EXP-021]}
+  EXP-023: {title: Final clean reproduction,                phase: 23, status: blocked, depends_on: [EXP-022]}
+
+  EXP-D01:
+    title: "Track D -- systematic reporting-practice survey"
+    phase: parallel
+    maps_to_plan: [E9]
+    claims: [C13]
+    status: planned
+    depends_on: []
+    note: >
+      Runs in parallel from day one; no code dependency. Until a pre-registered
+      screening protocol with an enumerated candidate pool, inclusion/exclusion criteria
+      and a second coder has been executed, Table VIII of the manuscript is unevidenced
+      (plan A9). reports/literature_audit.md is NOT this survey and must not be used as
+      evidence for C13 -- it is a targeted keyword search with selection bias by
+      construction.
+    decision_if_not_executed: delete Table VIII and soften C13 to a qualitative
+      observation supported by a handful of concrete cited examples.

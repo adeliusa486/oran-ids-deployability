@@ -1,11 +1,69 @@
-# BLOCKED ON A1 -- this corpus is not yet identified.
-# Do not fill these fields with a guess. Resolve the A1 gate first.
-id: d_a
-status: UNRESOLVED_SEE_A1
-source_doi: null
-source_url: null
-source_sha256: null
-group_key: null          # A4: e.g. ue_imsi -- must exist, asserted at load
-has_radio_kpis: true
-label_column: null
+# A1 CANDIDATE -- identified by EXP-000 (2026-09-20), NOT yet verified.
+#
+# Gate A1 asked for a corpus with (i) packet-level traces, (ii) synchronised radio
+# KPIs and (iii) labelled attack traffic, from a real O-RAN deployment. The landing
+# pages for this corpus state all three. That is not the same as having checked.
+#
+# status stays 'candidate_unverified' until EXP-001 has, at artefact level:
+#   - downloaded the files and recorded SHA-256 in data/provenance/
+#   - identified the label column and its value set
+#   - identified a group key with enough distinct values for 5 disjoint splits
+#   - demonstrated the CU flow <-> DU radio join and quantified its time-alignment error
+#   - measured class balance and duplicate rate
+# Every null below is null because it is genuinely unknown. Do not guess any of them.
+# See configs/decisions.md D-001 and D-004.
+
+id: d_a_netslab_5goran_idd
+status: candidate_unverified
+resolved_by: EXP-001            # gate G1
+
+source_doi: "10.1109/IEEEDATA.2025.3614167"     # descriptor, IEEE Data Descriptions 2025
+source_url: "https://zenodo.org/records/18923275"
+mirror_urls:
+  - "https://doi.org/10.34740/kaggle/ds/7416931"
+  - "https://netslab.ucd.ie/netslab-5g-oran-idd/"
+licence: "CC-BY-4.0"
+source_sha256: null             # fill per file from the download, then commit
+
+# Provenance, as stated on the landing pages (retrieved 2026-09-20).
+testbed: "physical 5G O-RAN testbed, University College Dublin"
+oran_stack: "OpenAirInterface; 1 O-CU, 2 O-DU, 1 O-RU; Dell Precision 7920 O-Cloud edge server; 2 physical UEs"
+attack_classes: [benign, dos, ddos, probe, brute_force, web]
+
+# A3: which artefact we extract from. The whole point of the control is that ONE
+# exporter processes both corpora from raw captures. D-004 decides whether that is
+# affordable here -- D_A raw is ~1.5 TB against D_B's ~3.65 GB.
+use_artefact: pcap
+artefact_inventory:
+  raw_pcap_zips: {benign_gb: 5.9, dos_gb: 3.5, ddos_gb: 3.1, bruteforce_gb: 3.3, web_gb: 0.594}
+  total_uncompressed_tb: 1.5
+  network_dataset_csv_mb: 227.2
+  lower_layer_data_db_mb: 5.4
+  network_dataset_db_mb: 210.7
+  network_layer_tooling: "Zeek (conn.log, http.log, files.log), captured at the O-CU"
+  radio_layer: "22 PHY/MAC metrics per record, from the O-DU over E2, .txt"
+
+has_radio_kpis: true            # STATED by the descriptor; the join is UNVERIFIED
+radio_kpi_count: 22
+
+label_column: null              # A4/EXP-001
+group_key: null                 # A4/EXP-001 -- must exist and is asserted at load
+time_column: null               # EXP-001
+cu_du_join_key: null            # EXP-001 -- if this cannot be established, claim C5 is WITHDRAWN
+
 role: train_and_indist_test
+
+# Prior work on this corpus. Adopting it means inheriting this as the in-distribution
+# reference, and rescoping claim C5 to the transfer half only.
+prior_work:
+  - id: P03
+    citation: "Fard H., Komarov I., Wunder G. -- Cross-Layer Intrusion Detection in 5G O-RAN, IEEE CSR 2026"
+    url: "https://arxiv.org/abs/2606.22450"
+    note: >
+      Seven architectures, run-disjoint splits, ten seeds. Reports radio features match
+      or exceed network flows IN DISTRIBUTION. Establishes run-disjoint as the expected
+      protocol on this corpus. Reports 27-46% DoS-to-Benign confusion attributed to
+      windowed statistical aggregation -- our A12 windowing must be justified against it.
+  - id: P05
+    citation: "Performance Analysis of an AI-Based IDS xApp, 2026 (UNVERIFIED, HTTP 403)"
+    note: "Uses O-CU network layer and O-DU radio telemetry from this corpus. Must be retrieved."

@@ -13,14 +13,19 @@ claims:
     status: planned
 
   C5:
-    text: "Radio KPIs raise in-distribution F1 and lower cross-deployment F1"
+    text: "Radio KPIs lower cross-deployment F1 relative to the packet-only feature set"
+    rescoped_by: EXP-000
+    rescope_note: >
+      Original text also claimed the in-distribution gain. Fard et al. (IEEE CSR 2026,
+      arXiv 2606.22450) already publish that on this same corpus. Cite them for the
+      in-distribution half; only the sign-flip under transfer is ours.
     hypothesis: H4
     experiment: E2
     metric: [f1_indist, f1_cross]
     artefact: tables/generated/ablation.tex
     falsified_if: "the two deltas share a sign (no trade-off exists)"
     status: blocked
-    blocked_on: A1
+    blocked_on: "EXP-001 -- the CU/DU join must be demonstrated first. If it cannot be, this claim is WITHDRAWN, not weakened." 
 
   C8:
     text: "The default threshold yields operationally unusable precision"
@@ -32,7 +37,13 @@ claims:
     status: planned
 
   C9:
-    text: "Only the gradient-boosted ensemble meets the p99 budget"
+    text: "Architectures differ in the near-RT budget B at which their p99 latency crosses out of conformance"
+    rescoped_by: EXP-000
+    rescope_note: >
+      I11. O-RAN specifies the near-RT loop over 10 ms to 1 s. Prior work reaches
+      opposite-magnitude verdicts by picking opposite ends (arXiv 2607.01583 uses 10 ms;
+      the 2026 IDS xApp study uses 1000 ms). Asserting a single B makes the verdict an
+      authoring choice. Report the crossing point per architecture over a swept B.
     hypothesis: H3
     experiment: E5a
     metric: q99_latency_ms
@@ -46,4 +57,51 @@ claims:
     artefact: tables/generated/survey.tex
     falsified_if: "screening finds the criteria are commonly reported"
     status: planned
-    note: "No evidence exists yet. Execute Track D or delete Table VIII (A9)."
+    note: >
+      No evidence exists yet. Execute Track D (EXP-D01) with a pre-registered screening
+      protocol, or delete Table VIII (A9). reports/literature_audit.md is NOT that study:
+      a targeted keyword search over-samples work mentioning the search terms and has
+      selection bias by construction.
+
+# --- Added by EXP-000 (2026-09-20) -----------------------------------------
+# Claims the manuscript makes that were not in this file. Added so the Phase 20
+# audit covers the whole manuscript, not a subset of it.
+
+  C10:
+    text: "Feature construction, not model inference, dominates per-decision latency"
+    hypothesis: H3
+    experiment: E5b
+    metric: t_feat_over_total
+    artefact: tables/generated/runtime.tex
+    falsified_if: "inference exceeds feature construction for any architecture at any tested load"
+    status: planned
+    note: >
+      Promoted to load-bearing by EXP-000. arXiv 2607.01583 measures a C-exported
+      logistic regression at 1-5 microseconds inside a real FlexRIC xApp, which closes
+      the inference-cost question. Requires a per-stage breakdown, not an inference.
+
+  C11:
+    text: "Sustainable throughput under the tail constraint differs across architectures"
+    hypothesis: H3
+    experiment: E6
+    metric: t_max
+    artefact: tables/generated/runtime.tex
+    falsified_if: "T_max is within a factor of two across architectures"
+    status: planned
+    note: >
+      A7. The draft's 'T_max < 250' is the lowest load tested, which is an unbounded
+      statement dressed as a bound. Requires a downward load sweep plus bisection and a
+      bracketing interval. The '<250' formulation must not be reused in any form.
+
+  C15:
+    text: "Energy per decision differs across architectures"
+    experiment: E5d
+    metric: mj_per_decision
+    artefact: tables/generated/runtime.tex
+    falsified_if: "idle-baseline drift exceeds the measured signal"
+    status: recommend_withdraw
+    note: >
+      A8. RAPL reports package and DRAM energy for the whole socket and cannot attribute
+      it to a container. EXP-000 found no retrieved source that attributes container
+      energy either. Improvement I9: drop the column. One row of one table is not worth
+      an indefensible claim.

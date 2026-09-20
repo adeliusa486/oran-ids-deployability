@@ -11,7 +11,13 @@ data/processed/
 # Results: raw runs are large; aggregated CSVs are committed.
 results/raw/
 results/runtime/
-logs/
+
+# Transient run logs at the repository root are excluded. Per-experiment evidence
+# logs under results/EXP-*/logs/ are COMMITTED: they are the record that a gate was
+# actually executed, and an experiment report that cites an uncommitted log is an
+# assertion rather than evidence. Anchored with a leading slash so the pattern does
+# not swallow them.
+/logs/
 
 # Models
 *.onnx

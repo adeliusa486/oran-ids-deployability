@@ -1,0 +1,19 @@
+=== check_no_placeholders on paper/main.tex ===
+FAIL paper\main.tex:46: draft banner still enabled
+FAIL paper\main.tex:68: synthetic-value macro
+FAIL paper\main.tex:78: synthetic block marker
+FAIL paper\main.tex:440: synthetic-value macro
+FAIL paper\main.tex:489: synthetic-value macro
+FAIL paper\main.tex:493: synthetic-value macro
+FAIL paper\main.tex:529: synthetic-value macro
+FAIL paper\main.tex:533: synthetic-value macro
+FAIL paper\main.tex:538: synthetic-value macro
+FAIL paper\main.tex:571: synthetic-value macro
+FAIL paper\main.tex:625: synthetic-value macro
+FAIL paper\main.tex:627: synthetic-value macro
+FAIL paper\main.tex:672: synthetic-value macro
+FAIL paper\main.tex:674: synthetic-value macro
+FAIL paper\main.tex:769: synthetic-value macro
+
+15 placeholder(s) remain. The paper is not submittable.
+exit=1

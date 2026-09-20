@@ -1,0 +1,5 @@
+=== validate_results ===
+FAIL [missing_runs] no result files under results\raw
+
+Nothing to validate. Run experiments first (make experiments-track-a).
+exit=1

@@ -1,0 +1,6 @@
+=== make smoke ===
+[1/5] importing package...
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'oran_ids'
+exit=1
