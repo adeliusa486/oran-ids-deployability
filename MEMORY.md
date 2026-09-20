@@ -6,74 +6,92 @@
 > `reports/SESSION_REPORT.md`. Then run `python -m experiments.final_validation`
 > to see the live state rather than trusting this file.**
 >
-> ### Where we are, 2026-09-20
+> ### Where we are, 2026-09-20 (campaign 2)
 >
-> Repository is at commit `479372f`+ on `main`, working tree clean, 24 commits.
-> Validation: 11 PASS, 1 WARN, 4 BLOCKED, 0 FAIL.
+> Repository on `main`, working tree clean. Campaign 2 has run phases 24-31 and
+> 36. `pytest` passes 50 tests **from a bare `pytest`**, which it did not before.
 >
-> **Three findings are measured and hold up.** One draft claim (C9) is
-> contradicted by our own measurement. Two claims are withdrawn under
-> pre-registered criteria. See section "Current Best Results".
+> ### The four things that changed the paper this campaign
 >
-> ### THE NEXT TASK, precisely
+> **1. RQ1 is unblocked and running.** `D_B` is verified and the shared feature
+> space is built, committed and unit-tested. EXP-026 evaluates transfer in both
+> directions. This was the paper's missing headline.
 >
-> **`D_B` has just arrived and is verified. The transfer experiment (RQ1, the
-> paper's headline) has never been run. That is the next thing to do.**
+> **2. We were about to publish a preprocessing bug as the headline (D-015).**
+> The handover note in this very file proposed mapping `src_bytes <-> SrcBytes`.
+> Zeek's `src_bytes` is application **payload** (median 0, because both corpora
+> are dominated by floods and scans that carry none); Argus's `SrcBytes` is
+> header-inclusive (median 84). That mapping would have collapsed every
+> architecture on the target, consistently and significantly, and looked exactly
+> like the generalisation failure we set out to find. The real counterpart is
+> `src_ip_bytes`, at 40 vs 42 bytes per packet. **Caught by twenty minutes of
+> label-blind measurement before any transfer metric existed.**
 >
-> Files on disk, checksummed in `data/provenance/d_b_files.json`:
-> ```
-> data/raw/d_b/Combined.csv    275.27 MB   1,215,890 flows, 52 cols, 60.71% attack
-> data/raw/d_b/Encoded.csv     489.23 MB   pre-encoded; DO NOT USE, it fights the pipeline
-> ```
-> Source: https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65
-> Open, CC BY 4.0. **Not** the IEEE DataPort copy, which is paywalled.
+> **3. Our own "6x deployment PPV spread" does not survive re-estimation
+> (D-018, bug B-E).** PPV is violently non-linear in FPR near zero, and EXP-004
+> averaged PPV *across folds*. Any fold with FPR = 0 contributes PPV = 1.000.
+> XGBoost drew six such folds out of forty; the MLP drew none; and the published
+> ranking is almost exactly that count. Same data, three estimators: pooled
+> **1.40x**, median 1.73x, mean **13.18x**. The mean is what was published.
+> **Pooled counts are primary from now on.**
 >
-> **Step 1 — build the shared feature space.** The two corpora were processed by
-> different tools and share no column names. They must be mapped by meaning, in
-> an explicit committed table, not inline in a script:
+> **4. Two of our five gaps were closed by other people, in July and August
+> 2026 (EXP-036).**
+> - **Abraheem & Edhirig (WAUJPAS, 7 Aug 2026)** run bidirectional transfer
+>   between **the same two corpora**, with 15 harmonised features to our 15
+>   shared concepts. Gap G1 closed. **No "first cross-deployment evaluation"
+>   claim is available.**
+> - **Obiuwevwi et al. (arXiv:2607.01583, Jul 2026)** measure AI inference in a
+>   real OAI+FlexRIC RIC: 1-5 us logreg, 10-25 us MLP. Gap G5 closed.
 >
-> | Concept | `D_A` (Zeek) | `D_B` (Argus) |
-> |---|---|---|
-> | duration | `duration` | `Dur` |
-> | src bytes | `src_bytes` | `SrcBytes` |
-> | dst bytes | `dst_bytes` | `DstBytes` |
-> | src packets | `src_pkts` | `SrcPkts` |
-> | dst packets | `dst_pkts` | `DstPkts` |
-> | total packets | `src_pkts`+`dst_pkts` | `TotPkts` |
-> | total bytes | `src_bytes`+`dst_bytes` | `TotBytes` |
-> | protocol | `proto` / `ip_proto` | `Proto` |
+> ### What survives, stated narrowly
 >
-> Derived on both sides: mean packet size, bytes/s, packets/s, byte ratio,
-> packet ratio. **Report the TRUE feature count.** The draft claims 24; the
-> honest number is likely 8 base plus a handful derived. Do not inflate it.
+> - Corpus precision ~0.93; **pooled** deployment PPV 0.0055-0.0077. A **132x**
+>   gap at the declared base rate, and the detectors are operationally
+>   **indistinguishable** (1.08-1.40x) at every base rate from 1e-4 to 0.5.
+> - **FPR is not a stable property of these detectors**: 0.000 to 0.890 across
+>   group-disjoint folds. Fold composition explains little of it (max R^2 0.36).
+>   Any single-number FPR for this corpus is close to meaningless.
+> - Random-split inflation (+0.09 to +0.17) tracking model flexibility, with the
+>   trivial floors gaining nothing. Unchanged and still the cleanest result here.
+> - Extraction dominates inference **even after a 12x speedup** (EXP-030).
 >
-> `D_B` has **no IP or port columns at all**, which removes an identity-leakage
-> risk and also means no group key is needed there (it is transfer-only).
-> `D_A` columns absent from `D_B`: `service`, `conn_state`, `history`,
-> `missed_bytes`, all HTTP fields. `D_B` columns absent from `D_A`: TTL, Load,
-> Rate, TCP window/RTT. None of these can be in the shared space.
+> ### THE NEXT TASKS, precisely
 >
-> **Step 2 — run transfer.** Train on `D_A` network layer, evaluate once on
-> `D_B`. Report `Delta_F1` per architecture with the trivial floor beside it.
->
-> **Step 3 — MANDATORY wording.** The A3 single-exporter control is NOT applied
-> (D-004, D-010). Zeek and Argus are different exporters, so every `Delta_F1`
-> is an UPPER BOUND on deployment shift and must be described as spanning "an
-> independently collected deployment AND an independent feature-extraction
-> pipeline". Never "due to deployment shift".
->
-> **Step 4 — then** regenerate figures/tables/paper and re-run final_validation.
+> 1. **EXP-026 completion.** When `results/EXP-026/processed/transfer_summary__*.csv`
+>    exist, write the report, regenerate figures/tables, re-run EXP-027 so the
+>    target surfaces enter the prevalence sweep.
+> 2. **EXP-029 parts A and B** (grouping confound). Part C is done: fold
+>    composition does **not** explain the FPR range. Part A was interrupted; it
+>    reads the whole 227 MB CSV and takes several minutes.
+> 3. **Phases not yet started:** 28 calibration, 32 resource scaling,
+>    33 adversarial, 34 drift, 35 Pareto, 37 manuscript, 38 reviewer attack,
+>    39 reproducibility, 40 release.
 >
 > ### Do not repeat the mistakes already made
 >
-> - Do NOT use `bootstrap_ci` below n=30. It is anti-conservative and it already
->   produced a wrong significance claim once (D-012). Use t-intervals. 20 split
->   seeds is the standing choice.
-> - Do NOT `\input` a LaTeX table body inside a `tabular`. It silently breaks.
->   Generators emit complete tabular environments.
-> - Do NOT let two experiment runs write the same output path (D-014).
-> - Do NOT quote any `\syn{}` number from `paper/main.tex`. 51 remain synthetic.
-
+> - **Do NOT `git stash -u` while a background job is running.** It deletes
+>   untracked output directories out from under an open file handle and kills the
+>   job silently. It destroyed a 20-seed transfer run this session, and the log
+>   restored by `stash pop` made the job look alive for fifteen minutes.
+> - Do NOT average a non-linear functional of a rate across folds. **Pool the
+>   counts.** See D-018 -- it cost us a published finding.
+> - Do NOT trust a handover table. D-015 was written in this file as settled fact
+>   and two of its eight rows were wrong.
+> - Do NOT dedup on a column subset and assume alignment with `load_network`.
+>   Subset dedup collapses 1,640,182 rows to 888,367.
+> - Do NOT use `bootstrap_ci` below n=30 (D-012). Use t-intervals. 20 split seeds.
+> - Do NOT `\input` a LaTeX table body inside a `tabular`. Generators emit
+>   complete tabular environments.
+> - Do NOT let two runs write the same output path (D-014).
+> - Do NOT quote any `\syn{}` number from `paper/main.tex`.
+> - Do NOT describe any latency figure as a conformance result. **All are
+>   EMULATED**; Track C is BLOCKED (EXP-031) and the blocker is one uninstalled
+>   Windows feature, not the absence of hardware.
+> - Do NOT write "due to deployment shift". Every `Delta_F1` spans an independent
+>   deployment **and** an independent exporter (Zeek vs Argus). Abraheem &
+>   Edhirig measured a source classifier at **0.993** balanced accuracy on the
+>   shared features, which quantifies how separable the two corpora are.
 
 > Permanent research memory. Read this and `configs/experiment_registry.yaml` before
 > starting any phase. Never rewrite history here — append corrections instead.
@@ -764,3 +782,138 @@ landing page. **D-004 must be settled inside EXP-001, before any feature is comp
 3. Re-run detection under resampled prevalence (Reviewer A3).
 4. Report the `src_ip` grouping confound explicitly (Reviewer A4).
 5. Align title, abstract and contributions with what was measured (Reviewer C1).
+
+---
+
+## Campaign 2 — experiment records (appended 2026-09-20)
+
+### EXP-024 — Repository / remote reconciliation
+
+- **Phase:** 24 | **Gate:** PASS | **Report:** `reports/repository_remote_reconciliation.md`
+- **Question:** the brief reported 24 commits pushed but a GitHub page showing one
+  commit and a skeleton. Which is true?
+- **Method:** `git ls-remote` (asks the server, cannot be stale), `git fetch`,
+  `git diff HEAD origin/main`, `git ls-tree -r origin/main`.
+- **Result:** **no discrepancy.** local HEAD == origin/main == `faa2849`, 25
+  commits, one branch, clean tree, every required artefact present remotely.
+- **Explanation:** the described page matches `6d657fe` exactly — the repository's
+  first commit, titled "Repository skeleton". A stale view.
+- **Trap for next time:** the git repo is `oran-ids-deployability/` **inside** the
+  working folder. `git log` one level up says "not a git repository".
+
+### EXP-025 — Target corpus acquisition and verification
+
+- **Phase:** 25 | **Gate:** PASS | **Report:** `reports/EXP-025_target_corpus.md`
+- **Closes:** D-011, gate A1-target. **RQ1 unblocked.**
+- **Route:** Etsin/Fairdata, the Finnish national research repository. Open,
+  CC BY 4.0, own DOI `10.23729/e80ac9df-d9fb-47e7-8d0d-01384a415361`. **Not** the
+  paywalled IEEE DataPort copy; **not** an unattributable mirror.
+- **Verified on the artefact:** 1,215,890 rows, 52 cols, Argus, 60.71% attack,
+  **no IP or port columns at all**. All four files re-hashed for the report.
+- **Coverage:** {benign, dos, probe}. `ddos`, `bruteforce`, `web` exist in `D_A`
+  and not in `D_B` — **UNTESTABLE in transfer**, reported, never dropped quietly.
+- **`HTTPFlood` maps to `dos`, not `web`.** It is Goldeneye/Torshammer DoS;
+  `D_A`'s `web` is SQLi/XSS/directory brute force. Mapping them together would
+  invent a correspondence and flatter the result.
+- `reports/RQ1_blocked.md` deliberately **not** written — that branch does not apply.
+
+### EXP-026 — Cross-deployment transfer (RQ1)
+
+- **Phase:** 26 | **Runner:** `experiments/run_transfer.py`
+- **Space:** `configs/features/shared_space.yaml` — **15 shared concepts / 18
+  matrix columns.** The draft claims 24; that number was never derived from
+  either schema. `configs/features/shared24.yaml` is superseded.
+- **Design:** group-disjoint source split on `src_ip`, 20 split seeds, threshold
+  fixed at 0.5, source-fitted scaling only, full 8-model ladder including both
+  trivial floors, evaluated on the whole target once.
+- **Controls:** source held-out **in the same 18-column space** (so the gap is
+  not the projection), and the trivial floor **on the target** (so a collapse
+  reads against what guessing scores there).
+- **Directions:** `a_to_b` primary, committed first; `b_to_a` a labelled symmetry
+  check (D-017). `D_B` has no group key, so its own held-out reference is a
+  random split and an **optimistic bound**.
+- **Decisions raised:** D-015 (byte semantics), D-016 (log1p), D-017 (direction).
+- **Every target read is logged** to `results/EXP-026/logs/target_access.log`.
+
+### EXP-027 — Prevalence sensitivity, and bug B-E
+
+- **Phase:** 27 | **Gate:** PASS (source side) | **Runner:** `experiments/run_prevalence_sensitivity.py`
+- **Question asked:** does the operational-precision finding depend on `pi = 0.002`?
+- **Answer:** it does not depend on `pi`. It depended on **how PPV was averaged**,
+  which is worse. See D-018.
+- **Method:** analytic sweep over **pooled** confusion counts from committed
+  results. No model refitted, so nothing can drift from what EXP-002/EXP-026 said.
+- **Separability, verified numerically:** PPV is `lambda_b`-invariant (max
+  variation 2.2e-16) and alert volume is exactly linear in `lambda_b` (max
+  deviation 3.7e-9). So the 2-D grid is really 1-D plus a multiplier.
+- **Surviving result:** corpus precision ~0.93, pooled PPV 0.0055-0.0077, a
+  **132x** gap at `pi = 0.002`, rising to **2,631x** at `pi = 1e-4` and falling to
+  1.19x at `pi = 0.5`. Detectors indistinguishable throughout.
+- **Reporting rule:** the *collapse factor* is the finding; the "6x" was not.
+
+### EXP-029 — Grouping confound (parts A and B outstanding)
+
+- **Phase:** 29 | **Status:** part C complete, parts A and B outstanding
+- **Part C result:** test-fold composition does **NOT** explain the 0.000-0.890
+  FPR range. Mean R^2 across predictors 0.04-0.06, max 0.36, 1 of 7 significant.
+  So it is *which* groups land in test, not how many or their class balance.
+- **Part A** (label-free): NMI / Cramer's V / purity of each candidate grouping
+  against the label, read against **two** nulls — a label shuffle and a
+  size-matched random grouping. It reads the whole 227 MB CSV; allow minutes.
+- **Part B:** does `src_ip` grouping score like grouping *by attack type*? If yes,
+  "host-disjoint" is really "attack-disjoint" and the protocol is misnamed.
+
+### EXP-030 — Native feature extraction
+
+- **Phase:** 30 | **Gate:** PASS | **Runner:** `experiments/run_extraction_benchmark.py`
+- **New module:** `src/oran_ids/ingest/fast_exporter.py` — bulk NumPy header
+  extraction. **Agrees with the reference exactly** (0 packet mismatches, 0 byte
+  mismatches, 100% coverage) on every shape tested. 8 tests.
+- **Speedup 2.3x to 12.1x**, tracking packets-per-flow: bulk parsing wins on fat
+  flows, groupby overhead eats the win on 2-packet flows. The reference is flat at
+  **63-78 us/packet** whatever the shape — that is the per-packet Python cost.
+- **The finding survives optimisation.** Best vectorised extraction 0.058 ms/flow;
+  against real-RIC inference (1-5 us logreg, 10-25 us MLP) that is still **19x**
+  and **3x**. Smaller than the 7-39x against Python inference, same sign, and now
+  resting on a measurement rather than a caveat.
+- **Captures are SYNTHETIC** — D-010 stopped the pcap download, originals are gone.
+  Calibration: the reference exporter runs 0.9-1.1 MB/s here against 1.1-4.3 MB/s
+  on the real captures, which is reported whether or not it passes.
+
+### EXP-031 — Real Near-RT RIC runtime
+
+- **Phase:** 31 | **Gate:** **BLOCKED** | **Report:** `reports/EXP-031_real_ric_blocked.md`
+- **Blocker, command-verified:** `wsl -d Ubuntu` fails with
+  `HCS_E_SERVICE_NOT_AVAILABLE` — the Windows Virtual Machine Platform feature is
+  not installed. Docker Desktop's Linux engine runs on WSL2, so it fails too.
+  Docker 29.6.2, kubectl 1.36.1 and a registered Ubuntu **are** present.
+  Unblocking needs **administrator rights and a reboot**.
+- **Why we did not force it:** even with WSL2 there would be no CPU isolation, and
+  tail latency is what a noisy scheduler destroys. The outcome would have been a
+  third emulated measurement wearing the word "real".
+- **The scientific content is a negative result about our own method.** Obiuwevwi
+  et al. report 1-5 us for logistic regression on a real RIC; we report 2.45 ms
+  p50 for the same family. Three orders of magnitude is not hardware — it is a
+  compiled embedded model against a Python object graph. **The near-RT crossing
+  point is a property of the implementation, not the architecture.**
+
+### EXP-036 — Fresh literature and novelty audit
+
+- **Phase:** 36 | **Gate:** PASS | **Report:** `reports/literature_audit_v2.md`
+- **Two direct pre-emptions in nine queries**, both recorded rather than worked
+  around. Gaps **G1 and G5 are CLOSED by other people.**
+- **Provenance discipline kept:** 2 entries `FULL_PAGE`, 9 `SNIPPET`. Nothing
+  tagged `SNIPPET` may support an absence claim — that rule is what G4 violated.
+- **Abraheem & Edhirig's dataset-fingerprint result (0.993 balanced accuracy for a
+  source classifier on the shared features, surviving CORAL and Top-6 filtering)
+  is the best external support our own exporter confound has ever had.** Cite it
+  where we state the caveat.
+- **Surviving novelty** is narrow and honest: the B-E estimator error with its
+  magnitude; the published Zeek/Argus byte-mapping trap; transfer measured against
+  a group-disjoint source reference; an 8-architecture ladder with trivial floors
+  on the target; and the combination of protocol, transfer, burden, calibration
+  and latency with a decision register of everything withdrawn.
+- Also fixed a live integrity problem: the public README described Track C by
+  quoting the wording results *would* carry once measured, and an automated
+  summary had already repeated it as a result. It now says plainly that no real
+  RIC measurement exists.
