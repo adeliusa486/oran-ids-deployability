@@ -39,9 +39,24 @@ def timing_procs():
     return out
 
 
-def run(cmd):
+def _tex_setup():
+    """The paper uses the official IEEE Access class, kept with its fonts and
+    logos in paper/access/. MiKTeX takes -include-directory; TeX Live reads the
+    kpathsea search-path variables (a trailing separator keeps the defaults)."""
+    ver = subprocess.run(["pdflatex", "--version"], capture_output=True, text=True,
+                         errors="ignore").stdout
+    if "MiKTeX" in ver:
+        return ["-include-directory=access"], None
+    env = dict(os.environ)
+    add = "." + os.pathsep + str(PAPER / "access") + "//" + os.pathsep
+    for var in ("TEXINPUTS", "TFMFONTS", "T1FONTS", "TEXFONTMAPS", "ENCFONTS", "BSTINPUTS"):
+        env[var] = add + env.get(var, "")
+    return [], env
+
+
+def run(cmd, env=None):
     return subprocess.run(cmd, cwd=PAPER, capture_output=True, text=True,
-                          errors="ignore")
+                          errors="ignore", env=env)
 
 
 def main() -> int:
@@ -55,11 +70,10 @@ def main() -> int:
             fh.write(f"{dt.datetime.now().isoformat(timespec='seconds')} suspended "
                      f"{[p.pid for p in procs]} for a paper build\n")
     try:
-        for cmd in (["pdflatex", "-interaction=nonstopmode", "main.tex"],
-                    ["bibtex", "main"],
-                    ["pdflatex", "-interaction=nonstopmode", "main.tex"],
-                    ["pdflatex", "-interaction=nonstopmode", "main.tex"]):
-            run(cmd)
+        extra, env = _tex_setup()
+        tex = ["pdflatex", *extra, "-interaction=nonstopmode", "main.tex"]
+        for cmd in (tex, ["bibtex", "main"], tex, tex):
+            run(cmd, env)
     finally:
         for p in procs:
             p.resume()
@@ -69,7 +83,9 @@ def main() -> int:
     text = (PAPER / "main.log").read_text(encoding="utf-8", errors="ignore")
     errors = re.findall(r"^! .*", text, re.M)
     undef = re.findall(r"(Citation|Reference) `[^']+' on page \d+ undefined", text)
-    over = re.findall(r"Overfull \\hbox \((\d+\.\d+)pt too wide\)", text)
+    # "while \output is active" overfulls come from the IEEE Access page header
+    # (the untouched sample access.tex produces the same ones); they are not ours
+    over = re.findall(r"Overfull \\hbox \((\d+\.\d+)pt too wide\)(?! has occurred while)", text)
     big = [float(o) for o in over if float(o) > 10]
     pages = re.search(r"Output written on main\.pdf \((\d+) pages", text)
     print(f"pages: {pages.group(1) if pages else 'NO PDF'}")

@@ -168,5 +168,5 @@ operator parameters; the verdict's insensitivity to them is stated in VII-B.
 
 ## Still open
 
-Author block; IEEE Access class file (not installed on the build host); real RIC
+Author biographies and photographs; real RIC
 (EXP-031 blocked); third corpus.

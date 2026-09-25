@@ -4,12 +4,13 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
   "numpy", "pandas", "pyarrow", "scikit-learn", "xgboost",
-  "torch", "scipy", "statsmodels", "pyyaml", "matplotlib",
-  "onnx", "onnxruntime", "psutil",
+  "scipy", "statsmodels", "pyyaml", "matplotlib", "dpkt",
+  "onnx", "onnxruntime", "skl2onnx", "onnxmltools", "psutil",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "hypothesis", "pre-commit", "ruff"]
+seq = ["torch"]   # only EXP-050 (GRU, 1D-CNN)
 
 [build-system]
 requires = ["setuptools>=68"]

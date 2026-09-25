@@ -102,13 +102,17 @@ def main() -> int:
     # argument ("File ended while scanning use of \@xdblarg"). Remove blank lines
     # inside every \caption{...}, counting braces outside comments.
     tex = _no_blank_lines_in_captions(tex)
+    # latexdiff marks the value of the class's \titlepgskip=-21pt as added text,
+    # which breaks the assignment; put the plain assignment back
+    tex = re.sub(r"\\titlepgskip\\DIFadd\{=(-?[\d.]+pt)\s*\}", r"\\titlepgskip=\1", tex)
     (PAPER / "diff.tex").write_text(tex, encoding="utf-8")
-    for step in (["pdflatex", "-interaction=nonstopmode", "diff.tex"],
-                 ["bibtex", "diff"],
-                 ["pdflatex", "-interaction=nonstopmode", "diff.tex"],
-                 ["pdflatex", "-interaction=nonstopmode", "diff.tex"]):
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from build_paper import _tex_setup  # the IEEE Access class lives in paper/access
+    extra, env = _tex_setup()
+    tex_cmd = ["pdflatex", *extra, "-interaction=nonstopmode", "diff.tex"]
+    for step in (tex_cmd, ["bibtex", "diff"], tex_cmd, tex_cmd):
         try:
-            subprocess.run(step, cwd=PAPER, capture_output=True, timeout=300)
+            subprocess.run(step, cwd=PAPER, capture_output=True, timeout=300, env=env)
         except subprocess.TimeoutExpired:
             print(f"timed out: {' '.join(step)}")
             return 1

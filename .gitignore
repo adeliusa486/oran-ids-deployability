@@ -63,3 +63,6 @@ paper/_old.tex
 paper/_latexdiff.err
 paper/_f?prev_rev.png
 paper/_verify_*.png
+paper/access/*.aux
+paper/access/*.log
+paper/access/_*

@@ -20,18 +20,21 @@ done; what remains open is at the end.
   reports/response_to_reviewers_round2.md, EXPERIMENTS.md (one-file record),
   README status.
 
-## Still open (not doable on this host or needs Adeel)
+## Still open
 
-- Author names, affiliations, biographies (placeholders in main.tex).
-- IEEE Access class file (ieeeaccess.cls) is not installed; the paper builds in
-  IEEEtran journal layout. Move content into the Access template at submission.
-- Real near-RT RIC measurement (EXP-031 blocked: WSL2/Docker cannot start).
-- Third corpus with paired radio telemetry; single-exporter re-extraction.
-- Attacker addresses per split side for D_A (reviewer 3, optional).
-- Optional: EXP-054 used 3 seeds (random, file) and one draw per base-station
-  direction; EXP-056 flows 10 of 20 seeds; EXP-055 2 repeats with KNN at R0 only.
-  More seeds would tighten intervals but not change any conclusion stated.
-- Optional: report the 5G-NIDD duplication to the dataset authors.
+- Author biographies and photographs (the IEEE Access class expects them; the
+  paper currently has one-line biographies with the affiliation only).
+- Corresponding-author line and e-mail addresses (not given yet).
+- Real near-RT RIC measurement (EXP-031 blocked on this host).
+- A LICENSE file for the public repository (not chosen yet).
+- Optional, deliberately left out: more seeds for EXP-054/055/056, a third
+  corpus, attacker addresses per split side, informing the 5G-NIDD authors.
+
+Done on 2026-09-25: authors and affiliation set; paper moved to the official
+IEEE Access class (template of 2026-05-13, `paper/access/`, three documented
+compatibility fixes in the preamble); `REPRODUCE.md` and
+`scripts/reproduce.py` (Level 1 reproduces 36 of 36 generated files); new
+README; reproducibility zip; pushed to GitHub.
 
 ## If a new session continues
 

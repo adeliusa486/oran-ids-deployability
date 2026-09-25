@@ -11,6 +11,7 @@ result. Details live in the files this page points to.
 | Which claims stand or were withdrawn | `docs/claims.yaml`, `scripts/check_withdrawn_claims.py` |
 | Every change, in order | `MEMORY.md`, section "Change log" |
 | The reviews and the answers | `reports/peer_review_*.md`, `reports/response_to_reviewers_*.md` |
+| How to reproduce every result | `REPRODUCE.md`, `python scripts/reproduce.py` |
 | What is still open | `reports/NEXT_STEPS_round2.md` |
 
 ## 1. The question
@@ -22,8 +23,10 @@ and two input-blind baselines) on two public corpora along a ladder of protocols
 that move closer to deployment: random split, group-disjoint split, held-out
 sessions, a second corpus, and an operational analysis at a declared attack base
 rate. It also audits the target corpus's labels and takes a published pipeline
-down the same ladder. Target venue: IEEE Access (manuscript currently in IEEEtran
-journal layout; the IEEE Access class file is not installed on the build host).
+down the same ladder. Authors: Arshad Ali and Adeel Ahmad, Faculty of Computer
+and Information Systems, Islamic University of Madinah. Target venue: IEEE Access;
+the manuscript uses the official IEEE Access LaTeX class (template of 2026-05-13,
+in `paper/access/`).
 
 ## 2. Data
 
@@ -72,6 +75,7 @@ environment. Split seeds 101-120, model seed 11 unless a runner says otherwise.
 
 ```
 python -m pytest -q
+python scripts/reproduce.py paper           # all numbers, tables, figures, the PDF
 python experiments/<runner>.py ...          # see the tables below
 python analysis/revision_stats.py           # statistics layer
 python analysis/make_numbers.py             # tables/generated/numbers.tex
@@ -165,4 +169,4 @@ Review: `reports/peer_review_round2_2026-09-24.md`; decisions D-030 to D-033.
 - Two corpora, two exporters; the D_B base-station split holds the exporter fixed.
 - Radio layer: 30 sessions (10 benign) in scenario blocks six weeks apart.
 - 5G-NIDD labels conflict for 59% of benign flows; results given with and without.
-- Author block and IEEE Access class file still to add at submission.
+- Author biographies and photographs are still to be added before submission.
