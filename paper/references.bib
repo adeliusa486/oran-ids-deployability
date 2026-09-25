@@ -120,25 +120,39 @@
   author    = {Niknam, Solmaz and Roy, Abhishek and Dhillon, Harpreet S. and Singh, Sukhdeep and Banerji, Rahul and Reed, Jeffrey H. and Saxena, Navrati and Yoon, Seungil},
   title     = {Intelligent {O-RAN} for Beyond {5G} and {6G} Wireless Networks},
   booktitle = {Proc. IEEE Globecom Workshops (GC Wkshps)},
+  pages     = {215--220},
   year      = {2022},
   doi       = {10.1109/GCWkshps56602.2022.10008676}
 }
 
-@misc{oran_wg3_ricarch,
-  author       = {{O-RAN Alliance}},
-  title        = {{O-RAN} Near-Real-time {RAN} Intelligent Controller Architecture},
-  howpublished = {Technical Specification O-RAN.WG3.RICARCH-R003-v04.00},
-  month        = mar,
-  year         = {2023},
-  url          = {https://www.o-ran.org/specifications}
+% 2026-09-25: replaces O-RAN.WG3.RICARCH-R003-v04.00, which sits behind the
+% O-RAN click-through licence and could not be checked. The ETSI PAS below is
+% public; clause "E2 interface shall support latency requirements for
+% near-real-time optimization, i.e. from 10 milliseconds up to 1 second" was
+% read in the PDF.
+@techreport{etsi_e2gap,
+  author      = {{ETSI}},
+  title       = {Publicly Available Specification ({PAS}); {E2} Interface: General Aspects and Principles ({O-RAN.WG3.E2GAP-R003-v04.01})},
+  institution = {European Telecommunications Standards Institute},
+  type        = {ETSI TS},
+  number      = {104 038 V4.1.0},
+  month       = oct,
+  year        = {2024},
+  url         = {https://www.etsi.org/deliver/etsi_ts/104000_104099/104038/04.01.00_60/ts_104038v040100p.pdf}
 }
 
-@misc{oran_wg11_security,
-  author       = {{O-RAN Alliance}},
-  title        = {{O-RAN} Security Threat Modeling and Remediation Analysis},
-  howpublished = {Technical Report O-RAN.WG11.Threat-Model},
-  year         = {2023},
-  url          = {https://www.o-ran.org/specifications}
+% 2026-09-25: the WG11 threat model as published by ETSI (public PAS);
+% title page and the clauses on threats against the Near-RT RIC (7.4.1.4)
+% and against xApps (7.4.1.6) were read in the PDF.
+@techreport{etsi_wg11_threat,
+  author      = {{ETSI}},
+  title       = {Publicly Available Specification ({PAS}); {O-RAN} Security Threat Modeling and Risk Assessment ({O-RAN.WG11.Threat-Modeling.O-R003-v03.00})},
+  institution = {European Telecommunications Standards Institute},
+  type        = {ETSI TR},
+  number      = {104 106 V3.0.0},
+  month       = jun,
+  year        = {2025},
+  url         = {https://www.etsi.org/deliver/etsi_tr/104100_104199/104106/03.00.00_60/tr_104106v030000p.pdf}
 }
 
 % ------------------------------------------------------- O-RAN security
@@ -442,20 +456,26 @@
   url     = {https://waujpas.com/index.php/journal/article/view/509}
 }
 
-@misc{obiuwevwi2026realtime,
-  author       = {Obiuwevwi, Lawrence and Rechowicz, Krzysztof J. and
-                  Jayarathna, Sampath and Bouk, Safdar Hussain and
-                  Afrin, Fahmida and Barati, C. Nicolas and Moghim, Neda and
-                  Nanou, Valentina and Rahman, Muhammad Enayetur and
-                  Shetty, Sachin},
-  title        = {Enabling Real-Time {AI} in {O-RAN}: Deploying and Measuring
-                  {AI} Inside a Near-{RT} {RIC} {xApp}},
-  year         = {2026},
-  month        = jul,
-  eprint       = {2607.01583},
-  archivePrefix = {arXiv},
-  primaryClass = {cs.NI},
-  url          = {https://arxiv.org/abs/2607.01583}
+% 2026-09-25: the arXiv preprint (2607.01583) is now the ICCCN 2026 paper;
+% Crossref record of the DOI below checked (title, ten authors, pp. 1-9). The
+% microsecond figures we cite are stated in the preprint's abstract (v2).
+% Author names as in the DOI record IEEE deposited (Crossref and OpenAlex
+% agree): "Valentina Nannou" and "Muhammad Enayet Ur Rahman". The arXiv
+% preprint 2607.01583 spells them "Valentina Nanou" and "Muhammad Enayetur
+% Rahman". We cite the published version, so we follow its record.
+@inproceedings{obiuwevwi2026realtime,
+  author    = {Obiuwevwi, Lawrence and Rechowicz, Krzysztof J. and
+               Jayarathna, Sampath and Bouk, Safdar Hussain and
+               Afrin, Fahmida and Barati, C. Nicolas and Moghim, Neda and
+               Nannou, Valentina and {Ur Rahman}, Muhammad Enayet and
+               Shetty, Sachin},
+  title     = {Enabling Real-Time {AI} in {O-RAN}: Deploying and Measuring
+               {AI} Inside a Near-{RT} {RIC} {xApp}},
+  booktitle = {Proc. 35th Int. Conf. on Computer Communications and Networks (ICCCN)},
+  pages     = {1--9},
+  year      = {2026},
+  month     = jul,
+  doi       = {10.1109/ICCCN69946.2026.11662852}
 }
 
 
@@ -483,6 +503,7 @@
   author    = {Scalingi, Alessio and D'Oro, Salvatore and Restuccia, Francesco and Melodia, Tommaso and Giustiniano, Domenico},
   title     = {{Det-RAN}: Data-Driven Cross-Layer Real-Time Attack Detection in {5G} Open {RANs}},
   booktitle = {Proc. IEEE Conf. on Computer Communications (INFOCOM)},
+  pages     = {41--50},
   year      = {2024},
   doi       = {10.1109/INFOCOM52122.2024.10621223}
 }
@@ -606,7 +627,8 @@
   title        = {Convolutional Neural Networks and Mixture of Experts for Intrusion Detection in {5G} Networks and beyond},
   howpublished = {arXiv:2412.03483},
   year         = {2024},
-  url          = {https://arxiv.org/abs/2412.03483}
+  url          = {https://arxiv.org/abs/2412.03483},
+  note         = {The weighted $F_1$ cited is from the abstract of v2 (May 2025); a revised version appeared in Front. Artif. Intell., vol. 8, art. 1708953, 2026, doi:10.3389/frai.2025.1708953}
 }
 
 @article{dhooge2020interdataset,
@@ -654,4 +676,17 @@
   pages     = {326--333},
   year      = {2025},
   doi       = {10.1109/CSR64739.2025.11130023}
+}
+
+% 2026-09-25: anchors the declared benign flow rate. Crossref-checked (DOI,
+% four authors, pp. 163-174); the sentence "we expect the actual flow arrival
+% rate to be around several hundred flows per second" was read in the
+% arXiv version (1305.3568) of the same paper.
+@inproceedings{jin2013softcell,
+  author    = {Jin, Xin and Li, Li Erran and Vanbever, Laurent and Rexford, Jennifer},
+  title     = {{SoftCell}: Scalable and Flexible Cellular Core Network Architecture},
+  booktitle = {Proc. 9th ACM Conf. on Emerging Networking Experiments and Technologies (CoNEXT)},
+  pages     = {163--174},
+  year      = {2013},
+  doi       = {10.1145/2535372.2535377}
 }

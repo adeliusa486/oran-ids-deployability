@@ -1,0 +1,11 @@
+gap_s,n_segments,n_category_pure,n_subcategory_pure,nested_in_reference,reference_sessions_multi_subcategory
+10,56,56,53,True,10
+30,48,48,45,True,10
+60,46,46,43,True,10
+90,42,42,38,True,10
+100,42,42,38,True,10
+105,42,42,38,True,10
+110,40,40,36,True,10
+120,39,39,34,True,10
+300,30,30,20,True,10
+600,24,23,18,,10

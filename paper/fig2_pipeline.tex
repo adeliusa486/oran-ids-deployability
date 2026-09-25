@@ -1,142 +1,190 @@
 % ---------------------------------------------------------------------------
-%  FIGURE 2 -- Experimental pipeline: one trained detector, four protocols.
+%  FIGURE 2 -- Experimental pipeline and evaluation ladder.
 %
-%  Visual language from paper/figstyle.tex. The numbered step badges carry the
-%  evaluation ladder, deepening from sage to coral as the protocol approaches
-%  deployment conditions, which is the figure's argument.
+%  Rebuilt 2026-09-25 from figures/source/fig2_candidate_a.jpg (Downloads,
+%  "Academic_research_figure_layout..._20260925175932.jpg", the second-newest
+%  of two candidates and the less machine-made of the two: muted grey panels,
+%  no rendered title). Five columns, palette (paper/figstyle.tex, gPanel ...
+%  gPink) and the 14 pictograms are the render's own, cut out unchanged by
+%  scripts/extract_figure2_icons.py. Every word is LaTeX (Helvetica), every
+%  number a macro from tables/generated/numbers.tex.
 %
-%  Pictograms are the originals, extracted by scripts/extract_figure_icons.py.
-%  Every word is set in LaTeX.
-%
-%  Corrections carried against the source render:
-%   * it carried three layout captions -- "LEFT SPINE", "RIGHT SIDE",
-%     "RUNTIME / LATENCY ARM". Those were instructions to the renderer, not
-%     labels, and they are removed along with the title.
-%   * it labelled a stage "measured latency" and drew an offered-load versus
-%     queueing-delay curve. No load sweep was performed and the latency is
-%     emulated, so the runtime panel reports only the stage decomposition that
-%     was measured, and is marked EMULATED.
+%  Corrections carried against the render:
+%    * its caption ("Fig. 2. Proposed experimental pipeline and ...") was drawn
+%      into the image. Removed; the caption is LaTeX's.
+%    * it routed the radio layer into "feature harmonisation (15 concepts / 18
+%      columns)". That space is flow-only (Table III); radio windows are 16
+%      records x 16 KPM fields summarised by mean and s.d. (Section IV-A).
+%    * "BASELINE FLOORS / Majority / Stratified" was drawn twice; there are two
+%      floors and six supervised models (8 architectures).
+%    * "booster" beside XGB and "tracking progression toward realism" were
+%      prompt text. Removed.
+%    * its "MEASURED OFF-PLATFORM" brace spanned t_ind to t_act. Only t_feat
+%      and t_inf were timed (EXP-043); the brace now covers those two, and the
+%      untimed terms are dashed and labelled.
+%    * rung 03 named D_B only; the third corpus D_C is added with its range.
+%    * the "HOW TO READ" panel became a plain note; group keys use the paper's
+%      terms (capture session, source address).
 % ---------------------------------------------------------------------------
-\begin{tikzpicture}[figbase,
-  rungA/.style={draw=fgRule,      fill=white,      rounded corners=2.4pt,
-                line width=0.8pt, align=left, inner sep=4.4pt,
-                text width=4.50cm, minimum height=1.10cm},
-  rungB/.style={rungA, draw=fgSage,  fill=fgSage!28,  line width=1.0pt},
-  rungC/.style={rungA, draw=fgTeal,  fill=fgTealL!40, line width=1.25pt},
-  rungD/.style={rungA, draw=fgCor,   fill=fgCorL!45,  line width=1.6pt},
-  blkd/.style ={draw=fgMute!75, dashed, rounded corners=2.4pt, line width=0.8pt,
-                pattern=north east lines, pattern color=fgMute!40,
-                align=center, inner sep=5pt, text width=4.50cm,
-                dash pattern=on 2.4pt off 2pt},
-  chev/.style ={draw=fgSlate!70, fill=fgPanel, line width=0.7pt, align=center,
-                signal, signal to=east, signal pointer angle=120,
-                inner xsep=3.4pt, inner ysep=3pt, font=\tiny},
-  chevhot/.style={chev, draw=fgCor, fill=fgCorL!55, line width=1.3pt},
-  cost/.style ={font=\scriptsize\bfseries, text=fgInk, align=left, anchor=west},
+\fontfamily{phv}\selectfont
+\begin{tikzpicture}[figbase, font=\scriptsize, x=1cm, y=1cm,
+  hdr/.style   ={font=\footnotesize, text=gHead, anchor=base},
+  lbl/.style   ={font=\scriptsize, text=gInk, align=center, inner sep=0.6pt},
+  bold/.style  ={font=\scriptsize\bfseries, text=gInk, align=center, inner sep=0.6pt},
+  arr/.style   ={-{Latex[length=1.6mm]}, draw=gLine, line width=0.7pt},
+  fan/.style   ={draw=gBorder, line width=0.5pt},
+  rung/.style  ={draw=gBorder, fill=gPanel, rounded corners=3pt, line width=0.7pt},
+  rungR/.style ={draw=gRed, fill=gPink, rounded corners=3pt, line width=1.0pt},
+  num/.style   ={font=\LARGE, text=gHead, anchor=north west, inner sep=0pt},
+  rtitle/.style={font=\footnotesize, text=gInk, anchor=north west, inner sep=0pt},
+  body/.style  ={font=\scriptsize, text=gInk, align=left, anchor=north west,
+                 inner sep=0pt},
+  side/.style  ={font=\scriptsize, text=gInk, align=right, anchor=north east,
+                 inner sep=0pt},
 ]
 
-% ===== column headers and hairline rules ===================================
-\foreach \x in {4.86, 13.42}
-  {\draw[colrule] (\x,-1.30) -- (\x,8.05);}
-\node[colhdr] at (2.15,8.42) {TRAINING PROTOCOL};
-\node[colhdr] at (8.95,8.42) {EVALUATION LADDER};
-\node[colhdr] at (16.05,8.42) {RUNTIME \& READING};
+% ===== column headers =======================================================
+\node[hdr] at (1.10,9.95) {DATA};
+\node[hdr] at (3.25,9.95) {FEATURE SPACE};
+\node[hdr] at (6.40,9.95) {TRAINING};
+\node[hdr] at (11.87,9.95) {EVALUATION LADDER};
+\node[hdr] at (17.37,9.95) {RUNTIME};
+\node[font=\scriptsize\itshape, text=gHead] at (11.87,9.50)
+     {one pipeline, increasingly deployment-relevant evaluation};
 
-% ===== training protocol ===================================================
-\node[card, text width=2.95cm, minimum height=1.00cm] (src) at (1.34,7.28)
-  {\textbf{$D_A$: NetsLab-5GORAN-IDD}\\[0.5pt]{\tiny Zeek flow records; 1\,Hz radio KPIs}};
-\node at (3.62,7.28) {\ficon{src_testbed}{4.8mm}};
+% ===== data =================================================================
+\node (tower) at (1.10,8.20) {\ficon{f2_tower}{7.0mm}};
+\node[bold, anchor=north] (radio-l) at (1.10,7.72) {RADIO};
+\node[lbl, anchor=north] at (radio-l.south) {1\,Hz radio\\KPIs (KPM)};
+\node (db) at (1.10,5.35) {\ficon{f2_database}{6.4mm}};
+\node[lbl, anchor=north, font=\footnotesize] (db-l) at (1.10,4.90) {$\mathcal{D}_A$};
+\node[lbl, anchor=north] at (db-l.south) {NetsLab-\\5GORAN-IDD};
+\node (fdoc) at (1.10,2.75) {\ficon{f2_flowdoc}{7.0mm}};
+\node[bold, anchor=north] (flow-l) at (1.10,2.27) {FLOW};
+\node[lbl, anchor=north] at (flow-l.south) {Zeek flow\\records};
+% the corpus holds both layers
+\draw[fan, dash pattern=on 1.5pt off 1.2pt] (db.north) -- (1.10,6.75);
+\draw[fan, dash pattern=on 1.5pt off 1.2pt] (1.10,4.02) -- (fdoc.north);
 
-\node[card, text width=2.95cm, minimum height=1.00cm] (fsp) at (1.34,5.52)
-  {\textbf{Shared feature space}\\[0.5pt]{\tiny 15 concepts / 18 columns}\\[0.5pt]
-   {\tiny semantic harmonization}};
-\node at (3.66,5.52) {\ficon{schema}{5.4mm}};
+% ===== feature space ========================================================
+\node[bold, anchor=west] (rw) at (2.10,8.42) {RADIO WINDOWS};
+\node[lbl, anchor=north west, align=left] at (2.10,8.22)
+     {16 records $\times$ 16 KPM\\fields, mean and s.d.};
+\draw[arr] (tower.east) -- (2.02,8.20);
+\node (grid) at (3.25,2.80) {\ficon{f2_grid}{7.4mm}};
+\node[bold, anchor=north] (sf-l) at (3.25,2.30) {SHARED FLOW SPACE};
+\node[lbl, anchor=north] (sf-2) at (sf-l.south) {15 concepts / 18 columns};
+\node[lbl, anchor=north, font=\scriptsize\itshape, text=gHead] at (sf-2.south)
+     {matched by meaning};
+\draw[arr] (fdoc.east) -- (grid.west);
 
-\node[card, text width=2.95cm, minimum height=1.00cm] (spl) at (1.34,3.76)
-  {\textbf{Group-disjoint splits}\\[0.5pt]{\tiny capture run (radio), \texttt{src\_ip} (flows); 20 seeds}};
-\node at (3.68,3.76) {\ficon{grouplock}{4.9mm}};
+% ===== training =============================================================
+\node (spl) at (5.90,5.35) {\ficon{f2_splits}{6.4mm}};
+\node[lbl, anchor=south, align=center] (spl-2) at (5.90,5.80)
+     {20 split seeds\\radio: capture session\\flow: source address};
+\node[bold, anchor=south, align=center] at ($(spl-2.north)+(0,0.04)$) {GROUP-DISJOINT\\SPLITS};
+\draw[arr] (4.24,8.42) -- (4.47,8.42) -- (4.47,5.48) -- ($(spl.west)+(0,0.13)$);
+\draw[arr] (grid.east) -- (4.47,2.80) -- (4.47,5.22) -- ($(spl.west)+(0,-0.13)$);
 
-\node[card, text width=2.95cm, minimum height=1.55cm] (trn) at (1.34,1.62)
-  {\textbf{Train}\\[0.5pt]{\tiny 8 architectures, 2 of them trivial floors}\\[1pt]
-   {\tiny L1\;\; majority, stratified}\\[-0.5pt]
-   {\tiny L2\;\; LR, DT, RF, XGB, HGB}\\[-0.5pt]
-   {\tiny L3\;\; MLP}};
+\coordinate (tr) at (7.15,5.35);
+\draw[draw=gLine, line width=0.7pt] (spl.east) -- (tr);
+\fill[gLine] (tr) circle (1.4pt);
+\node[bold, anchor=north east, align=right] at (7.05,4.98) {TRAIN\\[-0.5pt]{\mdseries 8 architectures}};
 
-\foreach \a/\b in {src/fsp, fsp/spl, spl/trn} {\draw[stepflow] (\a) -- (\b);}
+\node[bold, anchor=west, align=left] at (7.30,8.62) {BASELINE\\FLOORS};
+\node[bold, anchor=east] at (8.80,4.72) {SUPERVISED};
+\foreach \y/\t in {8.00/Majority, 7.65/Stratified, 4.32/LR, 3.92/DT, 3.52/RF,
+                   3.12/XGB, 2.72/HGB, 2.32/MLP}{%
+  \draw[fan] (tr) to[out=0,in=180] (7.46,\y);
+  \node[lbl, anchor=west] at (7.50,\y) {\t};}
+\node at (8.62,8.00) {\ficon{f2_bars}{4.0mm}};
+\node at (8.12,3.92) {\ficon{f2_tree}{3.9mm}};
+\node at (8.12,3.52) {\ficon{f2_forest}{3.6mm}};
+\node at (8.20,2.32) {\ficon{f2_mlp}{4.2mm}};
 
-% one detector, four protocols
-\draw[dataflow, line width=1.5pt] (trn.east) -- (4.54,1.62);
-\draw[draw=fgMute, line width=0.7pt] (4.54,1.62) -- (4.54,7.28);
-\node[callout, text=fgMute, align=center] at (4.54,8.02)
-  {ONE PIPELINE, TWO LAYERS};
+% ===== evaluation ladder ====================================================
+% each rung: title, what is evaluated, then the measured result under a rule
+\draw[-{Latex[length=2.2mm]}, draw=gLine, line width=0.8pt] (8.98,9.15) -- (8.98,-0.40);
+\node[font=\scriptsize, text=gHead, rotate=90, anchor=south] at (8.92,1.10)
+     {closer to deployment conditions};
+\newcommand{\fTwoRung}[5]{% top, bottom, style, number, title
+  \draw[#3] (9.10,#2) rectangle (14.65,#1);
+  \node[num, text=#4] at (9.24,#1-0.14) {#5};}
+\newcommand{\fTwoRule}[2]{\draw[draw=#2, line width=0.5pt] (9.95,#1) -- (14.50,#1);}
+\tikzset{res/.style={font=\scriptsize\bfseries, text=gInk, align=left,
+                     anchor=north west, inner sep=0pt}}
 
-% ===== the evaluation ladder ===============================================
-% round 2: each rung names its layer and metric, because the rungs do not share
-% one detector (radio windows for 01, 02; flows for 03, 04)
-\node[rungA] (r1) at (8.82,7.28)
-  {\textbf{Held-out $D_A$}, run-disjoint\\[0.5pt]
-   {\tiny radio windows, macro-$F_1$; in-distribution reference, a random split
-   scores higher}};
-\node[rungB] (r2) at (8.82,5.52)
-  {\textbf{Held-out benign sessions of $D_A$}\\[0.5pt]
-   {\tiny radio windows, false positive rate; each benign session scored by
-   models trained on the other 29}};
-\node[rungC] (r3) at (8.82,3.76)
-  {\textbf{$D_B$: 5G-NIDD}\\[0.5pt]
-   {\tiny flows, balanced accuracy; independent corpus, different exporter;
-   labels audited, conflicting records set aside}};
-\node[rungD] (r4) at (8.82,1.62)
-  {\textbf{Operational analysis}\\[0.5pt]
-   {\tiny $D_B$ flows, precision at base rate $\pi$; threshold $\tau$, benign
-   arrival rate $\lambda_b$, alert burden}};
+% rung 01
+\fTwoRung{9.15}{7.20}{rung}{gHead}{01}
+\node[rtitle] at (9.95,8.99) {RUN-DISJOINT HELD-OUT $\mathcal{D}_A$};
+\node[body] at (9.95,8.59) {in-distribution reference\\radio windows, macro-$F_1$};
+\node[body, font=\scriptsize\itshape, text=gHead] at (9.95,7.97)
+     {held-out score alone is insufficient};
+\fTwoRule{7.60}{gBorder}
+\node[res] at (9.95,7.47) {random split: $+\LeakAvg$ macro-$F_1$};
+\node at (14.25,7.95) {\ficon{f2_scatter}{5.2mm}};
 
-\node[badge]  (n1) at (5.40,7.28) {01};
-\node[badgeG] (n2) at (5.40,5.52) {02};
-\node[badgeT] (n3) at (5.40,3.76) {03};
-\node[badgeC] (n4) at (5.40,1.62) {04};
-\foreach \n/\y in {n1/7.28, n2/5.52, n3/3.76, n4/1.62}
-  {\draw[stepflow] (4.54,\y) -- (\n.west);}
-\foreach \n/\r in {n1/r1, n2/r2, n3/r3, n4/r4} {\draw[stepflow] (\n) -- (\r.west);}
+% rung 02
+\fTwoRung{6.95}{5.00}{rung}{gHead}{02}
+\node[rtitle] at (9.95,6.79) {HELD-OUT BENIGN SESSIONS};
+\node[body] at (9.95,6.39) {$\mathcal{D}_A$ radio windows, false positive rate\\each benign session held out in turn};
+\fTwoRule{5.66}{gBorder}
+\node[res] at (9.95,5.52) {FPR 0.00--\BenHighMax; \BenHighN{} of 10 sessions $\ge$ \BenHighMin};
+\node at (14.30,6.25) {\ficon{f2_range}{8.0mm}};
 
-\node[cost, text width=2.00cm] at (11.30,7.28) {reference\\{\tiny random split $+\LeakAvg\ F_{1}$}};
-\node[cost, text width=2.00cm] at (11.30,5.52) {FPR 0.00 to \BenHighMax\\{\tiny \BenHighN{} of 10 sessions $\ge\BenHighMin$}};
-\node[cost, text width=2.00cm] at (11.30,3.76) {BA \TrCleanTgtBAmin--\TrCleanTgtBAmax\\{\tiny in-target \TgtRandShCleanBAmin--\TgtRandShCleanBAmax}};
-\node[cost, text width=2.00cm] at (11.30,1.62)
-  {PPV $\le\NetCleanPPVbest$\\{\tiny any $\tau$, recall $\ge$ 0.1}};
-\node at (11.62,4.86) {\ficon{distrib}{4.4mm}};
-\node[font=\tiny, text=fgMute, align=center] at (11.62,4.42)
-      {distribution\\shift};
+% rung 03
+\fTwoRung{4.75}{2.25}{rung}{gHead}{03}
+\node[rtitle] at (9.95,4.59) {INDEPENDENT CORPORA $\mathcal{D}_B$, $\mathcal{D}_C$};
+\node[body] at (9.95,4.19) {5G-NIDD and a 5G core testbed\\flows, balanced accuracy; other\\flow exporters; labels audited,\\conflicting records set aside};
+\fTwoRule{2.96}{gBorder}
+\node[res] at (9.95,2.84) {BA \TrCleanTgtBAmin--\TrCleanTgtBAmax{} (in-target \TgtRandShCleanBAmin--\TgtRandShCleanBAmax)\\$\mathcal{D}_C$: \ThATgtBAmin--\ThATgtBAmax};
+\node at (14.38,2.45) {\ficon{f2_dbsmall}{4.2mm}};
 
-% the arm that was designed and not executed
-\node[blkd, minimum height=0.80cm] (blk) at (8.82,-0.44)
-  {\textbf{LIVE NEAR-RT RIC: NOT EXECUTED}\\[1pt]{\tiny see Limitations}};
-\node at (5.40,-0.44) {\ficon{ic_warn}{4.2mm}};
-\draw[stepflow, dashed, dash pattern=on 2pt off 1.6pt]
-      (4.54,1.62) -- (4.54,-0.44) -- (5.00,-0.44);
+% rung 04
+\fTwoRung{2.05}{-0.40}{rungR}{gRed}{04}
+\node[rtitle, text=gRed] at (9.95,1.89) {OPERATIONAL ANALYSIS};
+\node[body] at (9.95,1.49) {$\mathcal{D}_B$ flows; precision at base rate $\pi$;\\threshold $\tau$; benign arrival rate $\lambda_b$;\\alert burden};
+\fTwoRule{0.44}{gRed!50}
+\node[res] at (9.95,0.30) {PPV $\le$ \NetCleanPPVbest{} at recall $\ge$ 0.1};
+\node at (14.22,0.10) {\ficon{f2_bell}{5.2mm}};
 
-% ===== runtime and reading =================================================
-\node[panel, text width=4.55cm] (rt) at (16.05,7.32)
-  {\textbf{RUNTIME DECOMPOSITION}\\[1pt]
-   {\tiny\textsc{emulated}: one host, no RIC in the path}};
+% ===== runtime ==============================================================
+\node[font=\footnotesize, text=gInk] at (17.45,8.75)
+     {$L = t_{\mathrm{ind}} + t_{\mathrm{feat}} + t_{\mathrm{inf}} + t_{\mathrm{act}} + t_{q}$};
+\tikzset{stOn/.style ={draw=gLine, fill=gPanel, line width=1.1pt, rounded corners=2pt,
+                       minimum width=22mm, minimum height=5mm, font=\scriptsize},
+         stOff/.style={draw=gBorder, fill=white, line width=0.7pt, rounded corners=2pt,
+                       dash pattern=on 2pt off 1.5pt, minimum width=22mm,
+                       minimum height=5mm, font=\scriptsize, text=gHead}}
+\node[stOff] (s1) at (16.40,7.85) {indication decoding};
+\node[stOn]  (s2) at (16.40,7.10) {feature construction};
+\node[stOn]  (s3) at (16.40,6.35) {model inference};
+\node[stOff] (s4) at (16.40,5.60) {control encoding};
+\node[stOff] (s5) at (16.40,4.85) {queueing};
+\foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5} {\draw[arr] (\a) -- (\b);}
+\foreach \n/\t in {s1/{$t_{\mathrm{ind}}$}, s2/{$t_{\mathrm{feat}}$}, s3/{$t_{\mathrm{inf}}$},
+                   s4/{$t_{\mathrm{act}}$}, s5/{$t_{q}$}}
+  {\node[lbl, anchor=east] at ($(\n.west)+(-0.06,0)$) {\t};}
+\node[lbl, anchor=west, align=left, text=gHead] at (17.62,7.85) {not timed};
+\node[lbl, anchor=west, align=left] at (17.62,7.10) {\LatExtrMin--\LatExtrMax\,ms per flow\\vectorized, real captures};
+\node[lbl, anchor=west, align=left] at (17.62,6.35) {\LatNetOnnxPnnMax\,ms $p_{99}$\\ONNX Runtime};
+\node[lbl, anchor=west, align=left, text=gHead] at (17.62,5.60) {not timed};
+\node[lbl, anchor=west, align=left, text=gHead] at (17.62,4.85) {not timed};
 
-\begin{scope}[shift={(13.78,5.86)}]
-  \node[chev]    (s0) at (0.44,0) {E2\\indic.};
-  \node[chev]    (s1) at (1.84,0) {feature\\constr.};
-  \node[chev]    (s2) at (3.16,0) {model\\infer.};
-  \node[chev]    (s3) at (4.34,0) {control\\encode};
-\end{scope}
+% live-RIC arm, drawn as in Figure 1
+\draw[draw=fCor, fill=fPink, rounded corners=3pt, line width=0.7pt,
+      dash pattern=on 2.4pt off 1.8pt] (14.95,3.15) rectangle (19.80,4.30);
+\node[font=\footnotesize] at (17.37,4.01) {LIVE NEAR-RT RIC PATH};
+\node[font=\footnotesize\bfseries, text=fRed] at (17.37,3.70) {NOT EXECUTED};
+\node[lbl] at (17.37,3.38) {one host, no RIC in the path};
 
-\node[align=center, font=\tiny, text=fgInk, text width=4.6cm] at (16.05,4.62)
-  {$t_{\mathrm{ind}} + t_{\mathrm{feat}} + t_{\mathrm{inf}} + t_{\mathrm{act}} + t_{q}$\\[2pt]
-   \textbf{MEASURED: $t_{\mathrm{feat}}$ AND $t_{\mathrm{inf}}$ ONLY}\\[1pt]
-   \LatFigLine};
-
-% share-of-budget blocks, in the reference's capacity idiom
-
-\node[panel, text width=4.55cm] at (16.05,1.68)
-  {\textbf{HOW TO READ THIS FIGURE}\\[2pt]
-   {\tiny Each rung is closer to deployment conditions than the one above.
-   The held-out score of rung~01 alone does not establish how a detector
-   behaves in deployment.}};
-
+% legend and reading note
+\node[stOn, minimum width=6mm, minimum height=3mm] at (15.30,2.72) {};
+\node[lbl, anchor=west] at (15.70,2.72)
+     {\raisebox{-0.8mm}{\ficon{f2_watch}{3.2mm}}\ timed off-platform, one host};
+\node[stOff, minimum width=6mm, minimum height=3mm] at (15.30,2.30) {};
+\node[lbl, anchor=west] at (15.70,2.30) {not timed: needs a RIC in the path};
+\node[font=\scriptsize\itshape, text=gHead, align=left, anchor=north west,
+      text width=4.8cm] at (14.95,1.95)
+     {Each rung is closer to deployment conditions than the one above. The held-out score of rung 01 alone does not show how a detector behaves in deployment.};
 \end{tikzpicture}

@@ -1,7 +1,6 @@
 # Response to reviewers, round 2
 
-Manuscript: "Intrusion Detection for O-RAN: What Held-Out Accuracy Predicts About
-Deployment" (formerly "Intrusion Detection for IoT Traffic in O-RAN Edge Data
+Manuscript: "What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN" (formerly "Intrusion Detection for IoT Traffic in O-RAN Edge Data
 Centers: Why Accuracy Alone Is Not Enough"). Review answered:
 `reports/peer_review_round2_2026-09-24.md`. Every change is logged in `MEMORY.md`;
 decisions D-030 to D-033 in `configs/decisions.md`. Section and table numbers

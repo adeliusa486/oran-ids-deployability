@@ -1,4 +1,4 @@
-# Intrusion Detection for O-RAN: What Held-Out Accuracy Predicts About Deployment
+# What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN
 
 Code, results and manuscript for the paper by **Arshad Ali and Adeel Ahmad**,
 Faculty of Computer and Information Systems, Islamic University of Madinah,
@@ -123,7 +123,7 @@ publication):
 ```bibtex
 @misc{ali2026oranids,
   author = {Ali, Arshad and Ahmad, Adeel},
-  title  = {Intrusion Detection for {O-RAN}: What Held-Out Accuracy Predicts About Deployment},
+  title  = {What Held-Out Accuracy Predicts About Deploying Intrusion Detection in {O-RAN}},
   year   = {2026},
   note   = {Manuscript in preparation for IEEE Access},
   url    = {https://github.com/adeliusa486/oran-ids-deployability}

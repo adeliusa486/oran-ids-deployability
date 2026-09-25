@@ -95,7 +95,17 @@ def main() -> int:
         print("  ", e)
     for u in sorted(set(undef))[:10]:
         print("  undefined:", u)
-    return 0 if pages and not errors and not undef else 1
+    # BibTeX problems (a broken entry prints as an empty reference, which LaTeX
+    # does not report): count warnings and errors in main.blg
+    blg = (PAPER / "main.blg").read_text(encoding="utf-8", errors="ignore") \
+        if (PAPER / "main.blg").exists() else ""
+    bibwarn = re.findall(r"^Warning--.*", blg, re.M)
+    biberr = re.search(r"\(There (?:was|were) (\d+) error", blg)
+    nbiberr = int(biberr.group(1)) if biberr else 0
+    print(f"bibtex warnings: {len(bibwarn)}  bibtex errors: {nbiberr}")
+    for w in bibwarn[:10]:
+        print("  ", w)
+    return 0 if pages and not errors and not undef and not bibwarn and not nbiberr else 1
 
 
 if __name__ == "__main__":

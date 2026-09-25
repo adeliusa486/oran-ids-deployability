@@ -1,4 +1,4 @@
-# Reproducing the results of "Intrusion Detection for O-RAN: What Held-Out Accuracy Predicts About Deployment"
+# Reproducing the results of "What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN"
 
 This guide is written for reviewers. It has three levels. Level 1 needs no data
 and takes minutes; it regenerates every number, table and figure in the paper
@@ -59,7 +59,7 @@ This runs, in order:
    `reproducibility/expected_outputs.json` (comment lines, which carry the
    date and commit, are ignored). Expected result: `37 of 37 generated files
    identical`.
-5. `scripts/build_paper.py` (expected: 18 pages, 0 errors, 0 undefined
+5. `scripts/build_paper.py` (expected: 19 pages, 0 errors, 0 undefined
    references), `scripts/check_withdrawn_claims.py` (no retired claim in the
    text) and `scripts/check_no_placeholders.py`.
 
@@ -117,6 +117,8 @@ runs can be started detached with `scripts/round2_launch.ps1` (Windows).
 | EXP-046, EXP-056 | Sec. VI-G | Pooled operating points with cluster-bootstrap intervals |
 | EXP-044, diag. | Sec. VI-H | Calibration and prior estimation |
 | EXP-043 | Sec. VI-I | Emulated per-stage latency |
+| EXP-060 | Sec. VI-I | Latency CDF from a repeat that kept every call |
+| EXP-059 | Sec. IV-A | Session rule against the 42 runs of Fard et al. |
 
 Details of every experiment, including the withdrawn ones, are in `EXPERIMENTS.md`.
 

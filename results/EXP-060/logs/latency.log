@@ -1,0 +1,43 @@
+  radio tree done
+  radio logreg done
+  radio xgboost done
+  radio mlp done
+  radio hgb done
+  radio rf done
+   layer   model                       stage     p50     p99  p99_lo  p99_hi   p99_9  p99_9_hi
+platform   FLOOR                       no_op  0.0009  0.0013  0.0012  0.0013  0.0033    0.0058
+   radio       -          window_aggregation  0.0390  0.0749  0.0714  0.0807  0.1721    0.2311
+   radio    tree                sk_dataframe  0.3234  0.5629  0.5493  0.5885  0.9102    0.9607
+   radio    tree                    sk_array  0.0334  0.0620  0.0594  0.0680  0.2093    0.2264
+   radio    tree                        onnx  0.0120  0.0340  0.0337  0.0344  0.1138    0.1614
+   radio    tree     e2e_aggregate_plus_onnx  0.0841  0.1882  0.1815  0.1962  0.3853    0.4308
+   radio    tree e2e_aggregate_plus_sk_array  0.1362  0.3019  0.2801  0.3245  0.6711    0.8407
+   radio  logreg                sk_dataframe  0.6581  1.0813  1.0586  1.1034  1.7662    1.9201
+   radio  logreg                    sk_array  0.1895  0.3944  0.3820  0.4063  0.7139    0.8344
+   radio  logreg                        onnx  0.0146  0.0434  0.0427  0.0453  0.1172    0.1229
+   radio  logreg     e2e_aggregate_plus_onnx  0.1037  0.2149  0.1941  0.2407  0.5026    0.5641
+   radio  logreg e2e_aggregate_plus_sk_array  0.2484  0.4430  0.4280  0.4631  0.7313    0.8296
+   radio xgboost        sk_array_all_threads  1.5263  2.7361  2.6335  3.1263  4.5034    7.3421
+   radio xgboost                sk_dataframe  1.2074  1.9681  1.9036  2.0317  2.8608    3.1311
+   radio xgboost                    sk_array  0.2475  0.5215  0.5110  0.5345  1.0298    1.1764
+   radio xgboost                        onnx  0.0197  0.0438  0.0425  0.0475  0.2097    0.2450
+   radio xgboost     e2e_aggregate_plus_onnx  0.0997  0.3366  0.3246  0.3608  0.6667    0.8772
+   radio xgboost e2e_aggregate_plus_sk_array  0.3744  0.6610  0.6516  0.6784  1.1613    1.2871
+   radio     mlp                sk_dataframe  0.6258  0.9431  0.9189  0.9714  1.7638    1.8724
+   radio     mlp                    sk_array  0.1673  0.2592  0.2495  0.2739  0.4612    0.5190
+   radio     mlp                        onnx  0.0270  0.0477  0.0469  0.0483  0.0778    0.0982
+   radio     mlp     e2e_aggregate_plus_onnx  0.0901  0.1260  0.1233  0.1307  0.2655    0.3072
+   radio     mlp e2e_aggregate_plus_sk_array  0.2538  0.3871  0.3784  0.4105  0.5971    0.6642
+   radio     hgb                sk_dataframe  1.9040  2.3934  2.3740  2.4225  3.6364    4.9025
+   radio     hgb                    sk_array  1.3409  1.6807  1.6689  1.6946  2.6811    2.9770
+   radio     hgb                        onnx  0.0185  0.0384  0.0370  0.0400  0.0668    0.0833
+   radio     hgb     e2e_aggregate_plus_onnx  0.0749  0.1782  0.1655  0.1898  0.4105    0.4362
+   radio     hgb e2e_aggregate_plus_sk_array  1.4077  2.0041  1.9796  2.0366  4.3124    4.5969
+   radio      rf        sk_array_all_threads 27.6488 53.5634 46.5594 57.6163 62.1788   65.6508
+   radio      rf                sk_dataframe 11.5096 18.3451 17.9419 18.9960 29.9758   31.7977
+   radio      rf                    sk_array 10.6039 14.9141 14.7274 15.0779 24.0081   26.6937
+   radio      rf                        onnx  0.0167  0.0381  0.0378  0.0387  0.0876    0.1214
+   radio      rf     e2e_aggregate_plus_onnx  0.0836  0.1372  0.1316  0.1465  0.3541    0.3868
+   radio      rf e2e_aggregate_plus_sk_array 10.7590 13.7408 13.6609 13.8667 18.5127   20.5148
+
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-060  (1029s)

@@ -858,3 +858,16 @@ campaign_2:
     answers: [round-2 open item, third corpus]
     result: D_C labels consistent (BA ceiling 0.992); in-target BA 0.99; transfer BA 0.60-0.74 from D_A (20 seeds, 0 of 6 significant drops), 0.42-0.85 from D_B (10 seeds); SYN flood recall 1.00 from D_A, 0.71-1.00 from D_B; FPR 0.16-0.81; deployability test 0 of 6 both directions.
 
+  EXP-059:
+    title: D_A radio session rule against the 42 runs reported by Fard et al.
+    runner: [experiments/run_session_rule.py]
+    status: complete
+    answers: [finalization audit 2026-09-25, reviewer risk 4]
+    result: gap rules of 90-105 s give exactly 42 category-pure segments; each of the 30 five-minute sessions is a union of whole segments; 10 sessions hold two or three subcategories. The five-minute rule only merges back-to-back runs.
+
+  EXP-060:
+    title: Latency repeat of the EXP-043 radio part that keeps all 20,000 per-call times per stage
+    runner: [experiments/run_latency_v2.py --exp EXP-060 --radio-only --keep-samples]
+    status: complete
+    answers: [finalization audit 2026-09-25, latency CDF]
+    result: see make_numbers LatRep* macros; per-call samples in results/EXP-060/raw/latency_samples.npz feed the CDF figure. Table XXI and all in-text latency numbers stay on EXP-043.

@@ -1,0 +1,65 @@
+% ---------------------------------------------------------------------------
+%  FIGURE -- the label-conflict mechanism in 5G-NIDD (Section VI-C).
+%
+%  Drawn at print size for one column; every number is a macro from
+%  tables/generated/numbers.tex (EXP-055, EXP-057), so nothing is typed by hand.
+%  The tile pattern is schematic: the content tiles are identical in the two
+%  rows because the records are identical in all 90 content fields; the two
+%  position tiles differ because Seq and Offset differ. No field value is shown.
+% ---------------------------------------------------------------------------
+\fontfamily{phv}\selectfont
+\begin{tikzpicture}[figbase, font=\scriptsize, x=1cm, y=1cm,
+  tileC/.style={draw=fInk!70, line width=0.35pt, minimum size=2.4mm, inner sep=0pt},
+  chipB/.style={draw=fBlue, fill=fBlue!12, rounded corners=2pt, line width=0.7pt,
+                minimum width=14mm, minimum height=4.6mm, font=\scriptsize\bfseries},
+  chipA/.style={draw=fCor, fill=fCor!15, rounded corners=2pt, line width=0.7pt,
+                minimum width=14mm, minimum height=4.6mm, font=\scriptsize\bfseries},
+  arr/.style  ={-{Latex[length=1.5mm]}, draw=fInk!75, line width=0.6pt},
+]
+% identical content pattern (schematic), and two different position pairs
+\def\shades{25,55,10,40,70,20,50,35}
+\newcommand{\fcRecord}[3]{% y, first position shade, second position shade
+  \foreach \s [count=\i] in \shades
+    {\node[tileC, fill=fTeal!\s] at ({1.42+0.29*(\i-1)},#1) {};}
+  \node[tileC, fill=fCor!#2] at (4.02,#1) {};
+  \node[tileC, fill=fCor!#3] at (4.31,#1) {};}
+
+\node[text=fInk!75] at (2.44,4.86) {content fields (90)};
+\node[text=fInk!75, align=center] at (4.17,5.00) {Seq,\\Offset};
+
+% row A: capture file 5, labelled benign
+\node[anchor=west, align=left] at (-0.05,4.42) {\textbf{file \LcBenignFile}\\pass 1};
+\fcRecord{4.42}{20}{45}
+\node[chipB] (lb) at (5.55,4.42) {benign};
+\draw[arr] (4.52,4.42) -- (lb.west);
+\node[anchor=west, align=left, text=fInk!80] at (6.35,4.42) {\LcTwinBenign{}\\flows};
+
+% row B: capture file 15, labelled UDP flood
+\node[anchor=west, align=left] at (-0.05,3.34) {\textbf{file \LcAttackFile}\\pass 2};
+\fcRecord{3.34}{70}{90}
+\node[chipA] (la) at (5.55,3.34) {UDP flood};
+\draw[arr] (4.52,3.34) -- (la.west);
+\node[anchor=west, align=left, text=fInk!80] at (6.35,3.34) {\LcTwinAttack{}\\flows};
+
+% between the rows: same content, different position
+\node[fill=white, inner sep=1pt] at (2.44,3.88) {$=$ identical records};
+\node[fill=white, inner sep=1pt] at (4.17,3.88) {$\neq$};
+\draw[draw=fgRule, line width=0.5pt] (-0.05,2.80) -- (8.20,2.80);
+
+% what a classifier can learn from each feature set
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,2.42) {content only};
+\draw[arr] (1.72,2.42) -- (2.12,2.42);
+\node[anchor=west, align=left] at (2.16,2.42)
+     {copies cannot be separated: balanced-accuracy\\ceiling \LcCeilNative{} (\LcCeilShared{} in the 18 shared columns)};
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,1.50) {+ Seq, Offset};
+\draw[arr] (1.72,1.50) -- (2.12,1.50);
+\node[anchor=west, align=left] at (2.16,1.50)
+     {every record unique: ceiling \LcCeilPos{}; four published\\classifiers reach \PubRzAccMin--\PubRzAccMax\% accuracy; DT, RF\\and MLP fall to \PubOneNoposAccMin--\PubOneNoposAccMax\% without the two fields};
+
+% the conclusion
+\node[draw=fInk!70, rounded corners=2.4pt, line width=0.6pt, fill=fRicI,
+      align=center, inner sep=3pt, minimum width=82mm] at (4.07,0.38)
+     {\textbf{benchmark separability $\neq$ deployable signal}\\
+      Seq and Offset locate a record in its capture file;\\
+      a deployed detector never observes them};
+\end{tikzpicture}

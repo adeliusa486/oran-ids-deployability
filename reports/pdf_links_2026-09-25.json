@@ -1,0 +1,51 @@
+{
+ "bib_items": 62,
+ "cited_keys_with_links": 57,
+ "cite_links_missing_for": [
+  "abdalla2022toward",
+  "moustafa2021toniot",
+  "ferrag2022edgeiiot",
+  "neto2023ciciot",
+  "ovadia2019trust"
+ ],
+ "cite_links_wrong_page": [],
+ "internal_link_counts": {
+  "cite": 97,
+  "subsection": 29,
+  "section": 4,
+  "table": 41,
+  "equation": 7,
+  "algorithm": 2,
+  "figure": 15
+ },
+ "broken_internal": [],
+ "external_links": 79,
+ "doi_links": 59,
+ "doi_links_not_in_bib": [],
+ "other_urls": [
+  "https://arxiv.org/abs/2212.01298",
+  "https://arxiv.org/abs/2412.03483",
+  "https://arxiv.org/abs/2606.22450",
+  "https://github.com/adeliusa486/oran-ids-deployability",
+  "https://jmlr.org/papers/v12/pedregosa11a.html",
+  "https://papers.nips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html",
+  "https://waujpas.com/index.php/journal/article/view/509",
+  "https://www.etsi.org/deliver/etsi_tr/104100_104199/104106/03.00.00_60/tr_104106v030000p.pdf",
+  "https://www.etsi.org/deliver/etsi_ts/104000_104099/104038/04.01.00_60/ts_104038v040100p.pdf",
+  "https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/antonakakis",
+  "https://www.usenix.org/conference/usenixsecurity22/presentation/arp"
+ ],
+ "web_status": {
+  "https://arxiv.org/abs/2212.01298": 200,
+  "https://arxiv.org/abs/2412.03483": 200,
+  "https://arxiv.org/abs/2606.22450": 200,
+  "https://github.com/adeliusa486/oran-ids-deployability": 200,
+  "https://jmlr.org/papers/v12/pedregosa11a.html": 200,
+  "https://papers.nips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html": 200,
+  "https://waujpas.com/index.php/journal/article/view/509": 200,
+  "https://www.etsi.org/deliver/etsi_tr/104100_104199/104106/03.00.00_60/tr_104106v030000p.pdf": 200,
+  "https://www.etsi.org/deliver/etsi_ts/104000_104099/104038/04.01.00_60/ts_104038v040100p.pdf": 200,
+  "https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/antonakakis": 200,
+  "https://www.usenix.org/conference/usenixsecurity22/presentation/arp": 200
+ }
+}

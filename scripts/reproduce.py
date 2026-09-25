@@ -83,6 +83,11 @@ EXPERIMENTS = [
        "--group-counts", "--seeds", "10"],
       ["experiments/run_third_corpus_reference.py"]],
      True, "35 min + 1.5 h + 3 min", "VI-F, third-corpus table"),
+    ("EXP-059", "radio session rule against the 42 runs of Fard et al.",
+     [["experiments/run_session_rule.py"]], True, "1 min", "IV-A"),
+    ("EXP-060", "latency repeat of EXP-043 (radio) keeping every call, for the CDF",
+     [["experiments/run_latency_v2.py", "--exp", "EXP-060", "--radio-only", "--keep-samples"]],
+     True, "25 min, run alone", "VI-I, latency CDF figure"),
     ("diag", "Platt inversion diagnosis (EXP-044 seed 110)",
      [["analysis/platt_diagnosis.py"]], True, "2 min", "VI-H"),
 ]

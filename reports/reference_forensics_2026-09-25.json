@@ -1,0 +1,5747 @@
+[
+ {
+  "key": "polese2023understanding",
+  "bibtype": "article",
+  "title": "Understanding O-RAN: Architecture, Interfaces, Algorithms, Security, and Research Challenges",
+  "year": "2023",
+  "doi": "10.1109/COMST.2023.3239220",
+  "venue": "IEEE Communications Surveys \\& Tutorials",
+  "volume": "25",
+  "number": "2",
+  "pages": "1376--1411",
+  "bib_authors": [
+   [
+    "Polese",
+    "Michele"
+   ],
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Basagni",
+    "Stefano"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/10024837/"
+  ],
+  "crossref": {
+   "title": "Understanding O-RAN: Architecture, Interfaces, Algorithms, Security, and Research Challenges",
+   "subtitle": "",
+   "authors": [
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ],
+   "container": "IEEE Communications Surveys &amp; Tutorials",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "25",
+   "issue": "2",
+   "page": "1376-1411",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Understanding O-RAN: Architecture, Interfaces, Algorithms, Security, and Research Challenges",
+   "year": 2023,
+   "type": "article",
+   "venue": "IEEE Communications Surveys & Tutorials",
+   "doi": "10.1109/comst.2023.3239220",
+   "authors": [
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "bonati2021intelligence",
+  "bibtype": "article",
+  "title": "Intelligence and Learning in O-RAN for Data-Driven NextG Cellular Networks",
+  "year": "2021",
+  "doi": "10.1109/MCOM.101.2001120",
+  "venue": "IEEE Communications Magazine",
+  "volume": "59",
+  "number": "10",
+  "pages": "21--27",
+  "bib_authors": [
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Polese",
+    "Michele"
+   ],
+   [
+    "Basagni",
+    "Stefano"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/9627832/"
+  ],
+  "crossref": {
+   "title": "Intelligence and Learning in O-RAN for Data-Driven NextG Cellular Networks",
+   "subtitle": "",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ],
+   "container": "IEEE Communications Magazine",
+   "type": "journal-article",
+   "year": 2021,
+   "volume": "59",
+   "issue": "10",
+   "page": "21-27",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Intelligence and Learning in O-RAN for Data-Driven NextG Cellular Networks",
+   "year": 2021,
+   "type": "article",
+   "venue": "IEEE Communications Magazine",
+   "doi": "10.1109/mcom.101.2001120",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "bonati2023openrangym",
+  "bibtype": "article",
+  "title": "OpenRAN Gym: AI/ML Development, Data Collection, and Testing for O-RAN on PAWR Platforms",
+  "year": "2023",
+  "doi": "10.1016/j.comnet.2022.109502",
+  "venue": "Computer Networks",
+  "volume": "220",
+  "number": null,
+  "pages": "109502",
+  "bib_authors": [
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "Polese",
+    "Michele"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Basagni",
+    "Stefano"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S1389128622005369"
+  ],
+  "crossref": {
+   "title": "OpenRAN Gym: AI/ML development, data collection, and testing for O-RAN on PAWR platforms",
+   "subtitle": "",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ],
+   "container": "Computer Networks",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "220",
+   "issue": null,
+   "page": "109502",
+   "article": "109502",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "OpenRAN Gym: AI/ML development, data collection, and testing for O-RAN on PAWR platforms",
+   "year": 2022,
+   "type": "article",
+   "venue": "Computer Networks",
+   "doi": "10.1016/j.comnet.2022.109502",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "polese2023coloran",
+  "bibtype": "article",
+  "title": "ColO-RAN: Developing Machine Learning-Based xApps for Open RAN Closed-Loop Control on Programmable Experimental Platforms",
+  "year": "2023",
+  "doi": "10.1109/TMC.2022.3188013",
+  "venue": "IEEE Transactions on Mobile Computing",
+  "volume": "22",
+  "number": "10",
+  "pages": "5787--5800",
+  "bib_authors": [
+   [
+    "Polese",
+    "Michele"
+   ],
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Basagni",
+    "Stefano"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/9814869/"
+  ],
+  "crossref": {
+   "title": "ColO-RAN: Developing Machine Learning-Based xApps for Open RAN Closed-Loop Control on Programmable Experimental Platforms",
+   "subtitle": "",
+   "authors": [
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ],
+   "container": "IEEE Transactions on Mobile Computing",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "22",
+   "issue": "10",
+   "page": "5787-5800",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "ColO-RAN: Developing Machine Learning-Based xApps for Open RAN Closed-Loop Control on Programmable Experimental Platforms",
+   "year": 2022,
+   "type": "article",
+   "venue": "IEEE Transactions on Mobile Computing",
+   "doi": "10.1109/tmc.2022.3188013",
+   "authors": [
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "bonati2021scope",
+  "bibtype": "inproceedings",
+  "title": "SCOPE: An Open and Softwarized Prototyping Platform for NextG Systems",
+  "year": "2021",
+  "doi": "10.1145/3458864.3466863",
+  "venue": "Proc. ACM MobiSys",
+  "volume": null,
+  "number": null,
+  "pages": "415--426",
+  "bib_authors": [
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Basagni",
+    "Stefano"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/3458864.3466863"
+  ],
+  "crossref": {
+   "title": "SCOPE",
+   "subtitle": "an open and softwarized prototyping platform for NextG systems",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ],
+   "container": "Proceedings of the 19th Annual International Conference on Mobile Systems, Applications, and Services",
+   "type": "proceedings-article",
+   "year": 2021,
+   "volume": null,
+   "issue": null,
+   "page": "415-426",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "SCOPE",
+   "year": 2021,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/3458864.3466863",
+   "authors": [
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "D'Oro",
+     "Salvatore"
+    ],
+    [
+     "Basagni",
+     "Stefano"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "schmidt2021flexric",
+  "bibtype": "inproceedings",
+  "title": "FlexRIC: An SDK for Next-Generation SD-RANs",
+  "year": "2021",
+  "doi": "10.1145/3485983.3494870",
+  "venue": "Proc. ACM CoNEXT",
+  "volume": null,
+  "number": null,
+  "pages": "411--425",
+  "bib_authors": [
+   [
+    "Schmidt",
+    "Robert"
+   ],
+   [
+    "Irazabal",
+    "Mikel"
+   ],
+   [
+    "Nikaein",
+    "Navid"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/3485983.3494870"
+  ],
+  "crossref": {
+   "title": "FlexRIC",
+   "subtitle": "an SDK for next-generation SD-RANs",
+   "authors": [
+    [
+     "Schmidt",
+     "Robert"
+    ],
+    [
+     "Irazabal",
+     "Mikel"
+    ],
+    [
+     "Nikaein",
+     "Navid"
+    ]
+   ],
+   "container": "Proceedings of the 17th International Conference on emerging Networking EXperiments and Technologies",
+   "type": "proceedings-article",
+   "year": 2021,
+   "volume": null,
+   "issue": null,
+   "page": "411-425",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "FlexRIC",
+   "year": 2021,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/3485983.3494870",
+   "authors": [
+    [
+     "Schmidt",
+     "Robert"
+    ],
+    [
+     "Irazabal",
+     "Mikel"
+    ],
+    [
+     "Nikaein",
+     "Navid"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "nikaein2014oai",
+  "bibtype": "article",
+  "title": "OpenAirInterface: A Flexible Platform for 5G Research",
+  "year": "2014",
+  "doi": "10.1145/2677046.2677053",
+  "venue": "ACM SIGCOMM Computer Communication Review",
+  "volume": "44",
+  "number": "5",
+  "pages": "33--38",
+  "bib_authors": [
+   [
+    "Nikaein",
+    "Navid"
+   ],
+   [
+    "Marina",
+    "Mahesh K."
+   ],
+   [
+    "Manickam",
+    "Saravana"
+   ],
+   [
+    "Dawson",
+    "Alex"
+   ],
+   [
+    "Knopp",
+    "Raymond"
+   ],
+   [
+    "Bonnet",
+    "Christian"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/2677046.2677053"
+  ],
+  "crossref": {
+   "title": "OpenAirInterface",
+   "subtitle": "A Flexible Platform for 5G Research",
+   "authors": [
+    [
+     "Nikaein",
+     "Navid"
+    ],
+    [
+     "Marina",
+     "Mahesh K."
+    ],
+    [
+     "Manickam",
+     "Saravana"
+    ],
+    [
+     "Dawson",
+     "Alex"
+    ],
+    [
+     "Knopp",
+     "Raymond"
+    ],
+    [
+     "Bonnet",
+     "Christian"
+    ]
+   ],
+   "container": "ACM SIGCOMM Computer Communication Review",
+   "type": "journal-article",
+   "year": 2014,
+   "volume": "44",
+   "issue": "5",
+   "page": "33-38",
+   "article": null,
+   "publisher": "Association for Computing Machinery (ACM)"
+  },
+  "openalex": {
+   "title": "OpenAirInterface",
+   "year": 2014,
+   "type": "article",
+   "venue": "ACM SIGCOMM Computer Communication Review",
+   "doi": "10.1145/2677046.2677053",
+   "authors": [
+    [
+     "Nikaein",
+     "Navid"
+    ],
+    [
+     "Marina",
+     "Mahesh K."
+    ],
+    [
+     "Manickam",
+     "Saravana"
+    ],
+    [
+     "Dawson",
+     "Alex"
+    ],
+    [
+     "Knopp",
+     "Raymond"
+    ],
+    [
+     "Bonnet",
+     "Christian"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "gomez2016srslte",
+  "bibtype": "inproceedings",
+  "title": "srsLTE: An Open-Source Platform for LTE Evolution and Experimentation",
+  "year": "2016",
+  "doi": "10.1145/2980159.2980163",
+  "venue": "Proc. ACM WiNTECH",
+  "volume": null,
+  "number": null,
+  "pages": "25--32",
+  "bib_authors": [
+   [
+    "Gomez-Miguelez",
+    "Ismael"
+   ],
+   [
+    "Garcia-Saavedra",
+    "Andres"
+   ],
+   [
+    "Sutton",
+    "Paul D."
+   ],
+   [
+    "Serrano",
+    "Pablo"
+   ],
+   [
+    "Cano",
+    "Cristina"
+   ],
+   [
+    "Leith",
+    "Doug J."
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/2980159.2980163"
+  ],
+  "crossref": {
+   "title": "srsLTE",
+   "subtitle": "an open-source platform for LTE evolution and experimentation",
+   "authors": [
+    [
+     "Gomez-Miguelez",
+     "Ismael"
+    ],
+    [
+     "Garcia-Saavedra",
+     "Andres"
+    ],
+    [
+     "Sutton",
+     "Paul D."
+    ],
+    [
+     "Serrano",
+     "Pablo"
+    ],
+    [
+     "Cano",
+     "Cristina"
+    ],
+    [
+     "Leith",
+     "Doug J."
+    ]
+   ],
+   "container": "Proceedings of the Tenth ACM International Workshop on Wireless Network Testbeds, Experimental Evaluation, and Characterization",
+   "type": "proceedings-article",
+   "year": 2016,
+   "volume": null,
+   "issue": null,
+   "page": "25-32",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "srsLTE",
+   "year": 2016,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/2980159.2980163",
+   "authors": [
+    [
+     "Gomez-Miguelez",
+     "Ismael"
+    ],
+    [
+     "Garcia-Saavedra",
+     "Andres"
+    ],
+    [
+     "Sutton",
+     "Paul D."
+    ],
+    [
+     "Serrano",
+     "Pablo"
+    ],
+    [
+     "Cano",
+     "Cristina"
+    ],
+    [
+     "Leith",
+     "Doug J."
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "abdalla2022toward",
+  "bibtype": "article",
+  "title": "Toward Next Generation Open Radio Access Networks: What O-RAN Can and Cannot Do!",
+  "year": "2022",
+  "doi": "10.1109/MNET.108.2100659",
+  "venue": "IEEE Network",
+  "volume": "36",
+  "number": "6",
+  "pages": "206--213",
+  "bib_authors": [
+   [
+    "Abdalla",
+    "Aly S."
+   ],
+   [
+    "Upadhyaya",
+    "Prabhu S."
+   ],
+   [
+    "Shah",
+    "Vijay K."
+   ],
+   [
+    "Marojevic",
+    "Vuk"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/9839628/"
+  ],
+  "crossref": {
+   "title": "Toward Next Generation Open Radio Access Networks: What O-RAN Can and Cannot Do!",
+   "subtitle": "",
+   "authors": [
+    [
+     "Abdalla",
+     "Aly S."
+    ],
+    [
+     "Upadhyaya",
+     "Pratheek S."
+    ],
+    [
+     "Shah",
+     "Vijay K."
+    ],
+    [
+     "Marojevic",
+     "Vuk"
+    ]
+   ],
+   "container": "IEEE Network",
+   "type": "journal-article",
+   "year": 2022,
+   "volume": "36",
+   "issue": "6",
+   "page": "206-213",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Toward Next Generation Open Radio Access Networks: What O-RAN Can and Cannot Do!",
+   "year": 2022,
+   "type": "article",
+   "venue": "IEEE Network",
+   "doi": "10.1109/mnet.108.2100659",
+   "authors": [
+    [
+     "Abdalla",
+     "Aly S."
+    ],
+    [
+     "Upadhyaya",
+     "Pratheek S."
+    ],
+    [
+     "Shah",
+     "Vijay K."
+    ],
+    [
+     "Marojevic",
+     "Vuk"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "niknam2022intelligent",
+  "bibtype": "inproceedings",
+  "title": "Intelligent O-RAN for Beyond 5G and 6G Wireless Networks",
+  "year": "2022",
+  "doi": "10.1109/GCWkshps56602.2022.10008676",
+  "venue": "Proc. IEEE Globecom Workshops (GC Wkshps)",
+  "volume": null,
+  "number": null,
+  "pages": "215--220",
+  "bib_authors": [
+   [
+    "Niknam",
+    "Solmaz"
+   ],
+   [
+    "Roy",
+    "Abhishek"
+   ],
+   [
+    "Dhillon",
+    "Harpreet S."
+   ],
+   [
+    "Singh",
+    "Sukhdeep"
+   ],
+   [
+    "Banerji",
+    "Rahul"
+   ],
+   [
+    "Reed",
+    "Jeffrey H."
+   ],
+   [
+    "Saxena",
+    "Navrati"
+   ],
+   [
+    "Yoon",
+    "Seungil"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/10008676/"
+  ],
+  "crossref": {
+   "title": "Intelligent O-RAN for Beyond 5G and 6G Wireless Networks",
+   "subtitle": "",
+   "authors": [
+    [
+     "Niknam",
+     "Solmaz"
+    ],
+    [
+     "Roy",
+     "Abhishek"
+    ],
+    [
+     "Dhillon",
+     "Harpreet S."
+    ],
+    [
+     "Singh",
+     "Sukhdeep"
+    ],
+    [
+     "Banerji",
+     "Rahul"
+    ],
+    [
+     "Reed",
+     "Jeffery H."
+    ],
+    [
+     "Saxena",
+     "Navrati"
+    ],
+    [
+     "Yoon",
+     "Seungil"
+    ]
+   ],
+   "container": "2022 IEEE Globecom Workshops (GC Wkshps)",
+   "type": "proceedings-article",
+   "year": 2022,
+   "volume": null,
+   "issue": null,
+   "page": "215-220",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Intelligent O-RAN for Beyond 5G and 6G Wireless Networks",
+   "year": 2022,
+   "type": "conference-paper",
+   "venue": "2022 IEEE Globecom Workshops (GC Wkshps)",
+   "doi": "10.1109/gcwkshps56602.2022.10008676",
+   "authors": [
+    [
+     "Niknam",
+     "Solmaz"
+    ],
+    [
+     "Roy",
+     "Abhishek"
+    ],
+    [
+     "Dhillon",
+     "Harpreet S."
+    ],
+    [
+     "Singh",
+     "Sukhdeep"
+    ],
+    [
+     "Banerji",
+     "Rahul"
+    ],
+    [
+     "Reed",
+     "Jeffery H."
+    ],
+    [
+     "Saxena",
+     "Navrati"
+    ],
+    [
+     "Yoon",
+     "Seungil"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "etsi_e2gap",
+  "bibtype": "techreport",
+  "title": "Publicly Available Specification (PAS); E2 Interface: General Aspects and Principles (O-RAN.WG3.E2GAP-R003-v04.01)",
+  "year": "2024",
+  "doi": null,
+  "venue": "European Telecommunications Standards Institute",
+  "volume": null,
+  "number": "104 038 V4.1.0",
+  "pages": null,
+  "bib_authors": [
+   [
+    "ETSI",
+    ""
+   ]
+  ],
+  "openalex": null
+ },
+ {
+  "key": "etsi_wg11_threat",
+  "bibtype": "techreport",
+  "title": "Publicly Available Specification (PAS); O-RAN Security Threat Modeling and Risk Assessment (O-RAN.WG11.Threat-Modeling.O-R003-v03.00)",
+  "year": "2025",
+  "doi": null,
+  "venue": "European Telecommunications Standards Institute",
+  "volume": null,
+  "number": "104 106 V3.0.0",
+  "pages": null,
+  "bib_authors": [
+   [
+    "ETSI",
+    ""
+   ]
+  ],
+  "openalex": null
+ },
+ {
+  "key": "liyanage2023openran",
+  "bibtype": "article",
+  "title": "Open RAN Security: Challenges and Opportunities",
+  "year": "2023",
+  "doi": "10.1016/j.jnca.2023.103621",
+  "venue": "Journal of Network and Computer Applications",
+  "volume": "214",
+  "number": null,
+  "pages": "103621",
+  "bib_authors": [
+   [
+    "Liyanage",
+    "Madhusanka"
+   ],
+   [
+    "Braeken",
+    "An"
+   ],
+   [
+    "Shahabuddin",
+    "Shahriar"
+   ],
+   [
+    "Ranaweera",
+    "Pasika"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S1084804523000401"
+  ],
+  "crossref": {
+   "title": "Open RAN security: Challenges and opportunities",
+   "subtitle": "",
+   "authors": [
+    [
+     "Liyanage",
+     "Madhusanka"
+    ],
+    [
+     "Braeken",
+     "An"
+    ],
+    [
+     "Shahabuddin",
+     "Shahriar"
+    ],
+    [
+     "Ranaweera",
+     "Pasika"
+    ]
+   ],
+   "container": "Journal of Network and Computer Applications",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "214",
+   "issue": null,
+   "page": "103621",
+   "article": "103621",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Open RAN security: Challenges and opportunities",
+   "year": 2023,
+   "type": "article",
+   "venue": "Journal of Network and Computer Applications",
+   "doi": "10.1016/j.jnca.2023.103621",
+   "authors": [
+    [
+     "Liyanage",
+     "Madhusanka"
+    ],
+    [
+     "Braeken",
+     "An"
+    ],
+    [
+     "Shahabuddin",
+     "Shahriar"
+    ],
+    [
+     "Ranaweera",
+     "Pasika"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "mimran2022security",
+  "bibtype": "article",
+  "title": "Security of Open Radio Access Networks",
+  "year": "2022",
+  "doi": "10.1016/j.cose.2022.102890",
+  "venue": "Computers \\& Security",
+  "volume": "122",
+  "number": null,
+  "pages": "102890",
+  "bib_authors": [
+   [
+    "Mimran",
+    "Dor"
+   ],
+   [
+    "Bitton",
+    "Ron"
+   ],
+   [
+    "Kfir",
+    "Yehonatan"
+   ],
+   [
+    "Klevansky",
+    "Eitan"
+   ],
+   [
+    "Brodt",
+    "Oleg"
+   ],
+   [
+    "Lehmann",
+    "Heiko"
+   ],
+   [
+    "Elovici",
+    "Yuval"
+   ],
+   [
+    "Shabtai",
+    "Asaf"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S016740482200284X"
+  ],
+  "crossref": {
+   "title": "Security of Open Radio Access Networks",
+   "subtitle": "",
+   "authors": [
+    [
+     "Mimran",
+     "Dudu"
+    ],
+    [
+     "Bitton",
+     "Ron"
+    ],
+    [
+     "Kfir",
+     "Yehonatan"
+    ],
+    [
+     "Klevansky",
+     "Eitan"
+    ],
+    [
+     "Brodt",
+     "Oleg"
+    ],
+    [
+     "Lehmann",
+     "Heiko"
+    ],
+    [
+     "Elovici",
+     "Yuval"
+    ],
+    [
+     "Shabtai",
+     "Asaf"
+    ]
+   ],
+   "container": "Computers &amp; Security",
+   "type": "journal-article",
+   "year": 2022,
+   "volume": "122",
+   "issue": null,
+   "page": "102890",
+   "article": "102890",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Security of Open Radio Access Networks",
+   "year": 2022,
+   "type": "article",
+   "venue": "Computers & Security",
+   "doi": "10.1016/j.cose.2022.102890",
+   "authors": [
+    [
+     "Mimran",
+     "Dudu"
+    ],
+    [
+     "Bitton",
+     "Ron"
+    ],
+    [
+     "Kfir",
+     "Yehonatan"
+    ],
+    [
+     "Klevansky",
+     "Eitan"
+    ],
+    [
+     "Brodt",
+     "Oleg"
+    ],
+    [
+     "Lehmann",
+     "Heiko"
+    ],
+    [
+     "Elovici",
+     "Yuval"
+    ],
+    [
+     "Shabtai",
+     "Asaf"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "groen2025implementing",
+  "bibtype": "article",
+  "title": "Implementing and Evaluating Security in O-RAN: Interfaces, Intelligence, and Platforms",
+  "year": "2025",
+  "doi": "10.1109/MNET.2024.3434419",
+  "venue": "IEEE Network",
+  "volume": "39",
+  "number": "1",
+  "pages": "227--234",
+  "bib_authors": [
+   [
+    "Groen",
+    "Joshua"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Demir",
+    "Utku"
+   ],
+   [
+    "Bonati",
+    "Leonardo"
+   ],
+   [
+    "Polese",
+    "Michele"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ],
+   [
+    "Chowdhury",
+    "Kaushik R."
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/10613612/"
+  ],
+  "crossref": {
+   "title": "Implementing and Evaluating Security in O-RAN: Interfaces, Intelligence, and Platforms",
+   "subtitle": "",
+   "authors": [
+    [
+     "Groen",
+     "Joshua"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Demir",
+     "Utku"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ],
+    [
+     "Chowdhury",
+     "Kaushik"
+    ]
+   ],
+   "container": "IEEE Network",
+   "type": "journal-article",
+   "year": 2025,
+   "volume": "39",
+   "issue": "1",
+   "page": "227-234",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Implementing and Evaluating Security in O-RAN: Interfaces, Intelligence, and Platforms",
+   "year": 2024,
+   "type": "article",
+   "venue": "IEEE Network",
+   "doi": "10.1109/mnet.2024.3434419",
+   "authors": [
+    [
+     "Groen",
+     "Joshua"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Demir",
+     "Utku"
+    ],
+    [
+     "Bonati",
+     "Leonardo"
+    ],
+    [
+     "Polese",
+     "Michele"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ],
+    [
+     "Chowdhury",
+     "Kaushik"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "wen2024spector",
+  "bibtype": "inproceedings",
+  "title": "5G-Spector: An O-RAN Compliant Layer-3 Cellular Attack Detection Service",
+  "year": "2024",
+  "doi": "10.14722/ndss.2024.24527",
+  "venue": "Proc. Network and Distributed System Security Symposium (NDSS)",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Wen",
+    "Haohuang"
+   ],
+   [
+    "Porras",
+    "Phillip"
+   ],
+   [
+    "Yegneswaran",
+    "Vinod"
+   ],
+   [
+    "Gehani",
+    "Ashish"
+   ],
+   [
+    "Lin",
+    "Zhiqiang"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://www.ndss-symposium.org/wp-content/uploads/2024-527-paper.pdf"
+  ],
+  "crossref": {
+   "title": "5G-Spector: An O-RAN Compliant Layer-3 Cellular Attack Detection Service",
+   "subtitle": "",
+   "authors": [
+    [
+     "Wen",
+     "Haohuang"
+    ],
+    [
+     "Porras",
+     "Phillip"
+    ],
+    [
+     "Yegneswaran",
+     "Vinod"
+    ],
+    [
+     "Gehani",
+     "Ashish"
+    ],
+    [
+     "Lin",
+     "Zhiqiang"
+    ]
+   ],
+   "container": "Proceedings 2024 Network and Distributed System Security Symposium",
+   "type": "proceedings-article",
+   "year": 2024,
+   "volume": null,
+   "issue": null,
+   "page": null,
+   "article": null,
+   "publisher": "Internet Society"
+  },
+  "openalex": {
+   "title": "5G-Spector: An O-RAN Compliant Layer-3 Cellular Attack Detection Service",
+   "year": 2024,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.14722/ndss.2024.24527",
+   "authors": [
+    [
+     "Wen",
+     "Haohuang"
+    ],
+    [
+     "Porras",
+     "Phillip"
+    ],
+    [
+     "Yegneswaran",
+     "Vinod"
+    ],
+    [
+     "Gehani",
+     "Ashish"
+    ],
+    [
+     "Lin",
+     "Zhiqiang"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "antonakakis2017mirai",
+  "bibtype": "inproceedings",
+  "title": "Understanding the Mirai Botnet",
+  "year": "2017",
+  "doi": null,
+  "venue": "Proc. 26th USENIX Security Symposium",
+  "volume": null,
+  "number": null,
+  "pages": "1093--1110",
+  "bib_authors": [
+   [
+    "Antonakakis",
+    "Manos"
+   ],
+   [
+    "April",
+    "Tim"
+   ],
+   [
+    "Bailey",
+    "Michael"
+   ],
+   [
+    "Bernhard",
+    "Matt"
+   ],
+   [
+    "Bursztein",
+    "Elie"
+   ],
+   [
+    "Cochran",
+    "Jaime"
+   ],
+   [
+    "Durumeric",
+    "Zakir"
+   ],
+   [
+    "Halderman",
+    "J. Alex"
+   ],
+   [
+    "Invernizzi",
+    "Luca"
+   ],
+   [
+    "Kallitsis",
+    "Michalis"
+   ],
+   [
+    "Kumar",
+    "Deepak"
+   ],
+   [
+    "Lever",
+    "Chaz"
+   ],
+   [
+    "Ma",
+    "Zane"
+   ],
+   [
+    "Mason",
+    "Joshua"
+   ],
+   [
+    "Menscher",
+    "Damian"
+   ],
+   [
+    "Seaman",
+    "Chad"
+   ],
+   [
+    "Sullivan",
+    "Nick"
+   ],
+   [
+    "Thomas",
+    "Kurt"
+   ],
+   [
+    "Zhou",
+    "Yi"
+   ]
+  ],
+  "openalex": {
+   "title": "Understanding the mirai botnet",
+   "year": 2017,
+   "type": "conference-paper",
+   "venue": "USENIX Security Symposium",
+   "doi": "",
+   "authors": [
+    [
+     "Antonakakis",
+     "Manos"
+    ],
+    [
+     "April",
+     "Tim"
+    ],
+    [
+     "Bailey",
+     "Michael"
+    ],
+    [
+     "Bernhard",
+     "Matthew"
+    ],
+    [
+     "Bursztein",
+     "Elie"
+    ],
+    [
+     "Cochran",
+     "Jaime"
+    ],
+    [
+     "Durumeric",
+     "Zakir"
+    ],
+    [
+     "Halderman",
+     "J. Alex"
+    ],
+    [
+     "Invernizzi",
+     "Luca"
+    ],
+    [
+     "Kallitsis",
+     "Michalis"
+    ],
+    [
+     "Kumar",
+     "Deepak"
+    ],
+    [
+     "Lever",
+     "Chaz"
+    ],
+    [
+     "Ma",
+     "Zane"
+    ],
+    [
+     "Mason",
+     "Joshua"
+    ],
+    [
+     "Menscher",
+     "Damian"
+    ],
+    [
+     "Seaman",
+     "Chad"
+    ],
+    [
+     "Sullivan",
+     "Nick"
+    ],
+    [
+     "Thomas",
+     "Kurt"
+    ],
+    [
+     "Zhou",
+     "Yi"
+    ]
+   ]
+  },
+  "author_issues_openalex": []
+ },
+ {
+  "key": "kolias2017ddos",
+  "bibtype": "article",
+  "title": "DDoS in the IoT: Mirai and Other Botnets",
+  "year": "2017",
+  "doi": "10.1109/MC.2017.201",
+  "venue": "Computer",
+  "volume": "50",
+  "number": "7",
+  "pages": "80--84",
+  "bib_authors": [
+   [
+    "Kolias",
+    "Constantinos"
+   ],
+   [
+    "Kambourakis",
+    "Georgios"
+   ],
+   [
+    "Stavrou",
+    "Angelos"
+   ],
+   [
+    "Voas",
+    "Jeffrey"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://ieeexplore.ieee.org/document/7971869/"
+  ],
+  "crossref": {
+   "title": "DDoS in the IoT: Mirai and Other Botnets",
+   "subtitle": "",
+   "authors": [
+    [
+     "Kolias",
+     "Constantinos"
+    ],
+    [
+     "Kambourakis",
+     "Georgios"
+    ],
+    [
+     "Stavrou",
+     "Angelos"
+    ],
+    [
+     "Voas",
+     "Jeffrey"
+    ]
+   ],
+   "container": "Computer",
+   "type": "journal-article",
+   "year": 2017,
+   "volume": "50",
+   "issue": "7",
+   "page": "80-84",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "DDoS in the IoT: Mirai and Other Botnets",
+   "year": 2017,
+   "type": "article",
+   "venue": "Computer",
+   "doi": "10.1109/mc.2017.201",
+   "authors": [
+    [
+     "Kolias",
+     "Constantinos"
+    ],
+    [
+     "Kambourakis",
+     "Georgios"
+    ],
+    [
+     "Stavrou",
+     "Angelos"
+    ],
+    [
+     "Voas",
+     "Jeffrey"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "koroniotis2019botiot",
+  "bibtype": "article",
+  "title": "Towards the Development of Realistic Botnet Dataset in the Internet of Things for Network Forensic Analytics: Bot-IoT Dataset",
+  "year": "2019",
+  "doi": "10.1016/j.future.2019.05.041",
+  "venue": "Future Generation Computer Systems",
+  "volume": "100",
+  "number": null,
+  "pages": "779--796",
+  "bib_authors": [
+   [
+    "Koroniotis",
+    "Nickolaos"
+   ],
+   [
+    "Moustafa",
+    "Nour"
+   ],
+   [
+    "Sitnikova",
+    "Elena"
+   ],
+   [
+    "Turnbull",
+    "Benjamin"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S0167739X18327687"
+  ],
+  "crossref": {
+   "title": "Towards the development of realistic botnet dataset in the Internet of Things for network forensic analytics: Bot-IoT dataset",
+   "subtitle": "",
+   "authors": [
+    [
+     "Koroniotis",
+     "Nickolaos"
+    ],
+    [
+     "Moustafa",
+     "Nour"
+    ],
+    [
+     "Sitnikova",
+     "Elena"
+    ],
+    [
+     "Turnbull",
+     "Benjamin"
+    ]
+   ],
+   "container": "Future Generation Computer Systems",
+   "type": "journal-article",
+   "year": 2019,
+   "volume": "100",
+   "issue": null,
+   "page": "779-796",
+   "article": null,
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Towards the development of realistic botnet dataset in the Internet of Things for network forensic analytics: Bot-IoT dataset",
+   "year": 2019,
+   "type": "article",
+   "venue": "Future Generation Computer Systems",
+   "doi": "10.1016/j.future.2019.05.041",
+   "authors": [
+    [
+     "Koroniotis",
+     "Nickolaos"
+    ],
+    [
+     "Moustafa",
+     "Nour"
+    ],
+    [
+     "Sitnikova",
+     "Elena"
+    ],
+    [
+     "Turnbull",
+     "Benjamin"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "moustafa2021toniot",
+  "bibtype": "article",
+  "title": "A New Distributed Architecture for Evaluating AI-Based Security Systems at the Edge: Network TON\\_IoT Datasets",
+  "year": "2021",
+  "doi": "10.1016/j.scs.2021.102994",
+  "venue": "Sustainable Cities and Society",
+  "volume": "72",
+  "number": null,
+  "pages": "102994",
+  "bib_authors": [
+   [
+    "Moustafa",
+    "Nour"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S2210670721002808"
+  ],
+  "crossref": {
+   "title": "A new distributed architecture for evaluating AI-based security systems at the edge: Network TON_IoT datasets",
+   "subtitle": "",
+   "authors": [
+    [
+     "Moustafa",
+     "Nour"
+    ]
+   ],
+   "container": "Sustainable Cities and Society",
+   "type": "journal-article",
+   "year": 2021,
+   "volume": "72",
+   "issue": null,
+   "page": "102994",
+   "article": "102994",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "A new distributed architecture for evaluating AI-based security systems at the edge: Network TON_IoT datasets",
+   "year": 2021,
+   "type": "article",
+   "venue": "Sustainable Cities and Society",
+   "doi": "10.1016/j.scs.2021.102994",
+   "authors": [
+    [
+     "Moustafa",
+     "Nour"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "ferrag2022edgeiiot",
+  "bibtype": "article",
+  "title": "Edge-IIoTset: A New Comprehensive Realistic Cyber Security Dataset of IoT and IIoT Applications for Centralized and Federated Learning",
+  "year": "2022",
+  "doi": "10.1109/ACCESS.2022.3165809",
+  "venue": "IEEE Access",
+  "volume": "10",
+  "number": null,
+  "pages": "40281--40306",
+  "bib_authors": [
+   [
+    "Ferrag",
+    "Mohamed Amine"
+   ],
+   [
+    "Friha",
+    "Othmane"
+   ],
+   [
+    "Hamouda",
+    "Djallel"
+   ],
+   [
+    "Maglaras",
+    "Leandros"
+   ],
+   [
+    "Janicke",
+    "Helge"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/9751703/"
+  ],
+  "crossref": {
+   "title": "Edge-IIoTset: A New Comprehensive Realistic Cyber Security Dataset of IoT and IIoT Applications for Centralized and Federated Learning",
+   "subtitle": "",
+   "authors": [
+    [
+     "Ferrag",
+     "Mohamed Amine"
+    ],
+    [
+     "Friha",
+     "Othmane"
+    ],
+    [
+     "Hamouda",
+     "Djallel"
+    ],
+    [
+     "Maglaras",
+     "Leandros"
+    ],
+    [
+     "Janicke",
+     "Helge"
+    ]
+   ],
+   "container": "IEEE Access",
+   "type": "journal-article",
+   "year": 2022,
+   "volume": "10",
+   "issue": null,
+   "page": "40281-40306",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Edge-IIoTset: A New Comprehensive Realistic Cyber Security Dataset of IoT and IIoT Applications for Centralized and Federated Learning",
+   "year": 2022,
+   "type": "article",
+   "venue": "IEEE Access",
+   "doi": "10.1109/access.2022.3165809",
+   "authors": [
+    [
+     "Ferrag",
+     "Mohamed Amine"
+    ],
+    [
+     "Friha",
+     "Othmane"
+    ],
+    [
+     "Hamouda",
+     "Djallel"
+    ],
+    [
+     "Maglaras",
+     "Leandros"
+    ],
+    [
+     "Janicke",
+     "Helge"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "neto2023ciciot",
+  "bibtype": "article",
+  "title": "CICIoT2023: A Real-Time Dataset and Benchmark for Large-Scale Attacks in IoT Environment",
+  "year": "2023",
+  "doi": "10.3390/s23135941",
+  "venue": "Sensors",
+  "volume": "23",
+  "number": "13",
+  "pages": "5941",
+  "bib_authors": [
+   [
+    "Neto",
+    "Euclides Carlos Pinto"
+   ],
+   [
+    "Dadkhah",
+    "Sajjad"
+   ],
+   [
+    "Ferreira",
+    "Raphael"
+   ],
+   [
+    "Zohourian",
+    "Alireza"
+   ],
+   [
+    "Lu",
+    "Rongxing"
+   ],
+   [
+    "Ghorbani",
+    "Ali A."
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://www.mdpi.com/1424-8220/23/13/5941"
+  ],
+  "crossref": {
+   "title": "CICIoT2023: A Real-Time Dataset and Benchmark for Large-Scale Attacks in IoT Environment",
+   "subtitle": "",
+   "authors": [
+    [
+     "Neto",
+     "Euclides Carlos Pinto"
+    ],
+    [
+     "Dadkhah",
+     "Sajjad"
+    ],
+    [
+     "Ferreira",
+     "Raphael"
+    ],
+    [
+     "Zohourian",
+     "Alireza"
+    ],
+    [
+     "Lu",
+     "Rongxing"
+    ],
+    [
+     "Ghorbani",
+     "Ali A."
+    ]
+   ],
+   "container": "Sensors",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "23",
+   "issue": "13",
+   "page": "5941",
+   "article": null,
+   "publisher": "MDPI AG"
+  },
+  "openalex": {
+   "title": "CICIoT2023: A Real-Time Dataset and Benchmark for Large-Scale Attacks in IoT Environment",
+   "year": 2023,
+   "type": "article",
+   "venue": "Sensors",
+   "doi": "10.3390/s23135941",
+   "authors": [
+    [
+     "Neto",
+     "Euclides Carlos Pinto"
+    ],
+    [
+     "Dadkhah",
+     "Sajjad"
+    ],
+    [
+     "Ferreira",
+     "Raphael"
+    ],
+    [
+     "Zohourian",
+     "Alireza"
+    ],
+    [
+     "Lu",
+     "Rongxing"
+    ],
+    [
+     "Ghorbani",
+     "Ali A."
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "sharafaldin2018cicids",
+  "bibtype": "inproceedings",
+  "title": "Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization",
+  "year": "2018",
+  "doi": "10.5220/0006639801080116",
+  "venue": "Proc. 4th Int. Conf. on Information Systems Security and Privacy (ICISSP)",
+  "volume": null,
+  "number": null,
+  "pages": "108--116",
+  "bib_authors": [
+   [
+    "Sharafaldin",
+    "Iman"
+   ],
+   [
+    "Habibi Lashkari",
+    "Arash"
+   ],
+   [
+    "Ghorbani",
+    "Ali A."
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://www.scitepress.org/DigitalLibrary/Link.aspx?doi=10.5220/0006639801080116"
+  ],
+  "crossref": {
+   "title": "Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization",
+   "subtitle": "",
+   "authors": [
+    [
+     "Sharafaldin",
+     "Iman"
+    ],
+    [
+     "Habibi Lashkari",
+     "Arash"
+    ],
+    [
+     "Ghorbani",
+     "Ali A."
+    ]
+   ],
+   "container": "Proceedings of the 4th International Conference on Information Systems Security and Privacy",
+   "type": "proceedings-article",
+   "year": 2018,
+   "volume": null,
+   "issue": null,
+   "page": "108-116",
+   "article": null,
+   "publisher": "SCITEPRESS - Science and Technology Publications"
+  },
+  "openalex": {
+   "title": "Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization",
+   "year": 2018,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.5220/0006639801080116",
+   "authors": [
+    [
+     "Sharafaldin",
+     "Iman"
+    ],
+    [
+     "Lashkari",
+     "Arash Habibi"
+    ],
+    [
+     "Ghorbani",
+     "Ali A."
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": [
+   "name form 2: bib 'Arash Habibi Lashkari' vs record 'Arash Habibi Lashkari'"
+  ]
+ },
+ {
+  "key": "samarakoon2022nidd",
+  "bibtype": "misc",
+  "title": "5G-NIDD: A Comprehensive Network Intrusion Detection Dataset Generated over 5G Wireless Network",
+  "year": "2022",
+  "doi": "10.21227/xtep-hv36",
+  "venue": "IEEE DataPort",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Samarakoon",
+    "Sehan"
+   ],
+   [
+    "Siriwardhana",
+    "Yushan"
+   ],
+   [
+    "Porambage",
+    "Pawani"
+   ],
+   [
+    "Liyanage",
+    "Madhusanka"
+   ],
+   [
+    "Chang",
+    "Sang-Yoon"
+   ],
+   [
+    "Kim",
+    "Jinoh"
+   ],
+   [
+    "Kim",
+    "Jonghyun"
+   ],
+   [
+    "Ylianttila",
+    "Mika"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieee-dataport.org/documents/5g-nidd-comprehensive-network-intrusion-detection-dataset-generated-over-5g-wireless"
+  ],
+  "crossref": null,
+  "openalex": {
+   "title": "5G-NIDD: A Comprehensive Network Intrusion Detection Dataset Generated over 5G Wireless Network",
+   "year": 2022,
+   "type": "dataset",
+   "venue": "IEEE DataPort",
+   "doi": "10.21227/xtep-hv36",
+   "authors": [
+    [
+     "Sehan",
+     "Samarakoon,"
+    ],
+    [
+     "Yushan",
+     "Siriwardhana,"
+    ],
+    [
+     "Pawani",
+     "Porambage,"
+    ],
+    [
+     "Madhusanka",
+     "Liyanage,"
+    ],
+    [
+     "Sang-Yoon",
+     "Chang,"
+    ],
+    [
+     "Jinoh",
+     "Kim,"
+    ],
+    [
+     "Jonghyun",
+     "Kim,"
+    ],
+    [
+     "Mika",
+     "Ylianttila,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Sehan Samarakoon' vs record 'Samarakoon, Sehan'",
+   "name form 2: bib 'Yushan Siriwardhana' vs record 'Siriwardhana, Yushan'",
+   "name form 3: bib 'Pawani Porambage' vs record 'Porambage, Pawani'",
+   "name form 4: bib 'Madhusanka Liyanage' vs record 'Liyanage, Madhusanka'",
+   "name form 5: bib 'Sang-Yoon Chang' vs record 'Chang, Sang-Yoon'",
+   "name form 6: bib 'Jinoh Kim' vs record 'Kim, Jinoh'",
+   "name form 7: bib 'Jonghyun Kim' vs record 'Kim, Jonghyun'",
+   "name form 8: bib 'Mika Ylianttila' vs record 'Ylianttila, Mika'"
+  ]
+ },
+ {
+  "key": "siriwardhana2025descriptor",
+  "bibtype": "article",
+  "title": "Descriptor: 5G Wireless Network Intrusion Detection Dataset (5G-NIDD)",
+  "year": "2025",
+  "doi": "10.1109/IEEEDATA.2025.3592888",
+  "venue": "IEEE Data Descriptions",
+  "volume": "2",
+  "number": null,
+  "pages": "358--369",
+  "bib_authors": [
+   [
+    "Siriwardhana",
+    "Yushan"
+   ],
+   [
+    "Samarakoon",
+    "Sehan"
+   ],
+   [
+    "Porambage",
+    "Pawani"
+   ],
+   [
+    "Liyanage",
+    "Madhusanka"
+   ],
+   [
+    "Chang",
+    "Sang-Yoon"
+   ],
+   [
+    "Kim",
+    "Jinoh"
+   ],
+   [
+    "Kim",
+    "Jonghyun"
+   ],
+   [
+    "Ylianttila",
+    "Mika"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/11098458/"
+  ],
+  "crossref": {
+   "title": "Descriptor: 5G Wireless Network Intrusion Detection Dataset (5G-NIDD)",
+   "subtitle": "",
+   "authors": [
+    [
+     "Siriwardhana",
+     "Yushan"
+    ],
+    [
+     "Samarakoon",
+     "Sehan"
+    ],
+    [
+     "Porambage",
+     "Pawani"
+    ],
+    [
+     "Liyanage",
+     "Madhusanka"
+    ],
+    [
+     "Chang",
+     "Sang-Yoon"
+    ],
+    [
+     "Kim",
+     "Jinoh"
+    ],
+    [
+     "Kim",
+     "Jonghyun"
+    ],
+    [
+     "Ylianttila",
+     "Mika"
+    ]
+   ],
+   "container": "IEEE Data Descriptions",
+   "type": "journal-article",
+   "year": 2025,
+   "volume": "2",
+   "issue": null,
+   "page": "358-369",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Descriptor: 5G Wireless Network Intrusion Detection Dataset (5G-NIDD)",
+   "year": 2025,
+   "type": "article",
+   "venue": "IEEE data descriptions.",
+   "doi": "10.1109/ieeedata.2025.3592888",
+   "authors": [
+    [
+     "Siriwardhana",
+     "Yushan"
+    ],
+    [
+     "Samarakoon",
+     "Sehan"
+    ],
+    [
+     "Porambage",
+     "Pawani"
+    ],
+    [
+     "Liyanage",
+     "Madhusanka"
+    ],
+    [
+     "Chang",
+     "Sang-Yoon"
+    ],
+    [
+     "Kim",
+     "Jinoh"
+    ],
+    [
+     "Kim",
+     "Jonghyun"
+    ],
+    [
+     "Ylianttila",
+     "Mika"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "sarhan2021netflow",
+  "bibtype": "inproceedings",
+  "title": "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems",
+  "year": "2021",
+  "doi": "10.1007/978-3-030-72802-1_9",
+  "venue": "Big Data Technologies and Applications (BDTA/WiCON), LNICST",
+  "volume": "371",
+  "number": null,
+  "pages": "117--135",
+  "bib_authors": [
+   [
+    "Sarhan",
+    "Mohanad"
+   ],
+   [
+    "Layeghy",
+    "Siamak"
+   ],
+   [
+    "Moustafa",
+    "Nour"
+   ],
+   [
+    "Portmann",
+    "Marius"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://link.springer.com/10.1007/978-3-030-72802-1_9"
+  ],
+  "crossref": {
+   "title": "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems",
+   "subtitle": "",
+   "authors": [
+    [
+     "Sarhan",
+     "Mohanad"
+    ],
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Moustafa",
+     "Nour"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ],
+   "container": "Lecture Notes of the Institute for Computer Sciences, Social Informatics and Telecommunications Engineering",
+   "type": "book-chapter",
+   "year": 2021,
+   "volume": null,
+   "issue": null,
+   "page": "117-135",
+   "article": null,
+   "publisher": "Springer International Publishing"
+  },
+  "openalex": {
+   "title": "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems",
+   "year": 2021,
+   "type": "book-chapter",
+   "venue": "Lecture notes of the Institute for Computer Sciences, Social Informatics and Telecommunications Engineering",
+   "doi": "10.1007/978-3-030-72802-1_9",
+   "authors": [
+    [
+     "Sarhan",
+     "Mohanad"
+    ],
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Moustafa",
+     "Nour"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "sarhan2022standard",
+  "bibtype": "article",
+  "title": "Towards a Standard Feature Set for Network Intrusion Detection System Datasets",
+  "year": "2022",
+  "doi": "10.1007/s11036-021-01843-0",
+  "venue": "Mobile Networks and Applications",
+  "volume": "27",
+  "number": "1",
+  "pages": "357--370",
+  "bib_authors": [
+   [
+    "Sarhan",
+    "Mohanad"
+   ],
+   [
+    "Layeghy",
+    "Siamak"
+   ],
+   [
+    "Portmann",
+    "Marius"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://link.springer.com/10.1007/s11036-021-01843-0"
+  ],
+  "crossref": {
+   "title": "Towards a Standard Feature Set for Network Intrusion Detection System Datasets",
+   "subtitle": "",
+   "authors": [
+    [
+     "Sarhan",
+     "Mohanad"
+    ],
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ],
+   "container": "Mobile Networks and Applications",
+   "type": "journal-article",
+   "year": 2022,
+   "volume": "27",
+   "issue": "1",
+   "page": "357-370",
+   "article": null,
+   "publisher": "Springer Science and Business Media LLC"
+  },
+  "openalex": {
+   "title": "Towards a Standard Feature Set for Network Intrusion Detection System Datasets",
+   "year": 2021,
+   "type": "article",
+   "venue": "Mobile Networks and Applications",
+   "doi": "10.1007/s11036-021-01843-0",
+   "authors": [
+    [
+     "Sarhan",
+     "Mohanad"
+    ],
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "layeghy2022generalisability",
+  "bibtype": "article",
+  "title": "Explainable Cross-Domain Evaluation of ML-Based Network Intrusion Detection Systems",
+  "year": "2023",
+  "doi": "10.1016/j.compeleceng.2023.108692",
+  "venue": "Computers and Electrical Engineering",
+  "volume": "108",
+  "number": null,
+  "pages": "108692",
+  "bib_authors": [
+   [
+    "Layeghy",
+    "Siamak"
+   ],
+   [
+    "Portmann",
+    "Marius"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S0045790623001167"
+  ],
+  "crossref": {
+   "title": "Explainable Cross-domain Evaluation of ML-based Network Intrusion Detection Systems",
+   "subtitle": "",
+   "authors": [
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ],
+   "container": "Computers and Electrical Engineering",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "108",
+   "issue": null,
+   "page": "108692",
+   "article": "108692",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Explainable Cross-domain Evaluation of ML-based Network Intrusion Detection Systems",
+   "year": 2023,
+   "type": "article",
+   "venue": "Computers & Electrical Engineering",
+   "doi": "10.1016/j.compeleceng.2023.108692",
+   "authors": [
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "layeghy2023benchmarking",
+  "bibtype": "article",
+  "title": "Benchmarking the Benchmark --- Comparing Synthetic and Real-World Network IDS Datasets",
+  "year": "2024",
+  "doi": "10.1016/j.jisa.2023.103689",
+  "venue": "Journal of Information Security and Applications",
+  "volume": "80",
+  "number": null,
+  "pages": "103689",
+  "bib_authors": [
+   [
+    "Layeghy",
+    "Siamak"
+   ],
+   [
+    "Gallagher",
+    "Marcus"
+   ],
+   [
+    "Portmann",
+    "Marius"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S2214212623002739"
+  ],
+  "crossref": {
+   "title": "Benchmarking the benchmark — Comparing synthetic and real-world Network IDS datasets",
+   "subtitle": "",
+   "authors": [
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Gallagher",
+     "Marcus"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ],
+   "container": "Journal of Information Security and Applications",
+   "type": "journal-article",
+   "year": 2024,
+   "volume": "80",
+   "issue": null,
+   "page": "103689",
+   "article": "103689",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Benchmarking the benchmark — Comparing synthetic and real-world Network IDS datasets",
+   "year": 2024,
+   "type": "article",
+   "venue": "Journal of Information Security and Applications",
+   "doi": "10.1016/j.jisa.2023.103689",
+   "authors": [
+    [
+     "Layeghy",
+     "Siamak"
+    ],
+    [
+     "Gallagher",
+     "Marcus"
+    ],
+    [
+     "Portmann",
+     "Marius"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "arp2022dosdonts",
+  "bibtype": "inproceedings",
+  "title": "Dos and Don'ts of Machine Learning in Computer Security",
+  "year": "2022",
+  "doi": null,
+  "venue": "Proc. 31st USENIX Security Symposium",
+  "volume": null,
+  "number": null,
+  "pages": "3971--3988",
+  "bib_authors": [
+   [
+    "Arp",
+    "Daniel"
+   ],
+   [
+    "Quiring",
+    "Erwin"
+   ],
+   [
+    "Pendlebury",
+    "Feargus"
+   ],
+   [
+    "Warnecke",
+    "Alexander"
+   ],
+   [
+    "Pierazzi",
+    "Fabio"
+   ],
+   [
+    "Wressnegger",
+    "Christian"
+   ],
+   [
+    "Cavallaro",
+    "Lorenzo"
+   ],
+   [
+    "Rieck",
+    "Konrad"
+   ]
+  ],
+  "openalex": {
+   "title": "Big data and machine learning for materials science",
+   "year": 2021,
+   "type": "article",
+   "venue": "Discover Materials",
+   "doi": "10.1007/s43939-021-00012-0",
+   "authors": [
+    [
+     "Rodrigues",
+     "Jose F."
+    ],
+    [
+     "Florea",
+     "Larisa"
+    ],
+    [
+     "Oliveira",
+     "Maria C. F. de"
+    ],
+    [
+     "Diamond",
+     "Dermot"
+    ],
+    [
+     "Oliveira",
+     "Osvaldo N."
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "MISMATCH 1: bib 'Daniel Arp' vs record 'Jose F. Rodrigues'",
+   "MISMATCH 2: bib 'Erwin Quiring' vs record 'Larisa Florea'",
+   "MISMATCH 3: bib 'Feargus Pendlebury' vs record 'Maria C. F. de Oliveira'",
+   "MISMATCH 4: bib 'Alexander Warnecke' vs record 'Dermot Diamond'",
+   "MISMATCH 5: bib 'Fabio Pierazzi' vs record 'Osvaldo N. Oliveira'",
+   "extra author 6: Christian Wressnegger",
+   "extra author 7: Lorenzo Cavallaro",
+   "extra author 8: Konrad Rieck"
+  ]
+ },
+ {
+  "key": "sommer2010outside",
+  "bibtype": "inproceedings",
+  "title": "Outside the Closed World: On Using Machine Learning for Network Intrusion Detection",
+  "year": "2010",
+  "doi": "10.1109/SP.2010.25",
+  "venue": "Proc. IEEE Symposium on Security and Privacy",
+  "volume": null,
+  "number": null,
+  "pages": "305--316",
+  "bib_authors": [
+   [
+    "Sommer",
+    "Robin"
+   ],
+   [
+    "Paxson",
+    "Vern"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://ieeexplore.ieee.org/document/5504793/"
+  ],
+  "crossref": {
+   "title": "Outside the Closed World: On Using Machine Learning for Network Intrusion Detection",
+   "subtitle": "",
+   "authors": [
+    [
+     "Sommer",
+     "Robin"
+    ],
+    [
+     "Paxson",
+     "Vern"
+    ]
+   ],
+   "container": "2010 IEEE Symposium on Security and Privacy",
+   "type": "proceedings-article",
+   "year": 2010,
+   "volume": null,
+   "issue": null,
+   "page": "305-316",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Outside the Closed World: On Using Machine Learning for Network Intrusion Detection",
+   "year": 2010,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/sp.2010.25",
+   "authors": [
+    [
+     "Sommer",
+     "Robin"
+    ],
+    [
+     "Paxson",
+     "Vern"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "axelsson2000baserate",
+  "bibtype": "article",
+  "title": "The Base-Rate Fallacy and the Difficulty of Intrusion Detection",
+  "year": "2000",
+  "doi": "10.1145/357830.357849",
+  "venue": "ACM Transactions on Information and System Security",
+  "volume": "3",
+  "number": "3",
+  "pages": "186--205",
+  "bib_authors": [
+   [
+    "Axelsson",
+    "Stefan"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/357830.357849"
+  ],
+  "crossref": {
+   "title": "The base-rate fallacy and the difficulty of intrusion detection",
+   "subtitle": "",
+   "authors": [
+    [
+     "Axelsson",
+     "Stefan"
+    ]
+   ],
+   "container": "ACM Transactions on Information and System Security",
+   "type": "journal-article",
+   "year": 2000,
+   "volume": "3",
+   "issue": "3",
+   "page": "186-205",
+   "article": null,
+   "publisher": "Association for Computing Machinery (ACM)"
+  },
+  "openalex": {
+   "title": "The base-rate fallacy and the difficulty of intrusion detection",
+   "year": 2000,
+   "type": "article",
+   "venue": "ACM Transactions on Information and System Security",
+   "doi": "10.1145/357830.357849",
+   "authors": [
+    [
+     "Axelsson",
+     "Stefan"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "apruzzese2023role",
+  "bibtype": "article",
+  "title": "The Role of Machine Learning in Cybersecurity",
+  "year": "2023",
+  "doi": "10.1145/3545574",
+  "venue": "Digital Threats: Research and Practice",
+  "volume": "4",
+  "number": "1",
+  "pages": "1--38",
+  "bib_authors": [
+   [
+    "Apruzzese",
+    "Giovanni"
+   ],
+   [
+    "Laskov",
+    "Pavel"
+   ],
+   [
+    "Montes de Oca",
+    "Edgardo"
+   ],
+   [
+    "Mallouli",
+    "Wissam"
+   ],
+   [
+    "Brdalo Rapa",
+    "Luis"
+   ],
+   [
+    "Grammatopoulos",
+    "Athanasios Vasileios"
+   ],
+   [
+    "Di Franco",
+    "Fabio"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/3545574"
+  ],
+  "crossref": {
+   "title": "The Role of Machine Learning in Cybersecurity",
+   "subtitle": "",
+   "authors": [
+    [
+     "Apruzzese",
+     "Giovanni"
+    ],
+    [
+     "Laskov",
+     "Pavel"
+    ],
+    [
+     "Montes de Oca",
+     "Edgardo"
+    ],
+    [
+     "Mallouli",
+     "Wissam"
+    ],
+    [
+     "Brdalo Rapa",
+     "Luis"
+    ],
+    [
+     "Grammatopoulos",
+     "Athanasios Vasileios"
+    ],
+    [
+     "Di Franco",
+     "Fabio"
+    ]
+   ],
+   "container": "Digital Threats: Research and Practice",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "4",
+   "issue": "1",
+   "page": "1-38",
+   "article": null,
+   "publisher": "Association for Computing Machinery (ACM)"
+  },
+  "openalex": {
+   "title": "The Role of Machine Learning in Cybersecurity",
+   "year": 2022,
+   "type": "article",
+   "venue": "Digital Threats Research and Practice",
+   "doi": "10.1145/3545574",
+   "authors": [
+    [
+     "Apruzzese",
+     "Giovanni"
+    ],
+    [
+     "Laskov",
+     "Pavel"
+    ],
+    [
+     "Oca",
+     "Edgardo Montes de"
+    ],
+    [
+     "Mallouli",
+     "Wissam"
+    ],
+    [
+     "Rapa",
+     "Luis Brdalo"
+    ],
+    [
+     "Grammatopoulos",
+     "Athanasios Vasileios"
+    ],
+    [
+     "Franco",
+     "Fabio Di"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": [
+   "name form 3: bib 'Edgardo Montes de Oca' vs record 'Edgardo Montes de Oca'",
+   "name form 5: bib 'Luis Brdalo Rapa' vs record 'Luis Brdalo Rapa'",
+   "name form 7: bib 'Fabio Di Franco' vs record 'Fabio Di Franco'"
+  ]
+ },
+ {
+  "key": "breiman2001random",
+  "bibtype": "article",
+  "title": "Random Forests",
+  "year": "2001",
+  "doi": "10.1023/A:1010933404324",
+  "venue": "Machine Learning",
+  "volume": "45",
+  "number": "1",
+  "pages": "5--32",
+  "bib_authors": [
+   [
+    "Breiman",
+    "Leo"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://link.springer.com/10.1023/A:1010933404324"
+  ],
+  "crossref": {
+   "title": "Random Forests",
+   "subtitle": "",
+   "authors": [
+    [
+     "Breiman",
+     "Leo"
+    ]
+   ],
+   "container": "Machine Learning",
+   "type": "journal-article",
+   "year": 2001,
+   "volume": "45",
+   "issue": "1",
+   "page": "5-32",
+   "article": null,
+   "publisher": "Springer Science and Business Media LLC"
+  },
+  "openalex": {
+   "title": "Random Forests",
+   "year": 2001,
+   "type": "article",
+   "venue": "Machine Learning",
+   "doi": "10.1023/a:1010933404324",
+   "authors": [
+    [
+     "Breiman",
+     "Leo"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "chen2016xgboost",
+  "bibtype": "inproceedings",
+  "title": "XGBoost: A Scalable Tree Boosting System",
+  "year": "2016",
+  "doi": "10.1145/2939672.2939785",
+  "venue": "Proc. 22nd ACM SIGKDD Int. Conf. on Knowledge Discovery and Data Mining",
+  "volume": null,
+  "number": null,
+  "pages": "785--794",
+  "bib_authors": [
+   [
+    "Chen",
+    "Tianqi"
+   ],
+   [
+    "Guestrin",
+    "Carlos"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/2939672.2939785"
+  ],
+  "crossref": {
+   "title": "XGBoost",
+   "subtitle": "A Scalable Tree Boosting System",
+   "authors": [
+    [
+     "Chen",
+     "Tianqi"
+    ],
+    [
+     "Guestrin",
+     "Carlos"
+    ]
+   ],
+   "container": "Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+   "type": "proceedings-article",
+   "year": 2016,
+   "volume": null,
+   "issue": null,
+   "page": "785-794",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "XGBoost",
+   "year": 2016,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/2939672.2939785",
+   "authors": [
+    [
+     "Chen",
+     "Tianqi"
+    ],
+    [
+     "Guestrin",
+     "Carlos"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "pedregosa2011scikit",
+  "bibtype": "article",
+  "title": "Scikit-learn: Machine Learning in Python",
+  "year": "2011",
+  "doi": null,
+  "venue": "Journal of Machine Learning Research",
+  "volume": "12",
+  "number": null,
+  "pages": "2825--2830",
+  "bib_authors": [
+   [
+    "Pedregosa",
+    "Fabian"
+   ],
+   [
+    "Varoquaux",
+    "Gael"
+   ],
+   [
+    "Gramfort",
+    "Alexandre"
+   ],
+   [
+    "Michel",
+    "Vincent"
+   ],
+   [
+    "Thirion",
+    "Bertrand"
+   ],
+   [
+    "Grisel",
+    "Olivier"
+   ],
+   [
+    "Blondel",
+    "Mathieu"
+   ],
+   [
+    "Prettenhofer",
+    "Peter"
+   ],
+   [
+    "Weiss",
+    "Ron"
+   ],
+   [
+    "Dubourg",
+    "Vincent"
+   ],
+   [
+    "Vanderplas",
+    "Jake"
+   ],
+   [
+    "Passos",
+    "Alexandre"
+   ],
+   [
+    "Cournapeau",
+    "David"
+   ],
+   [
+    "Brucher",
+    "Matthieu"
+   ],
+   [
+    "Perrot",
+    "Matthieu"
+   ],
+   [
+    "Duchesnay",
+    "Edouard"
+   ]
+  ],
+  "openalex": {
+   "title": "Scikit-learn: Machine Learning in Python",
+   "year": 2012,
+   "type": "article",
+   "venue": "ORBi (University of Liège)",
+   "doi": "10.48550/arxiv.1201.0490",
+   "authors": [
+    [
+     "Fabian",
+     "Pedregosa,"
+    ],
+    [
+     "Gaël",
+     "Varoquaux,"
+    ],
+    [
+     "Alexandre",
+     "Gramfort,"
+    ],
+    [
+     "Vincent",
+     "Michel,"
+    ],
+    [
+     "Bertrand",
+     "Thirion,"
+    ],
+    [
+     "Olivier",
+     "Grisel,"
+    ],
+    [
+     "Mathieu",
+     "Blondel,"
+    ],
+    [
+     "Andreas",
+     "Müller,"
+    ],
+    [
+     "Joel",
+     "Nothman,"
+    ],
+    [
+     "Gilles",
+     "Louppe,"
+    ],
+    [
+     "Peter",
+     "Prettenhofer,"
+    ],
+    [
+     "Ron",
+     "Weiss,"
+    ],
+    [
+     "Vincent",
+     "Dubourg,"
+    ],
+    [
+     "Jake",
+     "Vanderplas,"
+    ],
+    [
+     "Alexandre",
+     "Passos,"
+    ],
+    [
+     "David",
+     "Cournapeau,"
+    ],
+    [
+     "Matthieu",
+     "Brucher,"
+    ],
+    [
+     "Matthieu",
+     "Perrot,"
+    ],
+    [
+     "Édouard",
+     "Duchesnay,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Fabian Pedregosa' vs record 'Pedregosa, Fabian'",
+   "name form 2: bib 'Gael Varoquaux' vs record 'Varoquaux, Gaël'",
+   "name form 3: bib 'Alexandre Gramfort' vs record 'Gramfort, Alexandre'",
+   "name form 4: bib 'Vincent Michel' vs record 'Michel, Vincent'",
+   "name form 5: bib 'Bertrand Thirion' vs record 'Thirion, Bertrand'",
+   "name form 6: bib 'Olivier Grisel' vs record 'Grisel, Olivier'",
+   "name form 7: bib 'Mathieu Blondel' vs record 'Blondel, Mathieu'",
+   "MISMATCH 8: bib 'Peter Prettenhofer' vs record 'Müller, Andreas'",
+   "MISMATCH 9: bib 'Ron Weiss' vs record 'Nothman, Joel'",
+   "MISMATCH 10: bib 'Vincent Dubourg' vs record 'Louppe, Gilles'",
+   "MISMATCH 11: bib 'Jake Vanderplas' vs record 'Prettenhofer, Peter'",
+   "MISMATCH 12: bib 'Alexandre Passos' vs record 'Weiss, Ron'",
+   "MISMATCH 13: bib 'David Cournapeau' vs record 'Dubourg, Vincent'",
+   "MISMATCH 14: bib 'Matthieu Brucher' vs record 'Vanderplas, Jake'",
+   "MISMATCH 15: bib 'Matthieu Perrot' vs record 'Passos, Alexandre'",
+   "MISMATCH 16: bib 'Edouard Duchesnay' vs record 'Cournapeau, David'",
+   "missing author 17: Brucher, Matthieu",
+   "missing author 18: Perrot, Matthieu",
+   "missing author 19: Duchesnay, Édouard"
+  ]
+ },
+ {
+  "key": "liu2008isolation",
+  "bibtype": "inproceedings",
+  "title": "Isolation Forest",
+  "year": "2008",
+  "doi": "10.1109/ICDM.2008.17",
+  "venue": "Proc. 8th IEEE Int. Conf. on Data Mining (ICDM)",
+  "volume": null,
+  "number": null,
+  "pages": "413--422",
+  "bib_authors": [
+   [
+    "Liu",
+    "Fei Tony"
+   ],
+   [
+    "Ting",
+    "Kai Ming"
+   ],
+   [
+    "Zhou",
+    "Zhi-Hua"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://ieeexplore.ieee.org/document/4781136/"
+  ],
+  "crossref": {
+   "title": "Isolation Forest",
+   "subtitle": "",
+   "authors": [
+    [
+     "Liu",
+     "Fei Tony"
+    ],
+    [
+     "Ting",
+     "Kai Ming"
+    ],
+    [
+     "Zhou",
+     "Zhi-Hua"
+    ]
+   ],
+   "container": "2008 Eighth IEEE International Conference on Data Mining",
+   "type": "proceedings-article",
+   "year": 2008,
+   "volume": null,
+   "issue": null,
+   "page": "413-422",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Isolation Forest",
+   "year": 2008,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/icdm.2008.17",
+   "authors": [
+    [
+     "Liu",
+     "Fei Tony"
+    ],
+    [
+     "Ting",
+     "Kai Ming"
+    ],
+    [
+     "Zhou",
+     "Zhi-Hua"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "lundberg2017shap",
+  "bibtype": "inproceedings",
+  "title": "A Unified Approach to Interpreting Model Predictions",
+  "year": "2017",
+  "doi": null,
+  "venue": "Advances in Neural Information Processing Systems 30 (NeurIPS)",
+  "volume": null,
+  "number": null,
+  "pages": "4765--4774",
+  "bib_authors": [
+   [
+    "Lundberg",
+    "Scott M."
+   ],
+   [
+    "Lee",
+    "Su-In"
+   ]
+  ],
+  "openalex": {
+   "title": "A Unified Approach to Interpreting Model Predictions",
+   "year": 2017,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.1705.07874",
+   "authors": [
+    [
+     "Scott",
+     "Lundberg,"
+    ],
+    [
+     "Su-In",
+     "Lee,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Scott M. Lundberg' vs record 'Lundberg, Scott'",
+   "name form 2: bib 'Su-In Lee' vs record 'Lee, Su-In'"
+  ]
+ },
+ {
+  "key": "abraheem2026bidirectional",
+  "bibtype": "article",
+  "title": "Bidirectional Cross-Dataset Generalization and Label-Efficient Adaptation for 5G Network Intrusion Detection",
+  "year": "2026",
+  "doi": null,
+  "venue": "Wadi Alshatti University Journal of Pure and Applied Sciences",
+  "volume": "4",
+  "number": "2",
+  "pages": null,
+  "bib_authors": [
+   [
+    "Abraheem",
+    "Abraheem"
+   ],
+   [
+    "Edhirig",
+    "Albussiry"
+   ]
+  ],
+  "openalex": {
+   "title": "Enhancing IoT network security through deep learning-powered Intrusion Detection System",
+   "year": 2023,
+   "type": "article",
+   "venue": "Internet of Things",
+   "doi": "10.1016/j.iot.2023.100936",
+   "authors": [
+    [
+     "Bakhsh",
+     "Shahid Allah"
+    ],
+    [
+     "Khan",
+     "Muhammad Almas"
+    ],
+    [
+     "Ahmed",
+     "Fawad"
+    ],
+    [
+     "Alshehri",
+     "Mohammed S."
+    ],
+    [
+     "Ali",
+     "Hisham"
+    ],
+    [
+     "Ahmad",
+     "Jawad"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "MISMATCH 1: bib 'Abraheem Abraheem' vs record 'Shahid Allah Bakhsh'",
+   "MISMATCH 2: bib 'Albussiry Edhirig' vs record 'Muhammad Almas Khan'",
+   "missing author 3: Fawad Ahmed",
+   "missing author 4: Mohammed S. Alshehri",
+   "missing author 5: Hisham Ali",
+   "missing author 6: Jawad Ahmad"
+  ]
+ },
+ {
+  "key": "obiuwevwi2026realtime",
+  "bibtype": "inproceedings",
+  "title": "Enabling Real-Time AI in O-RAN: Deploying and Measuring AI Inside a Near-RT RIC xApp",
+  "year": "2026",
+  "doi": "10.1109/ICCCN69946.2026.11662852",
+  "venue": "Proc. 35th Int. Conf. on Computer Communications and Networks (ICCCN)",
+  "volume": null,
+  "number": null,
+  "pages": "1--9",
+  "bib_authors": [
+   [
+    "Obiuwevwi",
+    "Lawrence"
+   ],
+   [
+    "Rechowicz",
+    "Krzysztof J."
+   ],
+   [
+    "Jayarathna",
+    "Sampath"
+   ],
+   [
+    "Bouk",
+    "Safdar Hussain"
+   ],
+   [
+    "Afrin",
+    "Fahmida"
+   ],
+   [
+    "Barati",
+    "C. Nicolas"
+   ],
+   [
+    "Moghim",
+    "Neda"
+   ],
+   [
+    "Nannou",
+    "Valentina"
+   ],
+   [
+    "Ur Rahman",
+    "Muhammad Enayet"
+   ],
+   [
+    "Shetty",
+    "Sachin"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/11662852/"
+  ],
+  "crossref": {
+   "title": "Enabling Real-Time AI in O-RAN: Deploying and Measuring AI Inside a Near-RT RIC xApp",
+   "subtitle": "",
+   "authors": [
+    [
+     "Obiuwevwi",
+     "Lawrence"
+    ],
+    [
+     "Rechowicz",
+     "Krzysztof J."
+    ],
+    [
+     "Jayarathna",
+     "Sampath"
+    ],
+    [
+     "Bouk",
+     "Safdar Hussain"
+    ],
+    [
+     "Afrin",
+     "Fahmida"
+    ],
+    [
+     "Barati",
+     "C. Nicolas"
+    ],
+    [
+     "Moghim",
+     "Neda"
+    ],
+    [
+     "Nannou",
+     "Valentina"
+    ],
+    [
+     "Ur Rahman",
+     "Muhammad Enayet"
+    ],
+    [
+     "Shetty",
+     "Sachin"
+    ]
+   ],
+   "container": "2026 35th International Conference on Computer Communications and Networks (ICCCN)",
+   "type": "proceedings-article",
+   "year": 2026,
+   "volume": null,
+   "issue": null,
+   "page": "1-9",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Enabling Real-Time AI in O-RAN: Deploying and Measuring AI Inside a Near-RT RIC xApp",
+   "year": 2026,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/icccn69946.2026.11662852",
+   "authors": [
+    [
+     "Obiuwevwi",
+     "Lawrence"
+    ],
+    [
+     "Rechowicz",
+     "Krzysztof J."
+    ],
+    [
+     "Jayarathna",
+     "Sampath"
+    ],
+    [
+     "Bouk",
+     "Safdar Hussain"
+    ],
+    [
+     "Afrin",
+     "Fahmida"
+    ],
+    [
+     "Barati",
+     "C. Nicolas"
+    ],
+    [
+     "Moghim",
+     "Neda"
+    ],
+    [
+     "Nannou",
+     "Valentina"
+    ],
+    [
+     "Rahman",
+     "Muhammad Enayet Ur"
+    ],
+    [
+     "Shetty",
+     "Sachin"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": [
+   "name form 9: bib 'Muhammad Enayet Ur Rahman' vs record 'Muhammad Enayet Ur Rahman'"
+  ]
+ },
+ {
+  "key": "abedzadeh2025netslab",
+  "bibtype": "article",
+  "title": "Descriptor: 5G Open Radio Access Network Multi-Modal Intrusion Detection Dataset (NetsLab-5GORAN-IDD)",
+  "year": "2025",
+  "doi": "10.1109/IEEEDATA.2025.3614167",
+  "venue": "IEEE Data Descriptions",
+  "volume": "2",
+  "number": null,
+  "pages": "348--357",
+  "bib_authors": [
+   [
+    "Zadeh",
+    "Farah Abed"
+   ],
+   [
+    "Civciss",
+    "Alan"
+   ],
+   [
+    "Ravihansa",
+    "Vidura"
+   ],
+   [
+    "Sandeepa",
+    "Chamara"
+   ],
+   [
+    "Liyanage",
+    "Madhusanka"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/11181093/"
+  ],
+  "crossref": {
+   "title": "Descriptor: 5G Open Radio Access Network Multi-Modal Intrusion Detection Dataset (NetsLab-5GORAN-IDD)",
+   "subtitle": "",
+   "authors": [
+    [
+     "Zadeh",
+     "Farah Abed"
+    ],
+    [
+     "Civciss",
+     "Alan"
+    ],
+    [
+     "Ravihansa",
+     "Vidura"
+    ],
+    [
+     "Sandeepa",
+     "Chamara"
+    ],
+    [
+     "Liyanage",
+     "Madhusanka"
+    ]
+   ],
+   "container": "IEEE Data Descriptions",
+   "type": "journal-article",
+   "year": 2025,
+   "volume": "2",
+   "issue": null,
+   "page": "348-357",
+   "article": null,
+   "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  "openalex": {
+   "title": "Descriptor: 5G Open Radio Access Network Multi-Modal Intrusion Detection Dataset (NetsLab-5GORAN-IDD)",
+   "year": 2025,
+   "type": "article",
+   "venue": "IEEE data descriptions.",
+   "doi": "10.1109/ieeedata.2025.3614167",
+   "authors": [
+    [
+     "Zadeh",
+     "Farah Abed"
+    ],
+    [
+     "Civciss",
+     "Alan"
+    ],
+    [
+     "Ravihansa",
+     "Vidura"
+    ],
+    [
+     "Sandeepa",
+     "Chamara"
+    ],
+    [
+     "Liyanage",
+     "Madhusanka"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "fard2026crosslayer",
+  "bibtype": "misc",
+  "title": "Cross-Layer Intrusion Detection in 5G O-RAN: Gains and Limits of Fusing Radio Telemetry with Network Flow Records",
+  "year": "2026",
+  "doi": null,
+  "venue": "arXiv:2606.22450",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Fard",
+    "Hamed"
+   ],
+   [
+    "Komarov",
+    "Ilya"
+   ],
+   [
+    "Wunder",
+    "Gerhard"
+   ]
+  ],
+  "openalex": {
+   "title": "On the Road to 6G: Visions, Requirements, Key Technologies, and Testbeds",
+   "year": 2023,
+   "type": "article",
+   "venue": "IEEE Communications Surveys & Tutorials",
+   "doi": "10.1109/comst.2023.3249835",
+   "authors": [
+    [
+     "Wang",
+     "Cheng-Xiang"
+    ],
+    [
+     "You",
+     "Xiaohu"
+    ],
+    [
+     "Gao",
+     "Xiqi"
+    ],
+    [
+     "Zhu",
+     "Xiuming"
+    ],
+    [
+     "Li",
+     "Zixin"
+    ],
+    [
+     "Zhang",
+     "Chuan"
+    ],
+    [
+     "Wang",
+     "Haiming"
+    ],
+    [
+     "Huang",
+     "Yongming"
+    ],
+    [
+     "Chen",
+     "Yunfei"
+    ],
+    [
+     "Haas",
+     "Harald"
+    ],
+    [
+     "Thompson",
+     "John S."
+    ],
+    [
+     "Larsson",
+     "Erik G."
+    ],
+    [
+     "Renzo",
+     "Marco Di"
+    ],
+    [
+     "Tong",
+     "Wen"
+    ],
+    [
+     "Zhu",
+     "Peiying"
+    ],
+    [
+     "Shen",
+     "Xuemin"
+    ],
+    [
+     "Poor",
+     "H. Vincent"
+    ],
+    [
+     "Hanzo",
+     "Lajos"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "MISMATCH 1: bib 'Hamed Fard' vs record 'Cheng-Xiang Wang'",
+   "MISMATCH 2: bib 'Ilya Komarov' vs record 'Xiaohu You'",
+   "MISMATCH 3: bib 'Gerhard Wunder' vs record 'Xiqi Gao'",
+   "missing author 4: Xiuming Zhu",
+   "missing author 5: Zixin Li",
+   "missing author 6: Chuan Zhang",
+   "missing author 7: Haiming Wang",
+   "missing author 8: Yongming Huang",
+   "missing author 9: Yunfei Chen",
+   "missing author 10: Harald Haas",
+   "missing author 11: John S. Thompson",
+   "missing author 12: Erik G. Larsson",
+   "missing author 13: Marco Di Renzo",
+   "missing author 14: Wen Tong",
+   "missing author 15: Peiying Zhu",
+   "missing author 16: Xuemin Shen",
+   "missing author 17: H. Vincent Poor",
+   "missing author 18: Lajos Hanzo"
+  ]
+ },
+ {
+  "key": "scalingi2024detran",
+  "bibtype": "inproceedings",
+  "title": "Det-RAN: Data-Driven Cross-Layer Real-Time Attack Detection in 5G Open RANs",
+  "year": "2024",
+  "doi": "10.1109/INFOCOM52122.2024.10621223",
+  "venue": "Proc. IEEE Conf. on Computer Communications (INFOCOM)",
+  "volume": null,
+  "number": null,
+  "pages": "41--50",
+  "bib_authors": [
+   [
+    "Scalingi",
+    "Alessio"
+   ],
+   [
+    "D'Oro",
+    "Salvatore"
+   ],
+   [
+    "Restuccia",
+    "Francesco"
+   ],
+   [
+    "Melodia",
+    "Tommaso"
+   ],
+   [
+    "Giustiniano",
+    "Domenico"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/10621223/"
+  ],
+  "crossref": {
+   "title": "Det-RAN: Data-Driven Cross-Layer Real-Time Attack Detection in 5G Open RANs",
+   "subtitle": "",
+   "authors": [
+    [
+     "Scalingi",
+     "Alessio"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Restuccia",
+     "Francesco"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ],
+    [
+     "Giustiniano",
+     "Domenico"
+    ]
+   ],
+   "container": "IEEE INFOCOM 2024 - IEEE Conference on Computer Communications",
+   "type": "proceedings-article",
+   "year": 2024,
+   "volume": null,
+   "issue": null,
+   "page": "41-50",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Det-RAN: Data-Driven Cross-Layer Real-Time Attack Detection in 5G Open RANs",
+   "year": 2024,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/infocom52122.2024.10621223",
+   "authors": [
+    [
+     "Scalingi",
+     "Alessio"
+    ],
+    [
+     "D’Oro",
+     "Salvatore"
+    ],
+    [
+     "Restuccia",
+     "Francesco"
+    ],
+    [
+     "Melodia",
+     "Tommaso"
+    ],
+    [
+     "Giustiniano",
+     "Domenico"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "pendlebury2019tesseract",
+  "bibtype": "inproceedings",
+  "title": "TESSERACT: Eliminating Experimental Bias in Malware Classification across Space and Time",
+  "year": "2019",
+  "doi": null,
+  "venue": "Proc. 28th USENIX Security Symposium",
+  "volume": null,
+  "number": null,
+  "pages": "729--746",
+  "bib_authors": [
+   [
+    "Pendlebury",
+    "Feargus"
+   ],
+   [
+    "Pierazzi",
+    "Fabio"
+   ],
+   [
+    "Jordaney",
+    "Roberto"
+   ],
+   [
+    "Kinder",
+    "Johannes"
+   ],
+   [
+    "Cavallaro",
+    "Lorenzo"
+   ]
+  ],
+  "openalex": {
+   "title": "TESSERACT: Eliminating Experimental Bias in Malware Classification across Space and Time",
+   "year": 2018,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.1807.07838",
+   "authors": [
+    [
+     "Feargus",
+     "Pendlebury,"
+    ],
+    [
+     "Fabio",
+     "Pierazzi,"
+    ],
+    [
+     "Roberto",
+     "Jordaney,"
+    ],
+    [
+     "Johannes",
+     "Kinder,"
+    ],
+    [
+     "Lorenzo",
+     "Cavallaro,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Feargus Pendlebury' vs record 'Pendlebury, Feargus'",
+   "name form 2: bib 'Fabio Pierazzi' vs record 'Pierazzi, Fabio'",
+   "name form 3: bib 'Roberto Jordaney' vs record 'Jordaney, Roberto'",
+   "name form 4: bib 'Johannes Kinder' vs record 'Kinder, Johannes'",
+   "name form 5: bib 'Lorenzo Cavallaro' vs record 'Cavallaro, Lorenzo'"
+  ]
+ },
+ {
+  "key": "kapoor2023leakage",
+  "bibtype": "article",
+  "title": "Leakage and the Reproducibility Crisis in Machine-Learning-Based Science",
+  "year": "2023",
+  "doi": "10.1016/j.patter.2023.100804",
+  "venue": "Patterns",
+  "volume": "4",
+  "number": "9",
+  "pages": "100804",
+  "bib_authors": [
+   [
+    "Kapoor",
+    "Sayash"
+   ],
+   [
+    "Narayanan",
+    "Arvind"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S2666389923001599"
+  ],
+  "crossref": {
+   "title": "Leakage and the reproducibility crisis in machine-learning-based science",
+   "subtitle": "",
+   "authors": [
+    [
+     "Kapoor",
+     "Sayash"
+    ],
+    [
+     "Narayanan",
+     "Arvind"
+    ]
+   ],
+   "container": "Patterns",
+   "type": "journal-article",
+   "year": 2023,
+   "volume": "4",
+   "issue": "9",
+   "page": "100804",
+   "article": "100804",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Leakage and the reproducibility crisis in machine-learning-based science",
+   "year": 2023,
+   "type": "article",
+   "venue": "Patterns",
+   "doi": "10.1016/j.patter.2023.100804",
+   "authors": [
+    [
+     "Kapoor",
+     "Sayash"
+    ],
+    [
+     "Narayanan",
+     "Arvind"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "saerens2002adjusting",
+  "bibtype": "article",
+  "title": "Adjusting the Outputs of a Classifier to New a Priori Probabilities: A Simple Procedure",
+  "year": "2002",
+  "doi": "10.1162/089976602753284446",
+  "venue": "Neural Computation",
+  "volume": "14",
+  "number": "1",
+  "pages": "21--41",
+  "bib_authors": [
+   [
+    "Saerens",
+    "Marco"
+   ],
+   [
+    "Latinne",
+    "Patrice"
+   ],
+   [
+    "Decaestecker",
+    "Christine"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://direct.mit.edu/neco/article/14/1/21-41/6577"
+  ],
+  "crossref": {
+   "title": "Adjusting the Outputs of a Classifier to New a\n                    <i>Priori</i>\n                    Probabilities: A Simple Procedure",
+   "subtitle": "",
+   "authors": [
+    [
+     "Saerens",
+     "Marco"
+    ],
+    [
+     "Latinne",
+     "Patrice"
+    ],
+    [
+     "Decaestecker",
+     "Christine"
+    ]
+   ],
+   "container": "Neural Computation",
+   "type": "journal-article",
+   "year": 2002,
+   "volume": "14",
+   "issue": "1",
+   "page": "21-41",
+   "article": null,
+   "publisher": "MIT Press"
+  },
+  "openalex": {
+   "title": "Adjusting the Outputs of a Classifier to New a Priori Probabilities: A Simple Procedure",
+   "year": 2002,
+   "type": "article",
+   "venue": "Neural Computation",
+   "doi": "10.1162/089976602753284446",
+   "authors": [
+    [
+     "Saerens",
+     "Marco"
+    ],
+    [
+     "Latinne",
+     "Patrice"
+    ],
+    [
+     "Decaestecker",
+     "Christine"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "lipton2018bbse",
+  "bibtype": "inproceedings",
+  "title": "Detecting and Correcting for Label Shift with Black Box Predictors",
+  "year": "2018",
+  "doi": null,
+  "venue": "Proc. 35th Int. Conf. on Machine Learning (ICML)",
+  "volume": null,
+  "number": null,
+  "pages": "3122--3130",
+  "bib_authors": [
+   [
+    "Lipton",
+    "Zachary C."
+   ],
+   [
+    "Wang",
+    "Yu-Xiang"
+   ],
+   [
+    "Smola",
+    "Alexander J."
+   ]
+  ],
+  "openalex": {
+   "title": "Detecting and Correcting for Label Shift with Black Box Predictors",
+   "year": 2018,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.1802.03916",
+   "authors": [
+    [
+     "C.",
+     "Lipton, Zachary"
+    ],
+    [
+     "Yu-Xiang",
+     "Wang,"
+    ],
+    [
+     "Alex",
+     "Smola,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Zachary C. Lipton' vs record 'Lipton, Zachary C.'",
+   "name form 2: bib 'Yu-Xiang Wang' vs record 'Wang, Yu-Xiang'",
+   "name form 3: bib 'Alexander J. Smola' vs record 'Smola, Alex'"
+  ]
+ },
+ {
+  "key": "nadeau2003inference",
+  "bibtype": "article",
+  "title": "Inference for the Generalization Error",
+  "year": "2003",
+  "doi": "10.1023/A:1024068626366",
+  "venue": "Machine Learning",
+  "volume": "52",
+  "number": "3",
+  "pages": "239--281",
+  "bib_authors": [
+   [
+    "Nadeau",
+    "Claude"
+   ],
+   [
+    "Bengio",
+    "Yoshua"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://link.springer.com/10.1023/A:1024068626366"
+  ],
+  "crossref": {
+   "title": "Inference for the Generalization Error",
+   "subtitle": "",
+   "authors": [
+    [
+     "Nadeau",
+     "Claude"
+    ],
+    [
+     "Bengio",
+     "Yoshua"
+    ]
+   ],
+   "container": "Machine Learning",
+   "type": "journal-article",
+   "year": 2003,
+   "volume": "52",
+   "issue": "3",
+   "page": "239-281",
+   "article": null,
+   "publisher": "Springer Science and Business Media LLC"
+  },
+  "openalex": {
+   "title": "Inference for the Generalization Error",
+   "year": 2003,
+   "type": "article",
+   "venue": "Machine Learning",
+   "doi": "10.1023/a:1024068626366",
+   "authors": [
+    [
+     "Nadeau",
+     "Claude"
+    ],
+    [
+     "Bengio",
+     "Yoshua"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "fawcett2007pav",
+  "bibtype": "article",
+  "title": "PAV and the ROC Convex Hull",
+  "year": "2007",
+  "doi": "10.1007/s10994-007-5011-0",
+  "venue": "Machine Learning",
+  "volume": "68",
+  "number": "1",
+  "pages": "97--106",
+  "bib_authors": [
+   [
+    "Fawcett",
+    "Tom"
+   ],
+   [
+    "Niculescu-Mizil",
+    "Alexandru"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://link.springer.com/10.1007/s10994-007-5011-0"
+  ],
+  "crossref": {
+   "title": "PAV and the ROC convex hull",
+   "subtitle": "",
+   "authors": [
+    [
+     "Fawcett",
+     "Tom"
+    ],
+    [
+     "Niculescu-Mizil",
+     "Alexandru"
+    ]
+   ],
+   "container": "Machine Learning",
+   "type": "journal-article",
+   "year": 2007,
+   "volume": "68",
+   "issue": "1",
+   "page": "97-106",
+   "article": null,
+   "publisher": "Springer Science and Business Media LLC"
+  },
+  "openalex": {
+   "title": "PAV and the ROC convex hull",
+   "year": 2007,
+   "type": "article",
+   "venue": "Machine Learning",
+   "doi": "10.1007/s10994-007-5011-0",
+   "authors": [
+    [
+     "Fawcett",
+     "Tom"
+    ],
+    [
+     "Niculescu-Mizil",
+     "Alexandru"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "ovadia2019trust",
+  "bibtype": "inproceedings",
+  "title": "Can You Trust Your Model's Uncertainty? Evaluating Predictive Uncertainty under Dataset Shift",
+  "year": "2019",
+  "doi": null,
+  "venue": "Advances in Neural Information Processing Systems 32 (NeurIPS)",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Ovadia",
+    "Yaniv"
+   ],
+   [
+    "Fertig",
+    "Emily"
+   ],
+   [
+    "Ren",
+    "Jie"
+   ],
+   [
+    "Nado",
+    "Zachary"
+   ],
+   [
+    "Sculley",
+    "D."
+   ],
+   [
+    "Nowozin",
+    "Sebastian"
+   ],
+   [
+    "Dillon",
+    "Joshua V."
+   ],
+   [
+    "Lakshminarayanan",
+    "Balaji"
+   ],
+   [
+    "Snoek",
+    "Jasper"
+   ]
+  ],
+  "openalex": {
+   "title": "A survey of uncertainty in deep neural networks",
+   "year": 2023,
+   "type": "article",
+   "venue": "Artificial Intelligence Review",
+   "doi": "10.1007/s10462-023-10562-9",
+   "authors": [
+    [
+     "Gawlikowski",
+     "Jakob"
+    ],
+    [
+     "Tassi",
+     "Cedrique Rovile Njieutcheu"
+    ],
+    [
+     "Ali",
+     "Mohsin"
+    ],
+    [
+     "Lee",
+     "Jongseok"
+    ],
+    [
+     "Humt",
+     "Matthias"
+    ],
+    [
+     "Feng",
+     "Jianxiang"
+    ],
+    [
+     "Kruspe",
+     "Anna"
+    ],
+    [
+     "Triebel",
+     "Rudolph"
+    ],
+    [
+     "Jung",
+     "Peter"
+    ],
+    [
+     "Roscher",
+     "Ribana"
+    ],
+    [
+     "Shahzad",
+     "Muhammad"
+    ],
+    [
+     "Yang",
+     "Wen"
+    ],
+    [
+     "Bamler",
+     "Richard"
+    ],
+    [
+     "Zhu",
+     "Xiao Xiang"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "MISMATCH 1: bib 'Yaniv Ovadia' vs record 'Jakob Gawlikowski'",
+   "MISMATCH 2: bib 'Emily Fertig' vs record 'Cedrique Rovile Njieutcheu Tassi'",
+   "MISMATCH 3: bib 'Jie Ren' vs record 'Mohsin Ali'",
+   "MISMATCH 4: bib 'Zachary Nado' vs record 'Jongseok Lee'",
+   "MISMATCH 5: bib 'D. Sculley' vs record 'Matthias Humt'",
+   "MISMATCH 6: bib 'Sebastian Nowozin' vs record 'Jianxiang Feng'",
+   "MISMATCH 7: bib 'Joshua V. Dillon' vs record 'Anna Kruspe'",
+   "MISMATCH 8: bib 'Balaji Lakshminarayanan' vs record 'Rudolph Triebel'",
+   "MISMATCH 9: bib 'Jasper Snoek' vs record 'Peter Jung'",
+   "missing author 10: Ribana Roscher",
+   "missing author 11: Muhammad Shahzad",
+   "missing author 12: Wen Yang",
+   "missing author 13: Richard Bamler",
+   "missing author 14: Xiao Xiang Zhu"
+  ]
+ },
+ {
+  "key": "rabanser2019failing",
+  "bibtype": "inproceedings",
+  "title": "Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift",
+  "year": "2019",
+  "doi": null,
+  "venue": "Advances in Neural Information Processing Systems 32 (NeurIPS)",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Rabanser",
+    "Stephan"
+   ],
+   [
+    "Gunnemann",
+    "Stephan"
+   ],
+   [
+    "Lipton",
+    "Zachary C."
+   ]
+  ],
+  "openalex": {
+   "title": "Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift",
+   "year": 2018,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.1810.11953",
+   "authors": [
+    [
+     "Stephan",
+     "Rabanser,"
+    ],
+    [
+     "Stephan",
+     "Günnemann,"
+    ],
+    [
+     "C.",
+     "Lipton, Zachary"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Stephan Rabanser' vs record 'Rabanser, Stephan'",
+   "name form 2: bib 'Stephan Gunnemann' vs record 'Günnemann, Stephan'",
+   "name form 3: bib 'Zachary C. Lipton' vs record 'Lipton, Zachary C.'"
+  ]
+ },
+ {
+  "key": "sun2016coral",
+  "bibtype": "inproceedings",
+  "title": "Return of Frustratingly Easy Domain Adaptation",
+  "year": "2016",
+  "doi": "10.1609/aaai.v30i1.10306",
+  "venue": "Proc. 30th AAAI Conf. on Artificial Intelligence",
+  "volume": null,
+  "number": null,
+  "pages": "2058--2065",
+  "bib_authors": [
+   [
+    "Sun",
+    "Baochen"
+   ],
+   [
+    "Feng",
+    "Jiashi"
+   ],
+   [
+    "Saenko",
+    "Kate"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ojs.aaai.org/index.php/AAAI/article/view/10306"
+  ],
+  "crossref": {
+   "title": "Return of Frustratingly Easy Domain Adaptation",
+   "subtitle": "",
+   "authors": [
+    [
+     "Sun",
+     "Baochen"
+    ],
+    [
+     "Feng",
+     "Jiashi"
+    ],
+    [
+     "Saenko",
+     "Kate"
+    ]
+   ],
+   "container": "Proceedings of the AAAI Conference on Artificial Intelligence",
+   "type": "journal-article",
+   "year": 2016,
+   "volume": "30",
+   "issue": "1",
+   "page": null,
+   "article": null,
+   "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)"
+  },
+  "openalex": {
+   "title": "Return of Frustratingly Easy Domain Adaptation",
+   "year": 2016,
+   "type": "conference-paper",
+   "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+   "doi": "10.1609/aaai.v30i1.10306",
+   "authors": [
+    [
+     "Sun",
+     "Baochen"
+    ],
+    [
+     "Feng",
+     "Jiashi"
+    ],
+    [
+     "Saenko",
+     "Kate"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "guo2017calibration",
+  "bibtype": "inproceedings",
+  "title": "On Calibration of Modern Neural Networks",
+  "year": "2017",
+  "doi": null,
+  "venue": "Proc. 34th Int. Conf. on Machine Learning (ICML)",
+  "volume": null,
+  "number": null,
+  "pages": "1321--1330",
+  "bib_authors": [
+   [
+    "Guo",
+    "Chuan"
+   ],
+   [
+    "Pleiss",
+    "Geoff"
+   ],
+   [
+    "Sun",
+    "Yu"
+   ],
+   [
+    "Weinberger",
+    "Kilian Q."
+   ]
+  ],
+  "openalex": {
+   "title": "On Calibration of Modern Neural Networks",
+   "year": 2017,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.1706.04599",
+   "authors": [
+    [
+     "Chuan",
+     "Guo,"
+    ],
+    [
+     "Geoff",
+     "Pleiss,"
+    ],
+    [
+     "Yu",
+     "Sun,"
+    ],
+    [
+     "Q.",
+     "Weinberger, Kilian"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Chuan Guo' vs record 'Guo, Chuan'",
+   "name form 2: bib 'Geoff Pleiss' vs record 'Pleiss, Geoff'",
+   "name form 3: bib 'Yu Sun' vs record 'Sun, Yu'",
+   "name form 4: bib 'Kilian Q. Weinberger' vs record 'Weinberger, Kilian Q.'"
+  ]
+ },
+ {
+  "key": "cho2014gru",
+  "bibtype": "inproceedings",
+  "title": "Learning Phrase Representations using RNN Encoder--Decoder for Statistical Machine Translation",
+  "year": "2014",
+  "doi": "10.3115/v1/D14-1179",
+  "venue": "Proc. Conf. on Empirical Methods in Natural Language Processing (EMNLP)",
+  "volume": null,
+  "number": null,
+  "pages": "1724--1734",
+  "bib_authors": [
+   [
+    "Cho",
+    "Kyunghyun"
+   ],
+   [
+    "van Merrienboer",
+    "Bart"
+   ],
+   [
+    "Gulcehre",
+    "Caglar"
+   ],
+   [
+    "Bahdanau",
+    "Dzmitry"
+   ],
+   [
+    "Bougares",
+    "Fethi"
+   ],
+   [
+    "Schwenk",
+    "Holger"
+   ],
+   [
+    "Bengio",
+    "Yoshua"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "http://aclweb.org/anthology/D14-1179"
+  ],
+  "crossref": {
+   "title": "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation",
+   "subtitle": "",
+   "authors": [
+    [
+     "Cho",
+     "Kyunghyun"
+    ],
+    [
+     "van Merrienboer",
+     "Bart"
+    ],
+    [
+     "Gulcehre",
+     "Caglar"
+    ],
+    [
+     "Bahdanau",
+     "Dzmitry"
+    ],
+    [
+     "Bougares",
+     "Fethi"
+    ],
+    [
+     "Schwenk",
+     "Holger"
+    ],
+    [
+     "Bengio",
+     "Yoshua"
+    ]
+   ],
+   "container": "Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+   "type": "proceedings-article",
+   "year": 2014,
+   "volume": null,
+   "issue": null,
+   "page": "1724-1734",
+   "article": null,
+   "publisher": "Association for Computational Linguistics"
+  },
+  "openalex": {
+   "title": "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation",
+   "year": 2014,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.3115/v1/d14-1179",
+   "authors": [
+    [
+     "Cho",
+     "Kyunghyun"
+    ],
+    [
+     "Merrienboer",
+     "Bart van"
+    ],
+    [
+     "Gulcehre",
+     "Caglar"
+    ],
+    [
+     "Bahdanau",
+     "Dzmitry"
+    ],
+    [
+     "Bougares",
+     "Fethi"
+    ],
+    [
+     "Schwenk",
+     "Holger"
+    ],
+    [
+     "Bengio",
+     "Yoshua"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": [
+   "name form 2: bib 'Bart van Merrienboer' vs record 'Bart van Merrienboer'"
+  ]
+ },
+ {
+  "key": "samarakoon2022niddarxiv",
+  "bibtype": "misc",
+  "title": "5G-NIDD: A Comprehensive Network Intrusion Detection Dataset Generated over 5G Wireless Network",
+  "year": "2022",
+  "doi": null,
+  "venue": "arXiv:2212.01298",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Samarakoon",
+    "Sehan"
+   ],
+   [
+    "Siriwardhana",
+    "Yushan"
+   ],
+   [
+    "Porambage",
+    "Pawani"
+   ],
+   [
+    "Liyanage",
+    "Madhusanka"
+   ],
+   [
+    "Chang",
+    "Sang-Yoon"
+   ],
+   [
+    "Kim",
+    "Jinoh"
+   ],
+   [
+    "Kim",
+    "Jonghyun"
+   ],
+   [
+    "Ylianttila",
+    "Mika"
+   ]
+  ],
+  "openalex": {
+   "title": "5G-NIDD: A Comprehensive Network Intrusion Detection Dataset Generated over 5G Wireless Network",
+   "year": 2022,
+   "type": "preprint",
+   "venue": "arXiv (Cornell University)",
+   "doi": "10.48550/arxiv.2212.01298",
+   "authors": [
+    [
+     "Sehan",
+     "Samarakoon,"
+    ],
+    [
+     "Yushan",
+     "Siriwardhana,"
+    ],
+    [
+     "Pawani",
+     "Porambage,"
+    ],
+    [
+     "Madhusanka",
+     "Liyanage,"
+    ],
+    [
+     "Sang-Yoon",
+     "Chang,"
+    ],
+    [
+     "Jinoh",
+     "Kim,"
+    ],
+    [
+     "Jonghyun",
+     "Kim,"
+    ],
+    [
+     "Mika",
+     "Ylianttila,"
+    ]
+   ]
+  },
+  "author_issues_openalex": [
+   "name form 1: bib 'Sehan Samarakoon' vs record 'Samarakoon, Sehan'",
+   "name form 2: bib 'Yushan Siriwardhana' vs record 'Siriwardhana, Yushan'",
+   "name form 3: bib 'Pawani Porambage' vs record 'Porambage, Pawani'",
+   "name form 4: bib 'Madhusanka Liyanage' vs record 'Liyanage, Madhusanka'",
+   "name form 5: bib 'Sang-Yoon Chang' vs record 'Chang, Sang-Yoon'",
+   "name form 6: bib 'Jinoh Kim' vs record 'Kim, Jinoh'",
+   "name form 7: bib 'Jonghyun Kim' vs record 'Kim, Jonghyun'",
+   "name form 8: bib 'Mika Ylianttila' vs record 'Ylianttila, Mika'"
+  ]
+ },
+ {
+  "key": "ilias2024moe5g",
+  "bibtype": "misc",
+  "title": "Convolutional Neural Networks and Mixture of Experts for Intrusion Detection in 5G Networks and beyond",
+  "year": "2024",
+  "doi": null,
+  "venue": "arXiv:2412.03483",
+  "volume": null,
+  "number": null,
+  "pages": null,
+  "bib_authors": [
+   [
+    "Ilias",
+    "Loukas"
+   ],
+   [
+    "Doukas",
+    "George"
+   ],
+   [
+    "Lamprou",
+    "Vangelis"
+   ],
+   [
+    "Ntanos",
+    "Christos"
+   ],
+   [
+    "Askounis",
+    "Dimitris"
+   ]
+  ],
+  "openalex": {
+   "title": "Convolutional neural networks and mixture of experts for intrusion detection in 5G networks and beyond",
+   "year": 2026,
+   "type": "article",
+   "venue": "Frontiers in Artificial Intelligence",
+   "doi": "10.3389/frai.2025.1708953",
+   "authors": [
+    [
+     "Ilias",
+     "Loukas"
+    ],
+    [
+     "Doukas",
+     "George"
+    ],
+    [
+     "Lamprou",
+     "Vangelis"
+    ],
+    [
+     "Ntanos",
+     "Christos"
+    ],
+    [
+     "Askounis",
+     "Dimitris"
+    ]
+   ]
+  },
+  "author_issues_openalex": []
+ },
+ {
+  "key": "dhooge2020interdataset",
+  "bibtype": "article",
+  "title": "Inter-Dataset Generalization Strength of Supervised Machine Learning Methods for Intrusion Detection",
+  "year": "2020",
+  "doi": "10.1016/j.jisa.2020.102564",
+  "venue": "Journal of Information Security and Applications",
+  "volume": "54",
+  "number": null,
+  "pages": "102564",
+  "bib_authors": [
+   [
+    "D'hooge",
+    "Laurens"
+   ],
+   [
+    "Wauters",
+    "Tim"
+   ],
+   [
+    "Volckaert",
+    "Bruno"
+   ],
+   [
+    "De Turck",
+    "Filip"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://linkinghub.elsevier.com/retrieve/pii/S2214212619310415"
+  ],
+  "crossref": {
+   "title": "Inter-dataset generalization strength of supervised machine learning methods for intrusion detection",
+   "subtitle": "",
+   "authors": [
+    [
+     "D’hooge",
+     "Laurens"
+    ],
+    [
+     "Wauters",
+     "Tim"
+    ],
+    [
+     "Volckaert",
+     "Bruno"
+    ],
+    [
+     "De Turck",
+     "Filip"
+    ]
+   ],
+   "container": "Journal of Information Security and Applications",
+   "type": "journal-article",
+   "year": 2020,
+   "volume": "54",
+   "issue": null,
+   "page": "102564",
+   "article": "102564",
+   "publisher": "Elsevier BV"
+  },
+  "openalex": {
+   "title": "Inter-dataset generalization strength of supervised machine learning methods for intrusion detection",
+   "year": 2020,
+   "type": "article",
+   "venue": "Journal of Information Security and Applications",
+   "doi": "10.1016/j.jisa.2020.102564",
+   "authors": [
+    [
+     "D’hooge",
+     "Laurens"
+    ],
+    [
+     "Wauters",
+     "Tim"
+    ],
+    [
+     "Volckaert",
+     "Bruno"
+    ],
+    [
+     "Turck",
+     "Filip De"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": [
+   "name form 4: bib 'Filip De Turck' vs record 'Filip De Turck'"
+  ]
+ },
+ {
+  "key": "engelen2021troubleshooting",
+  "bibtype": "inproceedings",
+  "title": "Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study",
+  "year": "2021",
+  "doi": "10.1109/SPW53761.2021.00009",
+  "venue": "Proc. IEEE Security and Privacy Workshops (SPW)",
+  "volume": null,
+  "number": null,
+  "pages": "7--12",
+  "bib_authors": [
+   [
+    "Engelen",
+    "Gints"
+   ],
+   [
+    "Rimmer",
+    "Vera"
+   ],
+   [
+    "Joosen",
+    "Wouter"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/9474286/"
+  ],
+  "crossref": {
+   "title": "Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study",
+   "subtitle": "",
+   "authors": [
+    [
+     "Engelen",
+     "Gints"
+    ],
+    [
+     "Rimmer",
+     "Vera"
+    ],
+    [
+     "Joosen",
+     "Wouter"
+    ]
+   ],
+   "container": "2021 IEEE Security and Privacy Workshops (SPW)",
+   "type": "proceedings-article",
+   "year": 2021,
+   "volume": null,
+   "issue": null,
+   "page": "7-12",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study",
+   "year": 2021,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/spw53761.2021.00009",
+   "authors": [
+    [
+     "Engelen",
+     "Gints"
+    ],
+    [
+     "Rimmer",
+     "Vera"
+    ],
+    [
+     "Joosen",
+     "Wouter"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "flood2024smells",
+  "bibtype": "inproceedings",
+  "title": "Bad Design Smells in Benchmark NIDS Datasets",
+  "year": "2024",
+  "doi": "10.1109/EuroSP60621.2024.00042",
+  "venue": "Proc. IEEE European Symposium on Security and Privacy (EuroS\\&P)",
+  "volume": null,
+  "number": null,
+  "pages": "658--675",
+  "bib_authors": [
+   [
+    "Flood",
+    "Robert"
+   ],
+   [
+    "Engelen",
+    "Gints"
+   ],
+   [
+    "Aspinall",
+    "David"
+   ],
+   [
+    "Desmet",
+    "Lieven"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/10629000/"
+  ],
+  "crossref": {
+   "title": "Bad Design Smells in Benchmark NIDS Datasets",
+   "subtitle": "",
+   "authors": [
+    [
+     "Flood",
+     "Robert"
+    ],
+    [
+     "Engelen",
+     "Gints"
+    ],
+    [
+     "Aspinall",
+     "David"
+    ],
+    [
+     "Desmet",
+     "Lieven"
+    ]
+   ],
+   "container": "2024 IEEE 9th European Symposium on Security and Privacy (EuroS&amp;amp;P)",
+   "type": "proceedings-article",
+   "year": 2024,
+   "volume": null,
+   "issue": null,
+   "page": "658-675",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "Bad Design Smells in Benchmark NIDS Datasets",
+   "year": 2024,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/eurosp60621.2024.00042",
+   "authors": [
+    [
+     "Flood",
+     "Robert"
+    ],
+    [
+     "Engelen",
+     "Gints"
+    ],
+    [
+     "Aspinall",
+     "David"
+    ],
+    [
+     "Desmet",
+     "Lieven"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "kus2022falsesense",
+  "bibtype": "inproceedings",
+  "title": "A False Sense of Security? Revisiting the State of Machine Learning-Based Industrial Intrusion Detection",
+  "year": "2022",
+  "doi": "10.1145/3494107.3522773",
+  "venue": "Proc. ACM Cyber-Physical System Security Workshop (CPSS)",
+  "volume": null,
+  "number": null,
+  "pages": "73--84",
+  "bib_authors": [
+   [
+    "Kus",
+    "Dominik"
+   ],
+   [
+    "Wagner",
+    "Eric"
+   ],
+   [
+    "Pennekamp",
+    "Jan"
+   ],
+   [
+    "Wolsing",
+    "Konrad"
+   ],
+   [
+    "Fink",
+    "Ina Berenice"
+   ],
+   [
+    "Dahlmanns",
+    "Markus"
+   ],
+   [
+    "Wehrle",
+    "Klaus"
+   ],
+   [
+    "Henze",
+    "Martin"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/3494107.3522773"
+  ],
+  "crossref": {
+   "title": "A False Sense of Security?",
+   "subtitle": "Revisiting the State of Machine Learning-Based Industrial Intrusion Detection",
+   "authors": [
+    [
+     "Kus",
+     "Dominik"
+    ],
+    [
+     "Wagner",
+     "Eric"
+    ],
+    [
+     "Pennekamp",
+     "Jan"
+    ],
+    [
+     "Wolsing",
+     "Konrad"
+    ],
+    [
+     "Fink",
+     "Ina Berenice"
+    ],
+    [
+     "Dahlmanns",
+     "Markus"
+    ],
+    [
+     "Wehrle",
+     "Klaus"
+    ],
+    [
+     "Henze",
+     "Martin"
+    ]
+   ],
+   "container": "Proceedings of the 8th ACM on Cyber-Physical System Security Workshop",
+   "type": "proceedings-article",
+   "year": 2022,
+   "volume": null,
+   "issue": null,
+   "page": "73-84",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "A False Sense of Security?",
+   "year": 2022,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/3494107.3522773",
+   "authors": [
+    [
+     "Kus",
+     "Dominik"
+    ],
+    [
+     "Wagner",
+     "Eric"
+    ],
+    [
+     "Pennekamp",
+     "Jan"
+    ],
+    [
+     "Wolsing",
+     "Konrad"
+    ],
+    [
+     "Fink",
+     "Ina Berenice"
+    ],
+    [
+     "Dahlmanns",
+     "Markus"
+    ],
+    [
+     "Wehrle",
+     "Klaus"
+    ],
+    [
+     "Henze",
+     "Martin"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "nugraha2025fivegdatasets",
+  "bibtype": "inproceedings",
+  "title": "A Comprehensive 5G Dataset for Control and Data Plane Security and Resource Management",
+  "year": "2025",
+  "doi": "10.1109/CSR64739.2025.11130023",
+  "venue": "Proc. IEEE International Conference on Cyber Security and Resilience (CSR)",
+  "volume": null,
+  "number": null,
+  "pages": "326--333",
+  "bib_authors": [
+   [
+    "Nugraha",
+    "Beny"
+   ],
+   [
+    "Hajizadeh",
+    "Mehrdad"
+   ],
+   [
+    "Niehoff",
+    "Tim"
+   ],
+   [
+    "Jnanashree",
+    "Abhishek Venkatesh"
+   ],
+   [
+    "Phan",
+    "Trung V."
+   ],
+   [
+    "Triantafyllopoulou",
+    "Dionysia"
+   ],
+   [
+    "Krause",
+    "Oliver"
+   ],
+   [
+    "Mieth",
+    "Martin"
+   ],
+   [
+    "Moessner",
+    "Klaus"
+   ],
+   [
+    "Bauschert",
+    "Thomas"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://ieeexplore.ieee.org/document/11130023/"
+  ],
+  "crossref": {
+   "title": "A Comprehensive 5G Dataset for Control and Data Plane Security and Resource Management",
+   "subtitle": "",
+   "authors": [
+    [
+     "Nugraha",
+     "Beny"
+    ],
+    [
+     "Hajizadeh",
+     "Mehrdad"
+    ],
+    [
+     "Niehoff",
+     "Tim"
+    ],
+    [
+     "Jnanashree",
+     "Abhishek Venkatesh"
+    ],
+    [
+     "Phan",
+     "Trung V."
+    ],
+    [
+     "Triantafyllopoulou",
+     "Dionysia"
+    ],
+    [
+     "Krause",
+     "Oliver"
+    ],
+    [
+     "Mieth",
+     "Martin"
+    ],
+    [
+     "Moessner",
+     "Klaus"
+    ],
+    [
+     "Bauschert",
+     "Thomas"
+    ]
+   ],
+   "container": "2025 IEEE International Conference on Cyber Security and Resilience (CSR)",
+   "type": "proceedings-article",
+   "year": 2025,
+   "volume": null,
+   "issue": null,
+   "page": "326-333",
+   "article": null,
+   "publisher": "IEEE"
+  },
+  "openalex": {
+   "title": "A Comprehensive 5G Dataset for Control and Data Plane Security and Resource Management",
+   "year": 2025,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1109/csr64739.2025.11130023",
+   "authors": [
+    [
+     "Nugraha",
+     "Beny"
+    ],
+    [
+     "Hajizadeh",
+     "Mehrdad"
+    ],
+    [
+     "Niehoff",
+     "Tim"
+    ],
+    [
+     "Jnanashree",
+     "Abhishek Venkatesh"
+    ],
+    [
+     "Phan",
+     "Trung V."
+    ],
+    [
+     "Triantafyllopoulou",
+     "Dionysia"
+    ],
+    [
+     "Krause",
+     "Oliver"
+    ],
+    [
+     "Mieth",
+     "Martin"
+    ],
+    [
+     "Moessner",
+     "Klaus"
+    ],
+    [
+     "Bauschert",
+     "Thomas"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ },
+ {
+  "key": "jin2013softcell",
+  "bibtype": "inproceedings",
+  "title": "SoftCell: Scalable and Flexible Cellular Core Network Architecture",
+  "year": "2013",
+  "doi": "10.1145/2535372.2535377",
+  "venue": "Proc. 9th ACM Conf. on Emerging Networking Experiments and Technologies (CoNEXT)",
+  "volume": null,
+  "number": null,
+  "pages": "163--174",
+  "bib_authors": [
+   [
+    "Jin",
+    "Xin"
+   ],
+   [
+    "Li",
+    "Li Erran"
+   ],
+   [
+    "Vanbever",
+    "Laurent"
+   ],
+   [
+    "Rexford",
+    "Jennifer"
+   ]
+  ],
+  "doi_org": [
+   302,
+   "https://dl.acm.org/doi/10.1145/2535372.2535377"
+  ],
+  "crossref": {
+   "title": "SoftCell",
+   "subtitle": "scalable and flexible cellular core network architecture",
+   "authors": [
+    [
+     "Jin",
+     "Xin"
+    ],
+    [
+     "Li",
+     "Li Erran"
+    ],
+    [
+     "Vanbever",
+     "Laurent"
+    ],
+    [
+     "Rexford",
+     "Jennifer"
+    ]
+   ],
+   "container": "Proceedings of the ninth ACM conference on Emerging networking experiments and technologies",
+   "type": "proceedings-article",
+   "year": 2013,
+   "volume": null,
+   "issue": null,
+   "page": "163-174",
+   "article": null,
+   "publisher": "ACM"
+  },
+  "openalex": {
+   "title": "SoftCell",
+   "year": 2013,
+   "type": "conference-paper",
+   "venue": null,
+   "doi": "10.1145/2535372.2535377",
+   "authors": [
+    [
+     "Jin",
+     "Xin"
+    ],
+    [
+     "Li",
+     "Li Erran"
+    ],
+    [
+     "Vanbever",
+     "Laurent"
+    ],
+    [
+     "Rexford",
+     "Jennifer"
+    ]
+   ]
+  },
+  "author_issues_crossref": [],
+  "author_issues_openalex": []
+ }
+]

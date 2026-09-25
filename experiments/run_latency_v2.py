@@ -34,6 +34,9 @@ This experiment fixes each, on the SAME host, and adds a compiled runtime:
 Run ALONE. Any concurrent job contaminates the tail.
 
 Usage:  python experiments/run_latency_v2.py [--calls N]
+        python experiments/run_latency_v2.py --exp EXP-060 --radio-only --keep-samples
+        (EXP-060: a repeat of the radio part that keeps every per-call time, for
+        the latency CDF; the defaults reproduce EXP-043 exactly)
 """
 from __future__ import annotations
 
@@ -69,6 +72,8 @@ MODELS = ("tree", "logreg", "xgboost", "mlp", "hgb", "rf")
 QUANTS = (50, 95, 99, 99.9)
 BUDGETS_MS = (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
 WARMUP = 1000
+SAMPLES: dict[str, np.ndarray] = {}   # filled only with --keep-samples
+KEEP = False
 
 
 def quantile_ci(x: np.ndarray, q: float, conf: float = 0.95):
@@ -94,6 +99,8 @@ def time_calls(fn, n: int) -> np.ndarray:
 
 
 def summarise(layer, model, stage, lat, note=""):
+    if KEEP:
+        SAMPLES[f"{layer}__{model}__{stage}"] = lat.astype(np.float32)
     rec = dict(layer=layer, model=model, stage=stage, n=len(lat),
                mean=float(lat.mean()), max=float(lat.max()), note=note)
     for q in QUANTS:
@@ -204,7 +211,13 @@ def layer_run(layer, Xtr, ytr, Xte, n_calls, rows, verify):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--calls", type=int, default=20_000)
+    ap.add_argument("--exp", default="EXP-043")
+    ap.add_argument("--radio-only", action="store_true")
+    ap.add_argument("--keep-samples", action="store_true")
     a = ap.parse_args()
+    global OUT, KEEP
+    OUT = ROOT / "results" / a.exp
+    KEEP = a.keep_samples
     t0 = time.time()
     for d in ("raw", "processed", "statistics", "logs"):
         (OUT / d).mkdir(parents=True, exist_ok=True)
@@ -250,20 +263,26 @@ def main() -> int:
         rows.append(summarise("radio", key, "e2e_aggregate_plus_sk_array", lat))
 
     # ---- network layer, shared space ---------------------------------------
-    src = load_network_shared()
-    Xs, ys, cs, gs = subsample(src.X, src.y, src.category, src.groups,
-                               300_000, 101)
-    sp = group_disjoint_split(ys, gs, seed=101, n_folds=1)[0]
-    Xtr, ytr, Xte = Xs.iloc[sp.train_idx], ys[sp.train_idx], Xs.iloc[sp.test_idx]
-    raw = pd.read_csv(ROOT / "data/raw/d_a/Network_Dataset.csv", nrows=1)
-    rows.append(summarise("network", "-", "shared_space_mapping",
-                          time_calls(lambda: sh.from_d_a(raw.copy()), a.calls),
-                          "one Zeek record -> 18 columns, pandas path"))
-    for _ in layer_run("network", Xtr, ytr, Xte, a.calls, rows, verify):
-        pass
+    if a.radio_only:
+        src = None
+    else:
+        src = load_network_shared()
+    if not a.radio_only:
+        Xs, ys, cs, gs = subsample(src.X, src.y, src.category, src.groups,
+                                   300_000, 101)
+        sp = group_disjoint_split(ys, gs, seed=101, n_folds=1)[0]
+        Xtr, ytr, Xte = Xs.iloc[sp.train_idx], ys[sp.train_idx], Xs.iloc[sp.test_idx]
+        raw = pd.read_csv(ROOT / "data/raw/d_a/Network_Dataset.csv", nrows=1)
+        rows.append(summarise("network", "-", "shared_space_mapping",
+                              time_calls(lambda: sh.from_d_a(raw.copy()), a.calls),
+                              "one Zeek record -> 18 columns, pandas path"))
+        for _ in layer_run("network", Xtr, ytr, Xte, a.calls, rows, verify):
+            pass
 
     R = pd.DataFrame(rows)
     R.to_csv(OUT / "raw/latency_stages.csv", index=False)
+    if KEEP:
+        np.savez_compressed(OUT / "raw/latency_samples.npz", **SAMPLES)
     pd.DataFrame(verify).to_csv(OUT / "processed/onnx_verification.csv",
                                 index=False)
     conf = []
@@ -285,12 +304,13 @@ def main() -> int:
     except Exception:
         load, cpu = None, None
     (OUT / "statistics/provenance.json").write_text(json.dumps(dict(
-        experiment="EXP-043", measurement_class="emulated (no RIC in the path)",
+        experiment=a.exp, measurement_class="emulated (no RIC in the path)",
         host=dict(cpu="13th Gen Intel(R) Core(TM) i9-13900H, 14 cores / 20 "
                       "threads", ram_gb=47.6, os=platform.platform()),
         python=platform.python_version(), sklearn=sklearn.__version__,
         xgboost=xgboost.__version__, onnxruntime=onnxruntime.__version__,
-        calls=a.calls, warmup=WARMUP, gc_enabled=True,
+        calls=a.calls, warmup=WARMUP, gc_enabled=True, radio_only=a.radio_only,
+        samples_kept=a.keep_samples,
         threads="scikit-learn RF/XGBoost set to n_jobs=1 for sk_* stages; "
                 "ONNX Runtime intra_op_num_threads=1",
         cpu_percent_after=cpu, loadavg=load, pid=os.getpid(),

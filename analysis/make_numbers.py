@@ -184,6 +184,7 @@ def main() -> int:
     put("TrMLPtgtBA", f.loc["mlp", "tgt_ba"])
     put("TrMLPtgtFone", f.loc["mlp", "tgt_f1"], "{:.3f}")
     put("TrChanceSig", str(int((f.ba_vs_chance_nb_lo > 0).sum())))
+    put("TrChanceSigHolm", str(int((f.ba_vs_chance_p_nb_holm < 0.05).sum())))
     run = pd.read_csv(RES / "EXP-041/a_to_b__shared/raw/runs.csv")
     s = run[run.domain == "source_heldout"].set_index(["model", "split_seed"])
     t = run[run.domain == "target"].set_index(["model", "split_seed"])
@@ -475,6 +476,36 @@ def main() -> int:
         pcn = pd.read_csv(RES / "EXP-058/a_to_c__shared/processed/per_category_recall.csv").iloc[0]
         put("ThNattack", num(sum(int(pcn[c + "__n"]) for c in
                                  ("syn_flood", "icmp_flood", "pfcp_deletion"))))
+
+    # ---- radio session rule vs the 42 runs of Fard et al. (EXP-059) ----------
+    sr = RES / "EXP-059/processed/session_rule.csv"
+    if sr.exists():
+        S = pd.read_csv(sr)
+        k42 = S[S.n_segments == 42]
+        put("SessRunN", "42", source="EXP-059")
+        put("SessRunGapMin", str(int(k42.gap_s.min())))
+        put("SessRunGapMax", str(int(k42.gap_s.max())))
+        put("SessRunCatPure", str(int(k42.n_category_pure.min())))
+        put("SessMultiSub", str(int(S.reference_sessions_multi_subcategory.iloc[0])))
+        put("SessNested", "yes" if bool(k42.nested_in_reference.astype(str).eq("True").all()) else "no")
+
+    # ---- latency repeat with every call kept (EXP-060) vs EXP-043 -----------
+    l60 = RES / "EXP-060/raw/latency_stages.csv"
+    if l60.exists():
+        a = pd.read_csv(RES / "EXP-043/raw/latency_stages.csv")
+        b = pd.read_csv(l60)
+        key = ["layer", "model", "stage"]
+        mm = a[a.layer == "radio"].merge(b[b.layer == "radio"], on=key, suffixes=("_a", "_b"))
+        # single-thread stages only; the n_jobs=-1 stage depends on the pool
+        mm = mm[mm.stage != "sk_array_all_threads"]
+        r50 = mm.p50_b / mm.p50_a
+        e2e = mm[mm.stage == "e2e_aggregate_plus_onnx"]
+        put("LatRepStages", str(len(mm)), source="EXP-060")
+        put("LatRepMedRatio", float(r50.median()), "{:.2f}")
+        put("LatRepMedRatioMin", float(r50.min()), "{:.2f}")
+        put("LatRepMedRatioMax", float(r50.max()), "{:.1f}")
+        put("LatRepEtoEPnnMax", float(e2e.p99_b.max()), "{:.2f}")
+        put("LatRepEtoEPnnHiMax", float(e2e.p99_hi_b.max()), "{:.2f}")
 
     # ---- in-target references on D_B (EXP-054) -----------------------------
     tr_ = P / "target_reference.csv"

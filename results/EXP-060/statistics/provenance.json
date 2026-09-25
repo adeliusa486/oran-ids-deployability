@@ -1,0 +1,27 @@
+{
+  "experiment": "EXP-060",
+  "measurement_class": "emulated (no RIC in the path)",
+  "host": {
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900H, 14 cores / 20 threads",
+    "ram_gb": 47.6,
+    "os": "Windows-10-10.0.26120-SP0"
+  },
+  "python": "3.11.9",
+  "sklearn": "1.8.0",
+  "xgboost": "3.2.0",
+  "onnxruntime": "1.30.0",
+  "calls": 20000,
+  "warmup": 1000,
+  "gc_enabled": true,
+  "radio_only": true,
+  "samples_kept": true,
+  "threads": "scikit-learn RF/XGBoost set to n_jobs=1 for sk_* stages; ONNX Runtime intra_op_num_threads=1",
+  "cpu_percent_after": 4.9,
+  "loadavg": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "pid": 12956,
+  "runtime_s": 1028.9
+}

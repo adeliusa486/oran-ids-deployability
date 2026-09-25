@@ -1,192 +1,248 @@
 % ---------------------------------------------------------------------------
-%  FIGURE 1 -- Reference O-RAN edge deployment and the closed detection loop.
+%  FIGURE 1 -- Reference O-RAN edge deployment and the detection loop.
 %
-%  Visual language from paper/figstyle.tex, which follows the reference renders
-%  in figures/source/: grey letterspaced column headers over hairline rules,
-%  numbered step badges on a vertical flow, muted sage / coral / teal accents,
-%  and callouts set on the rules they annotate.
+%  Rebuilt 2026-09-25 from figures/source/fig1_arch_raw_v2.jpg (Downloads,
+%  "O-RAN_intrusion-detection_system..._2K_20260925161711.jpg"). Layout, five
+%  numbered columns, palette (paper/figstyle.tex, fMint ... fBadge) and every
+%  pictogram come from that render; the pictograms are cut out unchanged by
+%  scripts/extract_figure1_icons.py. Every word is set in LaTeX (Helvetica),
+%  so the figure text is selectable and searchable. The render's title-less
+%  layout is kept; the caption carries the title.
 %
-%  Pictograms are the originals, extracted by scripts/extract_figure_icons.py.
-%  Every word is set in LaTeX, so the figure text is selectable and searchable.
-%
-%  Corrections carried against the source render:
-%    * no title -- a journal figure carries a caption instead.
-%    * the render drew all three measurement markers identically. Marker 3 is
-%      tail latency, which is EMULATED off-platform with no RIC in the path,
-%      so it is hollow and dashed and the legend says why.
-%    * the render's telemetry arrows ran the wrong way: the harmonised feature
-%      space feeds the detector, it is not fed by it.
+%  Corrections carried against the render (evidence in brackets):
+%    * "Central Anchor" under the RIC column header was prompt text rendered
+%      as a heading. Removed.
+%    * The render sent malicious traffic from the gateway straight into the
+%      O-CU, bypassing the radio. All UE traffic, benign or not, enters over
+%      Uu at the O-RU; both streams are drawn into the O-RU.
+%    * The render drew E2 straight into the detection xApp. E2 terminates at
+%      the platform's E2 termination; the xApp subscribes through it.
+%    * The render fed the radio lane into the harmonised feature space. The
+%      shared space is a FLOW space (15 concepts / 18 columns, Table II) with
+%      no radio counterpart (review R7, D-022); radio windows reach the
+%      detector on their own and the layers are not fused (Limitations).
+%    * The render's arrows ran from the xApp out to E2SM-KPM and to the flow
+%      exporter, and raised the alert from the feature space. Data flows into
+%      the detector; the alert is the detector's output.
+%    * Marker 03 (decision latency) is EMULATED off-platform (EXP-043); it is
+%      drawn hollow and dashed, unlike the two markers measured on corpora.
+%    * Radio windows: 16 consecutive 1 Hz records per UE, mean and s.d. of
+%      16 KPM fields (Section IV-A), stated instead of "window / feature
+%      representation".
 % ---------------------------------------------------------------------------
-\begin{tikzpicture}[figbase,
-  ranbox/.style={draw=fgSlate!70, fill=fgSage!55, rounded corners=2.4pt,
-                 line width=0.8pt, minimum size=7.6mm},
-  shelf/.style ={draw=fgRule, fill=white, rounded corners=2.4pt,
-                 line width=0.7pt, align=center, inner sep=3.6pt},
-  xapp/.style  ={draw=fgSlate!55, fill=fgPanel, rounded corners=2pt,
-                 line width=0.6pt, align=center, inner sep=3pt},
-  ids/.style   ={draw=fgTeal, fill=fgTealL!60, rounded corners=2pt,
-                 line width=1.4pt, align=center, inner sep=3.4pt},
-  lav/.style   ={draw=fgGrn!80, fill=fgGrnL!55, rounded corners=2.4pt,
-                 line width=0.8pt, align=center, inner sep=3.6pt},
-  mk/.style    ={circle, draw=fgInk, fill=fgCorL, line width=0.7pt,
-                 minimum size=4.6mm, inner sep=0pt,
-                 font=\scriptsize\bfseries, text=fgInk},
-  mkE/.style   ={circle, draw=fgMute, dashed, fill=white, line width=0.6pt,
-                 minimum size=4.6mm, inner sep=0pt, font=\scriptsize\bfseries,
-                 text=fgMute, dash pattern=on 1pt off 1pt},
+\fontfamily{phv}\selectfont
+\begin{tikzpicture}[figbase, font=\footnotesize,
+  hdr/.style   ={font=\scriptsize, text=fInk!80, anchor=base},
+  lane/.style  ={font=\scriptsize\bfseries, text=fInk, align=left,
+                 anchor=north west},
+  lbl/.style   ={font=\scriptsize, text=fInk, align=center, anchor=north,
+                 inner sep=0.8pt},
+  note/.style  ={font=\scriptsize, text=fInk!70, align=center, anchor=north,
+                 inner sep=0.8pt},
+  ran/.style   ={draw=fInk!85, fill=white, rounded corners=2.4pt,
+                 line width=0.8pt, minimum width=11.5mm, minimum height=5.6mm,
+                 font=\small},
+  chip/.style  ={fill=white, rounded corners=1.5pt, minimum width=30mm,
+                 minimum height=3mm, font=\scriptsize, inner sep=0pt},
+  smallbox/.style={draw=fStroke, fill=fRicI, rounded corners=2pt,
+                 line width=0.6pt, align=center, font=\scriptsize},
+  dev/.style   ={-{Latex[length=1.5mm]}, draw=fInk!70, line width=0.55pt},
+  flow/.style  ={-{Latex[length=1.8mm]}, draw=fTeal, line width=1.0pt},
+  plain/.style ={-{Latex[length=1.7mm]}, draw=fInk!75, line width=0.7pt},
+  both/.style  ={{Latex[length=1.5mm]}-{Latex[length=1.5mm]}, draw=fInk!75,
+                 line width=0.7pt},
+  opt/.style   ={-{Latex[length=1.5mm,open]}, draw=fInk!60, line width=0.6pt,
+                 dash pattern=on 2.2pt off 1.6pt},
+  benign/.style={-{Latex[length=1.8mm]}, draw=fBlue, line width=1.2pt},
+  malic/.style ={-{Latex[length=1.8mm]}, draw=fCor, line width=1.2pt,
+                 dash pattern=on 3pt off 1.8pt},
+  mB/.style    ={circle, fill=fBadge, text=white, font=\scriptsize\bfseries,
+                 minimum size=5.2mm, inner sep=0pt},
+  mE/.style    ={circle, draw=fBadge, dashed, fill=white, text=fBadge,
+                 line width=0.7pt, font=\scriptsize\bfseries,
+                 minimum size=5.2mm, inner sep=0pt, dash pattern=on 1.4pt off 1pt},
+  mBs/.style   ={mB, minimum size=3.6mm, font=\tiny\bfseries},
+  mEs/.style   ={mE, minimum size=3.6mm, font=\tiny\bfseries, line width=0.55pt},
 ]
 
-% ===== column headers and hairline rules ===================================
-\foreach \x in {3.95, 7.30, 12.15, 16.20}
-  {\draw[colrule] (\x,-1.35) -- (\x,7.10);}
-\node[colhdr] at (1.85,7.45) {NETWORK EDGE};
-\node[colhdr] at (5.60,7.45) {O-RAN ACCESS};
-\node[colhdr] at (9.72,7.45) {NEAR-RT RIC};
-\node[colhdr] at (14.15,7.45) {TELEMETRY \& FEATURE SPACE};
-\node[colhdr] at (17.85,7.45) {DECISION};
-\node[font=\scriptsize, text=fgMute] at (17.85,7.05) {options, not evaluated};
+% ===== column rules and headers ============================================
+\foreach \x in {3.45, 5.55, 9.90, 14.95}
+  {\draw[colrule] (\x,0.25) -- (\x,9.15);}
+\node[hdr] at (1.70,9.30) {01\enspace NETWORK EDGE};
+\node[hdr] at (4.50,9.30) {02\enspace O-RAN ACCESS};
+\node[hdr] at (7.75,9.30) {03\enspace NEAR-RT RIC};
+\node[hdr] at (12.42,9.30) {04\enspace TELEMETRY \& FEATURE SPACE};
+\node[hdr] at (16.68,9.30) {05\enspace DETECTION \& CONTROL};
 
-% ===== 1. network edge: the IoT population =================================
-\newcommand{\iotrow}[3]{%
-  \node (#1) at (0.34,#2) {\ficon{#1}{4.5mm}};
-  \node[anchor=west, font=\scriptsize] at (0.78,#2) {#3};
-  \draw[hairflow] (2.62,#2) to[out=0,in=180] (ap.west);}
-\node (ap) at (3.28,2.92) {\ficon{ap}{6.4mm}};
-\iotrow{camera}{5.62}{Smart camera}
-\iotrow{meter}{4.58}{Smart meter}
-\iotrow{watch}{3.54}{Wearable}
-\iotrow{vehicle}{2.44}{Connected vehicle}
-\iotrow{robot}{1.36}{Robotic arm}
-\iotrow{plc}{0.28}{Controller (PLC)}
-\node[align=center, font=\scriptsize, text=fgMute, fill=white,
-      inner sep=1.2pt] at (3.28,1.86)
-      {IoT gateway /\\access point};
+% ===== 01 network edge ======================================================
+\node (camera)  at (0.75,8.30) {\ficon{f1_camera}{7.0mm}};
+\node (meter)   at (2.20,8.30) {\ficon{f1_meter}{7.0mm}};
+\node (watch)   at (0.75,6.45) {\ficon{f1_watch}{7.0mm}};
+\node (vehicle) at (0.75,4.55) {\ficon{f1_vehicle}{6.0mm}};
+\node (robot)   at (0.75,2.45) {\ficon{f1_robot}{7.0mm}};
+\node (plc)     at (2.20,2.20) {\ficon{f1_plc}{5.6mm}};
+\node (gw)      at (2.35,5.15) {\ficon{f1_gateway}{8.0mm}};
+\node[lbl] (camera-l)  at (camera.south)  {smart\\camera};
+\node[lbl] (meter-l)   at (meter.south)   {smart\\meter};
+\node[lbl] (watch-l)   at (watch.south)   {wearable\\device};
+\node[lbl] (vehicle-l) at (vehicle.south) {connected\\vehicle};
+\node[lbl] (robot-l)   at (robot.south)   {connected\\arm};
+\node[lbl] (plc-l)     at (plc.south)     {industrial\\PLC};
+\node[lbl] (gw-l)      at (gw.south)      {IoT gateway /\\access point};
+\draw[dev] (camera-l.south east) -- (gw.north west);
+\draw[dev] (meter-l.south) -- (gw.north);
+\draw[dev] (watch-l.east) -- (gw.west);
+\draw[dev] (vehicle.east) -- ($(gw.west)+(0,-0.22)$);
+\draw[dev] (robot.north east) -- ($(gw-l.south west)+(0.25,0)$);
+\draw[dev] (plc.north) -- ($(gw-l.south)+(0.05,0)$);
 
-% ===== 2. O-RAN access =====================================================
-\node[ranbox] (oru) at (4.86,3.92) {\ficon{oru}{5.6mm}};
-\node[ranbox] (odu) at (5.84,3.92) {\ficon{odu}{5.6mm}};
-\node[ranbox] (ocu) at (6.82,3.92) {\ficon{ocu}{5.6mm}};
-\node[font=\scriptsize] at (4.86,3.24) {O-RU};
-\node[font=\scriptsize] at (5.84,3.24) {O-DU};
-\node[font=\scriptsize] at (6.82,3.24) {O-CU};
-\draw[dataflow] (oru) -- (odu);
-\draw[dataflow] (odu) -- (ocu);
-\draw[dataflow] (ap.north) to[out=90,in=205] (oru.south west);
-\node[font=\scriptsize, text=fgMute] at (4.06,3.74) {Uu};
+% ===== 02 O-RAN access ======================================================
+\fill[fMint, rounded corners=4pt] (3.75,1.35) rectangle (5.30,8.85);
+\node (ant) at (4.52,8.10) {\ficon{f1_antenna}{8.0mm}};
+\node[ran] (oru) at (4.52,7.20) {O-RU};
+\node[ran] (odu) at (4.52,4.95) {O-DU};
+\node[ran] (ocu) at (4.52,2.55) {O-CU};
+\node[lbl] (oru-l) at (oru.south) {Radio Unit};
+\node[lbl] (odu-l) at (odu.south) {Distributed\\Unit};
+\node[lbl] (ocu-l) at (ocu.south) {Central\\Unit};
+\draw[plain] (oru-l.south) -- (odu.north);
+\draw[plain] (odu-l.south) -- (ocu.north);
+% all UE traffic, benign or malicious, enters over Uu at the radio unit
+\draw[benign] (2.84,5.32) -- (3.26,5.32) -- (3.26,7.30) -- (3.945,7.30);
+\draw[malic]  (2.84,5.00) -- (3.52,5.00) -- (3.52,7.08) -- (3.945,7.08);
+\node[font=\scriptsize, text=fInk, fill=white, inner sep=1pt] at (3.40,7.62) {Uu};
 
-\draw[dataflow, line width=1.6pt] (ap.north east) to[out=44,in=186] (7.30,5.72);
-\node[callout] at (5.62,5.84) {benign traffic};
-\draw[corflow] (ap.south east) to[out=-38,in=186] (7.30,0.52);
-\node[callout, text=fgCor] at (5.62,0.68) {malicious traffic};
+% ===== 03 near-RT RIC =======================================================
+\draw[draw=fStroke, fill=fRicI, rounded corners=3pt, line width=0.6pt]
+     (6.00,8.22) rectangle (9.55,9.02);
+\node[font=\small] at (7.775,8.79) {Non-RT RIC / SMO};
+\node[smallbox, fill=white, minimum height=3.2mm, inner sep=1.6pt] (sm2) at (7.775,8.42) {model lifecycle};
+\node[smallbox, fill=white, minimum height=3.2mm, inner sep=1.6pt, left=0.9mm of sm2] {rApps};
+\node[smallbox, fill=white, minimum height=3.2mm, inner sep=1.6pt, right=0.9mm of sm2] {policy};
+\draw[both] (7.775,8.22) -- node[right=1.5pt, font=\scriptsize] {A1} (7.775,7.72);
 
-% ===== 3. Near-RT RIC ======================================================
-\draw[dashbox] (7.62,-0.18) rectangle (11.92,6.58);
-\node[shelf, minimum width=3.98cm, minimum height=1.58cm] (xrow) at (9.75,4.92) {};
-\node[font=\tiny\bfseries, text=fgInk] at (9.30,5.48) {xApp ecosystem};
-\node[xapp, minimum width=0.92cm, minimum height=7.2mm] (kpi) at (8.35,4.62) {KPI\\monitor};
-\node[ids,  minimum width=1.72cm, minimum height=7.2mm] (ids) at (9.78,4.62)
-      {\textbf{IoT intrusion}\\\textbf{detection xApp}};
-\node[xapp, minimum width=0.92cm, minimum height=7.2mm] (ts) at (11.18,4.62) {Traffic\\steering};
+\draw[draw=fStroke, fill=fRicO, rounded corners=4pt, line width=0.8pt]
+     (5.95,1.30) rectangle (9.60,7.72);
+\node[font=\small] at (7.775,7.40) {Near-RT RIC};
+\draw[draw=fStroke!80, fill=fRicI, rounded corners=3pt, line width=0.6pt]
+     (6.12,1.48) rectangle (9.43,7.08);
+\node[font=\footnotesize] at (7.775,6.84) {RIC platform};
+\node[chip] at (7.775,6.48) {message router};
+\node[chip] at (7.775,6.12) {shared data layer (SDL)};
+\node[chip] at (7.775,5.76) {subscriptions};
+\node[chip] (e2t) at (7.775,5.40) {E2 termination};
+\node[draw=fInk, fill=fXapp, rounded corners=3pt, line width=1.6pt,
+      minimum width=25mm, minimum height=13mm, align=center, font=\small]
+      (xapp) at (7.775,3.95) {IoT intrusion\\detection xApp};
+\node[smallbox, minimum width=13.5mm, minimum height=7.5mm] at (6.98,2.12) {KPI\\monitor};
+\node[smallbox, minimum width=13.5mm, minimum height=7.5mm] at (8.57,2.12) {Traffic\\steering};
+\draw[both] (xapp.north) -- (e2t.south);
 
-\node[shelf, minimum width=3.98cm] (plat) at (9.75,2.92)
-  {RIC platform\\[0.5pt]{\tiny message router $\cdot$ shared data layer $\cdot$ subscriptions}};
-\node[shelf, minimum width=3.98cm] (e2t) at (9.75,1.18)
-  {E2 termination\\[0.5pt]{\tiny E2AP $\cdot$ E2SM-KPM $\cdot$ E2SM-RC}};
+% E2 from the E2 nodes terminates at the platform, not at the xApp
+\draw[draw=fInk!75, line width=0.8pt] (odu.east) -- (5.78,4.95);
+\draw[plain, line width=0.8pt] (ocu.east) -- (5.78,2.55) -- (5.78,5.40) -- (e2t.west);
+\node[font=\scriptsize, fill=white, inner sep=1pt, anchor=east] at (5.72,3.75) {E2};
 
-\foreach \n in {kpi,ids,ts}
-  {\draw[{Latex[length=1.5mm]}-{Latex[length=1.5mm]}, draw=fgSlate!70, line width=0.55pt]
-     (\n.south) -- (\n.south |- plat.north);}
-\draw[{Latex[length=1.5mm]}-{Latex[length=1.5mm]}, draw=fgSlate!70, line width=0.55pt]
-      (plat) -- (e2t);
-\draw[{Latex[length=1.5mm]}-{Latex[length=1.5mm]}, draw=fgSlate, line width=0.8pt]
-  (ocu.east) -- (7.32,3.92) -- node[left=1pt, pos=0.55, font=\scriptsize, text=fgMute] {E2}
-  (7.32,1.18) -- (e2t.west);
+% live-RIC arm: designed, not executed
+\draw[draw=fCor, fill=fPink, rounded corners=3pt, line width=0.7pt,
+      dash pattern=on 2.4pt off 1.8pt] (5.80,-1.10) rectangle (9.75,0.52);
+\node[font=\footnotesize] at (7.775,0.28) {LIVE NEAR-RT RIC PATH};
+\node[font=\footnotesize\bfseries, text=fRed] at (7.775,-0.04) {NOT EXECUTED};
+\node[font=\scriptsize, align=center, text=fInk] at (7.775,-0.66)
+     {latency timed off-platform for\\feature construction and\\inference only};
 
-\node[lav, minimum width=3.98cm] (nonrt) at (9.75,6.42)
-  {Non-RT RIC / SMO\\[0.5pt]{\tiny rApps $\cdot$ model lifecycle $\cdot$ policy}};
-\draw[dataflow] (nonrt.south) -- node[right=1.5pt, font=\scriptsize, text=fgMute] {A1} (xrow.north);
+% ===== 04 telemetry and feature space =======================================
+\fill[fRicI, rounded corners=4pt] (12.95,0.95) rectangle (14.80,8.35);
+\node[lane] at (10.05,8.78) {LANE A\\RADIO TELEMETRY};
+\node[lane] at (10.05,3.42) {LANE B\\FLOW FEATURES};
 
-% cache occupancy, drawn in the reference's capacity-block idiom
-\node[font=\tiny, text=fgMute, anchor=west] at (7.80,0.34) {edge cache occupancy};
-\capblocks{9.92}{0.26}{6}{9}{fgTeal}
+% lane A: E2SM-KPM indications, routed by the E2 termination
+\node[smallbox, font=\footnotesize, minimum height=5.2mm, inner sep=2.2pt]
+      (kpm) at (10.72,7.55) {E2SM-KPM};
+\node (chart) at (12.10,7.55) {\ficon{f1_kpichart}{7.2mm}};
+\node (win)   at (13.875,7.58) {\ficon{f1_windows}{6.6mm}};
+\node[lbl] at (chart.south) {1 Hz radio KPI\\time series};
+\node[lbl] (win-l) at (win.south) {window features\\16 records $\times$\\16 KPM fields};
+\draw[plain, line width=0.8pt] (e2t.east) -- (9.78,5.40) -- (9.78,7.55) -- (kpm.west);
+\draw[flow] (kpm) -- (chart);
+\draw[flow] (chart) -- (win);
 
-% ===== 4. telemetry and feature space ======================================
-\fill[fgTealL!55, rounded corners=3pt] (12.32,4.46) rectangle (16.02,5.94);
-\fill[fgGrnL!55, rounded corners=3pt]  (12.32,0.16) rectangle (16.02,1.62);
-\node[font=\scriptsize\bfseries, text=fgTeal] at (14.17,5.78) {PACKET / FLOW FEATURES};
-\node[font=\scriptsize\bfseries, text=fgGrn!75!black] at (14.17,1.46) {RADIO TELEMETRY};
+% lane B: flow records from an exporter at the user plane (E2 carries none)
+\node (exp)  at (10.90,2.05) {\ficon{f1_exporter}{6.4mm}};
+\node (fdoc) at (12.36,2.05) {\ficon{f1_flowdoc}{7.0mm}};
+\node (tab)  at (13.875,2.02) {\ficon{f1_table}{6.4mm}};
+\node[lbl] (exp-l) at (exp.south) {user-plane\\flow exporter};
+\node[note] at (exp-l.south) {at the user plane,\\not over E2};
+\node[lbl] at (fdoc.south) {flow record};
+\node[lbl] at (tab.south) {15 concepts /\\18 columns};
+\node[lbl, anchor=south] (tab-t) at (tab.north) {shared\\feature space};
+\draw[plain, line width=0.8pt] (ocu.east |- 0,2.36) -- (5.66,2.36) -- (5.66,0.95)
+      -- (9.78,0.95) -- (9.78,2.05) -- (exp.west);
+\node[font=\scriptsize, fill=fRicO!0, fill=white, inner sep=1.2pt] at (7.775,0.95)
+      {user-plane traffic};
+\draw[flow] (exp) -- (fdoc);
+\draw[flow] (fdoc) -- (tab);
 
-\node[badgeT] (b1) at (12.62,5.18) {01};
-\node (packet)  at (13.30,5.18) {\ficon{packet}{4.0mm}};
-\node (flowrec) at (14.42,5.18) {\ficon{flowrec}{4.8mm}};
-\node (featvec) at (15.50,5.18) {\ficon{featvec}{4.4mm}};
-\node[font=\scriptsize, align=center] at (13.30,4.72) {packet};
-\node[font=\scriptsize, align=center] at (14.42,4.72) {flow record};
-\node[font=\scriptsize, align=center] at (15.50,4.72) {feature vector};
-\draw[dataflow] (packet) -- (flowrec);
-\draw[dataflow] (flowrec) -- (featvec);
+% the detector: one model per layer, radio windows or flows (not fused)
+\node[draw=fInk, fill=white, rounded corners=2.4pt, line width=1.1pt,
+      minimum width=17mm, align=center, inner sep=2.5pt] (det) at (13.875,4.62)
+      {\ficon{f1_featvec}{5.0mm}\\[1pt]detector\\$\hat{p}=f_{\theta}(x)\ge\tau$};
+\draw[flow] (win-l.south) -- (det.north);
+\draw[flow] (tab-t.north) -- (det.south);
+% the panel is the xApp's own feature construction and inference
+\draw[draw=fTeal, line width=0.8pt, dash pattern=on 2.4pt off 1.8pt]
+     (xapp.east) -- (12.95,3.95);
+\node[font=\scriptsize, fill=white, inner sep=1.2pt, align=center] at (11.35,3.95)
+     {inside the xApp};
 
-\node[badgeG] (b2) at (12.62,0.92) {02};
-\node (e2sm)     at (13.30,0.92) {\ficon{e2sm}{4.4mm}};
-\node (kpirec)   at (14.42,0.92) {\ficon{kpirec}{4.8mm}};
-\node (tsmatrix) at (15.50,0.92) {\ficon{tsmatrix}{4.8mm}};
-\node[font=\scriptsize, align=center] at (13.30,0.46) {E2SM-KPM};
-\node[font=\scriptsize, align=center] at (14.42,0.46) {radio KPI};
-\node[font=\scriptsize, align=center] at (15.50,0.46) {time series};
-\draw[dataflow] (e2sm) -- (kpirec);
-\draw[dataflow] (kpirec) -- (tsmatrix);
+% ===== 05 detection and control =============================================
+\node (bell) at (15.62,4.62) {\ficon{f1_bell}{7.0mm}};
+\node[lbl] at (bell.south) {alert};
+\draw[flow] (det.east) -- (bell.west);
+\draw[plain] (bell.north) -- (15.62,7.95) -- (18.35,7.95);
+\node[font=\scriptsize, anchor=south east, inner sep=1pt] at (18.35,7.98) {to operator};
+\node[font=\footnotesize, align=center] at (17.15,7.38) {possible E2SM-RC\\mitigation actions};
+\node[font=\scriptsize\itshape, text=fInk!75] at (17.15,6.84) {options, not evaluated};
+\newcommand{\fOneAct}[3]{%
+  \node (#1) at (17.35,#2) {\ficon{f1_#1}{5.0mm}};
+  \node[lbl] at (#1.south) {#3};
+  \draw[opt] (16.40,#2) -- (#1.west);}
+\fOneAct{lock}{6.25}{block flow}
+\fOneAct{isolate}{5.08}{isolate device}
+\fOneAct{scales}{3.92}{update policy}
+\fOneAct{reroute}{2.76}{reroute / steer}
+\fOneAct{mitig}{1.55}{mitigation}
+\draw[draw=fInk!60, line width=0.6pt, dash pattern=on 2.2pt off 1.6pt]
+     (bell.east) -- (16.40,4.62);
+\draw[draw=fInk!60, line width=0.6pt, dash pattern=on 2.2pt off 1.6pt]
+     (16.40,1.55) -- (16.40,6.25);
 
-\node (db) at (14.17,2.92) {\ficon{database}{6.4mm}};
-\node[badgeC] (b3) at (13.06,2.92) {03};
-\node[align=center, font=\scriptsize, text=fgInk] at (14.17,2.16)
-      {\textbf{harmonised feature space}\\[0.5pt]15 concepts / 18 columns};
-\draw[dataflow] (featvec.south) to[out=-90,in=38] (db.north east);
-% REVISION 2026-09-24 (review R7): radio telemetry does NOT enter the
-% harmonised flow space, which has no radio counterpart; KPM windows go to the
-% RIC directly. Flow features come from an exporter at the user plane, not
-% over E2, which carries no packets.
-\draw[dataflow] (e2t.east) to[out=0,in=180] (b2.west);
-\draw[dataflow, draw=fgGrn!80!black] (b2.north) to[out=100,in=0]
-      ($(plat.east)+(0,-0.22)$);
-\draw[dataflow, dash pattern=on 2.4pt off 1.6pt] (ocu.north) to[out=88,in=180] (7.80,6.92)
-      -- (11.75,6.92) to[out=0,in=120] (b1.north);
-\node[font=\tiny, text=fgMute, fill=white, inner sep=1pt] at (9.75,6.92) {flow exporter at the user plane, not over E2};
-% the feature space feeds the RIC; routed into the platform edge so that it
-% never crosses the xApp row
-\draw[tealflow] (b3.west) -- (plat.east);
+% ===== measurement markers ==================================================
+\node[mB] at (12.72,8.80) {01};
+\node[font=\footnotesize, align=left, anchor=west] at (12.98,8.80)
+     {Generalization\\across corpora};
+\node[mB] at (15.30,8.78) {02};
+\node[font=\footnotesize, anchor=west] at (15.56,8.78) {Alert burden};
+\node[mE] at (12.72,0.50) {03};
+\node[font=\footnotesize, align=left, anchor=west] at (12.98,0.50)
+     {Decision latency\\[-1pt]{\scriptsize emulated, off-platform}};
 
-% ===== 5. decision =========================================================
-\newcommand{\actrow}[3]{%
-  \node (#1) at (16.62,#2) {\ficon{#1}{4.2mm}};
-  \node[anchor=west, font=\scriptsize, align=left] at (17.02,#2) {#3};}
-\actrow{act_alert}{5.42}{alert}
-\actrow{act_block}{4.46}{block flow}
-\actrow{act_isolate}{3.50}{isolate device}
-\actrow{act_policy}{2.54}{update policy}
-\actrow{act_reroute}{1.58}{reroute / steer}
-\actrow{act_mitig}{0.62}{mitigation}
-\draw[tealflow] (db.east) to[out=0,in=180] (16.24,2.86);
+% ===== legends ==============================================================
+\draw[benign, -] (0.05,0.62) -- (0.75,0.62);
+\node[anchor=west, font=\scriptsize] at (0.85,0.62) {benign traffic};
+\draw[malic, -]  (0.05,0.20) -- (0.75,0.20);
+\node[anchor=west, font=\scriptsize] at (0.85,0.20) {malicious traffic};
 
-\draw[corflow] (18.20,0.16) -- (18.20,-1.02) -- (6.82,-1.02) -- (6.82,3.50);
-\node[callout, text=fgCor] at (12.70,-1.02) {control / mitigation (E2SM-RC)};
-
-% ===== measurement markers =================================================
-\node[mk]  at (10.46,5.30) {1};
-\node[mk]  at (16.06,3.26) {2};
-\node[mkE] at (9.20,-1.02) {3};
-
-% ===== legend ==============================================================
-\begin{scope}[shift={(-0.20,-1.92)}]
-  \draw[draw=fgSlate, line width=1.6pt] (0,0.26) -- (0.66,0.26);
-  \node[anchor=west, font=\scriptsize] at (0.76,0.26) {data / traffic};
-  \draw[draw=fgCor, line width=0.9pt, dash pattern=on 2.2pt off 1.8pt]
-        (2.80,0.26) -- (3.46,0.26);
-  \node[anchor=west, font=\scriptsize] at (3.56,0.26) {control / feedback};
-  \node[mk] at (6.55,0.26) {\phantom{1}};
-  \node[anchor=west, font=\scriptsize] at (6.86,0.26) {measured in this work};
-  \node[mkE] at (10.15,0.26) {\phantom{3}};
-  \node[anchor=west, font=\scriptsize] at (10.46,0.26)
-        {\textbf{emulated} off-platform, no RIC in the path};
+\begin{scope}[font=\scriptsize]
+  \node[mBs] at (10.10,-0.22) {01};
+  \node[anchor=west] at (10.30,-0.22)
+       {Generalization across corpora: evaluated on the datasets};
+  \node[mBs] at (10.10,-0.56) {02};
+  \node[anchor=west] at (10.30,-0.56)
+       {Alert burden at a declared base rate: operational analysis};
+  \node[mEs] at (10.10,-0.90) {03};
+  \node[anchor=west] at (10.30,-0.90)
+       {Decision latency: feature construction + inference, timed off-platform};
 \end{scope}
 
 \end{tikzpicture}

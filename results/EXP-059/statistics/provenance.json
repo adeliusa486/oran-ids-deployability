@@ -1,0 +1,8 @@
+{
+  "experiment": "EXP-059",
+  "source_file": "Lower_Layer_Data.db",
+  "n_records": 45244,
+  "reference_gap_s": 300,
+  "python": "3.11.9",
+  "pandas": "2.3.3"
+}
