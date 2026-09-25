@@ -73,7 +73,7 @@ def main() -> int:
     (PAPER / "_old.tex").write_text((PAPER / a.old).read_text(encoding="utf-8"),
                                     encoding="utf-8")
     cmd = ["perl", "-I", a.perl_lib, LATEXDIFF, "--flatten", "--type=CFONT",
-           "--exclude-textcmd=caption",  # round 2: inline markup broke captions
+           "--exclude-textcmd=caption,emph",  # captions (round 2) and run-in \emph headings
            "--math-markup=0", "--disable-citation-markup",
            "--config=PICTUREENV=(?:picture|DIFnomarkup|tabular|algorithmic|"
            "tikzpicture|split|equation)[\\w\\d*@]*",
