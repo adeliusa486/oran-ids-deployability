@@ -154,6 +154,54 @@ def prior_correct(p: np.ndarray, pi_src: float, pi_tgt: float) -> np.ndarray:
     return out
 
 
+def em_prior(p_src: np.ndarray, pi_src: float, n_iter: int = 200,
+             tol: float = 1e-8) -> float:
+    """Saerens, Latinne and Decaestecker (Neural Computation, 2002).
+
+    Estimates the target prior from UNLABELLED target posteriors by EM. It
+    assumes label shift only: p(x|y) identical in both corpora. Here that
+    assumption is known to fail (the exporter differs and the attack tooling
+    differs), so the estimate is a test of the assumption as much as of the
+    method. Uses no target label.
+    """
+    p = np.clip(np.asarray(p_src, dtype=np.float64), 1e-12, 1 - 1e-12)
+    pi = pi_src
+    for _ in range(n_iter):
+        q = prior_correct(p, pi_src, pi)
+        new = float(q.mean())
+        if abs(new - pi) < tol:
+            return new
+        pi = min(max(new, 1e-6), 1 - 1e-6)
+    return pi
+
+
+def bbse_prior(y_cal: np.ndarray, pred_cal: np.ndarray,
+               pred_tgt: np.ndarray) -> float:
+    """Black-box shift estimation (Lipton, Wang and Smola, ICML 2018), binary.
+
+    Solves C w = mu for class-importance weights, with C the joint confusion
+    matrix on the SOURCE calibration fold and mu the predicted-class
+    distribution on the unlabelled target. Returns the implied target prior,
+    clipped to [0, 1]. Same label-shift assumption as ``em_prior``.
+    """
+    y_cal = np.asarray(y_cal).astype(int)
+    pred_cal = np.asarray(pred_cal).astype(int)
+    n = len(y_cal)
+    C = np.zeros((2, 2))
+    for i in (0, 1):
+        for j in (0, 1):
+            C[i, j] = np.sum((pred_cal == i) & (y_cal == j)) / n
+    mu = np.array([np.mean(pred_tgt == 0), np.mean(pred_tgt == 1)])
+    try:
+        w = np.linalg.solve(C, mu)
+    except np.linalg.LinAlgError:
+        return float("nan")
+    w = np.clip(w, 0, None)
+    p_y = np.array([np.mean(y_cal == 0), np.mean(y_cal == 1)])
+    q = w * p_y
+    return float(np.clip(q[1] / q.sum(), 0, 1)) if q.sum() > 0 else float("nan")
+
+
 def ppv_at(tpr: float, fpr: float, pi: float = PI) -> float:
     den = tpr * pi + fpr * (1 - pi)
     return float(tpr * pi / den) if den > 0 else float("nan")
@@ -201,13 +249,23 @@ def three_way_group_split(groups: np.ndarray, seed: int,
 
 
 def main() -> int:
+    global OUT
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--out", default=None,
+                    help="results directory (default results/EXP-028)")
+    ap.add_argument("--models", nargs="*", default=None)
+    ap.add_argument("--estimate-prior", action="store_true",
+                    help="add label-free target-prior estimates (EM, BBSE)")
     args = ap.parse_args()
+    if args.out:
+        OUT = Path(args.out)
     seeds = SPLIT_SEEDS[:2] if args.quick else SPLIT_SEEDS[:args.seeds]
     n_sub = 40_000 if args.quick else SUBSAMPLE
-    models = ("logreg", "tree") if args.quick else MODELS
+    models = tuple(args.models) if args.models else (
+        ("logreg", "tree") if args.quick else MODELS)
+    priors: list[dict] = []
 
     for d in ("raw", "processed", "statistics", "logs"):
         (OUT / d).mkdir(parents=True, exist_ok=True)
@@ -276,19 +334,48 @@ def main() -> int:
 
                 # ORACLE prior correction on the target only. Labelled, never claimed.
                 if kind in ("platt", "isotonic"):
-                    p = prior_correct(f(s_tg), pi_src_corpus, pi_tgt_corpus)
-                    m = detection_metrics(tgt.y, p, 0.5)
-                    rows.append(dict(
-                        seed=seed, model=key, calibrator=kind + "+prior_ORACLE",
-                        domain="target", oracle=True, brier=m["brier"],
-                        ece=ece(tgt.y, p), f1_macro=m["f1_macro"],
-                        recall=m["recall"], fpr=m["fpr"],
-                        precision=m["precision"], pr_auc=m["pr_auc"],
-                        roc_auc=m["roc_auc"],
-                        ppv_deploy=ppv_at(m["recall"], m["fpr"]),
-                        alerts_per_hour=m["fpr"] * LAMBDA_B
-                        + m["recall"] * LAMBDA_B * PI / (1 - PI),
-                        mean_score=float(np.mean(p))))
+                    variants = [(kind + "+prior_ORACLE", True,
+                                 prior_correct(f(s_tg), pi_src_corpus,
+                                               pi_tgt_corpus))]
+                    if args.estimate_prior:
+                        # Label-free: the target prior estimated from the
+                        # unlabelled target posteriors (EM) or predictions (BBSE).
+                        pi_cal = float(y[cal].mean())
+                        pi_em = em_prior(f(s_tg), pi_cal)
+                        priors.append(dict(seed=seed, model=key, method="EM",
+                                           calibrator=kind, pi_hat=pi_em,
+                                           pi_true=pi_tgt_corpus,
+                                           pi_source=pi_cal))
+                        variants.append((kind + "+prior_EM", False,
+                                         prior_correct(f(s_tg), pi_cal, pi_em)))
+                        if kind == "platt":
+                            pi_bb = bbse_prior(y[cal], s_cal >= 0.5,
+                                               s_tg >= 0.5)
+                            priors.append(dict(seed=seed, model=key,
+                                               method="BBSE", calibrator="raw",
+                                               pi_hat=pi_bb,
+                                               pi_true=pi_tgt_corpus,
+                                               pi_source=pi_cal))
+                            if np.isfinite(pi_bb):
+                                variants.append((
+                                    "platt+prior_BBSE", False,
+                                    prior_correct(f(s_tg), pi_cal,
+                                                  min(max(pi_bb, 1e-6),
+                                                      1 - 1e-6))))
+                    for name, is_oracle, p in variants:
+                        m = detection_metrics(tgt.y, p, 0.5)
+                        rows.append(dict(
+                            seed=seed, model=key, calibrator=name,
+                            domain="target", oracle=is_oracle, brier=m["brier"],
+                            ece=ece(tgt.y, p), f1_macro=m["f1_macro"],
+                            recall=m["recall"], fpr=m["fpr"],
+                            precision=m["precision"], pr_auc=m["pr_auc"],
+                            roc_auc=m["roc_auc"],
+                            ppv_deploy=ppv_at(m["recall"], m["fpr"]),
+                            alerts_per_hour=m["fpr"] * LAMBDA_B
+                            + m["recall"] * LAMBDA_B * PI / (1 - PI),
+                            mean_score=float(np.mean(p)),
+                            tp=m["tp"], fp=m["fp"], tn=m["tn"], fn=m["fn"]))
 
             print("  seed %d %-8s done %.1fs" % (seed, key, time.time() - t0),
                   flush=True)
@@ -297,6 +384,13 @@ def main() -> int:
     R.to_csv(OUT / "raw/calibration_runs.csv", index=False)
     S = pd.DataFrame(sweep)
     S.to_csv(OUT / "raw/calibration_tau_sweep.csv", index=False)
+    if priors:
+        P = pd.DataFrame(priors)
+        P.to_csv(OUT / "processed/prior_estimates.csv", index=False)
+        print("\n=== label-free target-prior estimates (true %.4f) ===" % pi_tgt_corpus)
+        print(P.groupby(["method", "calibrator", "model"]).pi_hat
+              .agg(["mean", "std", "min", "max"]).to_string(
+                  float_format=lambda v: "%.4f" % v))
 
     summ = (R.groupby(["domain", "model", "calibrator", "oracle"])
             .agg(brier=("brier", "mean"), ece=("ece", "mean"),
@@ -327,7 +421,9 @@ def main() -> int:
     C.to_csv(OUT / "processed/ppv_reachability.csv", index=False)
 
     (OUT / "statistics/provenance.json").write_text(json.dumps(dict(
-        experiment="EXP-028", seeds=list(seeds), models=list(models),
+        experiment=OUT.name, seeds=list(seeds), models=list(models),
+        mlp_class_weighting="balanced sample_weight (D-021)",
+        label_free_prior_estimates=bool(args.estimate_prior),
         subsample=n_sub, pi=PI, lambda_b=LAMBDA_B,
         split="group-disjoint three-way train/calibration/test on src_ip",
         calibrators=["raw", "platt", "isotonic", "temperature"],

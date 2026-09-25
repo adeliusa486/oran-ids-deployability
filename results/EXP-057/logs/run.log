@@ -1,0 +1,40 @@
+         feature_space  n_features  n_flows  n_distinct  n_conflicting_records  flows_in_conflicting  share_in_conflicting  benign_share_in_conflicting  attack_share_in_conflicting  ba_ceiling  ceiling_tpr  ceiling_tnr
+        native_content          90  1215890      374946                  33708                632378                0.5201                       0.5893                       0.4753      0.7655       0.5938       0.9372
+native_with_seq_offset          92  1215890     1215869                      0                     0                0.0000                       0.0000                       0.0000      1.0000       1.0000       1.0000
+              shared18          18  1215890      246281                  29421                758716                0.6240                       0.5973                       0.6413      0.7530       0.8104       0.6957
+           n  attack_share     attack_type  conflicting_native  conflicting_shared  benign_conflicting_native  site
+file                                                                                                               
+1      11450         0.875         SYNScan               0.000               0.001                      0.000     1
+2      11645         0.861  TCPConnectScan               0.000               0.852                      0.000     1
+3      10043         0.785         UDPScan               0.000               0.769                      0.000     1
+4      18279         0.034       ICMPFlood               0.000               0.010                      0.000     1
+5     467717         0.376        UDPFlood               0.750               0.750                      0.964     1
+6      44636         0.107        SYNFlood               0.000               0.034                      0.000     1
+7      93803         0.811       HTTPFlood               0.000               0.487                      0.000     1
+8      31015         0.200     SlowrateDoS               0.000               0.056                      0.000     1
+9      38120         0.784     SlowrateDoS               0.000               0.029                      0.000     1
+10      1608         0.000            none               0.000               0.006                      0.000     1
+11     11526         0.870         SYNScan               0.000               0.001                      0.000     2
+12     11653         0.861  TCPConnectScan               0.000               0.852                      0.000     2
+13     10305         0.778         UDPScan               0.000               0.762                      0.000     2
+14     14452         0.038       ICMPFlood               0.000               0.016                      0.000     2
+15    286197         0.984        UDPFlood               0.984               0.984                      0.000     2
+16     14108         0.349        SYNFlood               0.000               0.016                      0.000     2
+17     93650         0.691       HTTPFlood               0.000               0.402                      0.000     2
+18     12656         0.557     SlowrateDoS               0.000               0.131                      0.000     2
+19     31669         0.947     SlowrateDoS               0.000               0.028                      0.000     2
+20      1358         0.000            none               0.000               0.007                      0.000     2
+ f_b  f_a  records  benign_flows  attack_flows  equal_counts  within_one
+   5   15    33708        281525        281529         33704       33707
+     n  attack  benign                                                 by_file_and_type
+271474  159875  111599 {"5|Benign": 111599, "5|UDPFlood": 48273, "15|UDPFlood": 111602}
+ 81022   51036   29986   {"5|Benign": 29986, "5|UDPFlood": 21051, "15|UDPFlood": 29985}
+    80      40      40                              {"5|Benign": 40, "15|UDPFlood": 40}
+    78      39      39                              {"5|Benign": 39, "15|UDPFlood": 39}
+    76      38      38                              {"5|Benign": 38, "15|UDPFlood": 38}
+    76      38      38                              {"5|Benign": 38, "15|UDPFlood": 38}
+    74      37      37                              {"5|Benign": 37, "15|UDPFlood": 37}
+    74      37      37                              {"5|Benign": 37, "15|UDPFlood": 37}
+    72      36      36                              {"5|Benign": 36, "15|UDPFlood": 36}
+    68      34      34                              {"5|Benign": 34, "15|UDPFlood": 34}
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-057

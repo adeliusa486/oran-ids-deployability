@@ -94,6 +94,22 @@ def test_idle_timeout_splits_a_reused_five_tuple(tmp_path):
     assert len(fast) == 2, "idle timeout did not split the reused 5-tuple"
 
 
+def test_active_timeout_splits_a_long_flow_like_the_reference(tmp_path):
+    """EXP-043 part B: a flow active longer than active_timeout_s is cut.
+
+    Packets every 10 s for 400 s never trip the 30 s idle timeout, so only the
+    120 s active timeout can split them. Before the fix the fast exporter
+    emitted one record here and the reference four.
+    """
+    pkts = [(1700000000.0 + 10 * i, A, B, 1234, 80, 0) for i in range(41)]
+    p = build_pcap(tmp_path / "long.pcap", pkts)
+    cfg = ExporterConfig()
+    fast, _ = fx.extract(p, cfg)
+    ref = export_file(p, cfg)
+    assert len(fast) == len(ref) > 1, (len(fast), len(ref))
+    assert sorted(fast["total_pkts"]) == sorted(r["total_pkts"] for r in ref)
+
+
 def test_unknown_link_type_is_refused_not_guessed(tmp_path):
     p = build_pcap(tmp_path / "e.pcap", [(1700000000.0, A, B, 1, 2, 0)],
                    linktype=DLT_EN10MB)

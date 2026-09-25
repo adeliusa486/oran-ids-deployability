@@ -1,0 +1,9 @@
+protocol,direction,train_frac,rep,n_train_sessions,n_test_sessions,test_categories,unseen_test_categories,n_unseen_attack_categories,benign_test_sessions,n_benign_train_sessions
+temporal,forward,0.4,0,12,18,"benign,bruteforce,ddos,dos,web","bruteforce,ddos,dos,web",4,29,9
+temporal,reverse,0.4,0,18,12,"benign,probe",probe,1,"0,1,2,3,4,5,6,7,8",1
+temporal,forward,0.5,0,15,15,"benign,ddos,dos,web","ddos,dos,web",3,29,9
+temporal,reverse,0.5,0,15,15,"benign,bruteforce,probe","bruteforce,probe",2,"0,1,2,3,4,5,6,7,8",1
+temporal,forward,0.6,0,18,12,"benign,ddos,dos,web",ddos,1,29,9
+temporal,reverse,0.6,0,12,18,"benign,bruteforce,dos,probe,web","bruteforce,probe",2,"0,1,2,3,4,5,6,7,8",1
+temporal,forward,0.7,0,21,9,"benign,ddos,dos,web",ddos,1,29,9
+temporal,reverse,0.7,0,9,21,"benign,bruteforce,dos,probe,web","bruteforce,probe",2,"0,1,2,3,4,5,6,7,8",1

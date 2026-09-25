@@ -76,9 +76,65 @@ FORBIDDEN: list[tuple[str, str, str]] = [
      "B-010",
      "ue_id has 9 values with one holding 60.8%; the protocol is run-disjoint"),
 
-    (r"\b1D-CNN\b|\bLSTM\b",
+    (r"\bLSTM\b",
      "never implemented",
-     "no sequence model exists in models/zoo.py; do not report one"),
+     "the only sequence models are the GRU and 1D-CNN of EXP-050"),
+
+    # --- retired in the revision of 2026-09-24 -------------------------------
+    (r"worse than guessing|beneath (the|that) floor|below a stratified coin|"
+     r"wrong side of chance",
+     "D-028 (consequence of D-021)",
+     "with balanced weights the MLP scores above the stratified floor on D_B"),
+
+    (r"does not predict transfer rank|close to no information",
+     "D-028",
+     "six architectures cannot settle the rank correlation; report both metrics"),
+
+    (r"every standard calibration method|cannot change the achievable operating "
+     r"points at all",
+     "D-029",
+     "isotonic and Platt can change the ranking; only temperature preserves it"),
+
+    (r"not ours to choose",
+     "simulated review R2.6",
+     "B is swept; 10 ms is a declared choice, not a specification fact"),
+
+    (r"n\s*=\s*41|41 papers|Reporting practice across surveyed",
+     "D-023, C13 WITHDRAWN",
+     "the survey was never run; do not report its counts"),
+
+    (r"calibration failure with an immediate",
+     "D-029",
+     "the target limit is discriminability, not calibration"),
+
+    (r"statistically unambiguous",
+     "D-026",
+     "report Nadeau-Bengio corrected intervals; several effects are not significant"),
+
+    (r"order-of-magnitude optimi[sz]ation",
+     "EXP-030 speed-up is 2.3x to 12.1x",
+     "state the measured range"),
+
+    # ---- round-2 review (2026-09-24) ----
+    (r"triples the false[- ]alert|false alerts? (rise|rises) from .* per hour|"
+     r"\\DriftFwd|\\DriftFAratio|\\DriftFAtemp|Holding out later capture sessions costs",
+     "D-030",
+     "EXP-051's drift was unseen categories; report EXP-053 (time split with "
+     "category coverage, held-out benign sessions)"),
+
+    (r"no detector reaches 0\.05|no threshold helps even in distribution|"
+     r"worst case of its interval",
+     "D-031",
+     "radio operating points carry cluster-bootstrap intervals that reach 1.0; "
+     "say the radio alert burden is not determined"),
+
+    (r"collapse factor is not an artifact of the declared prevalence",
+     "round-2 R1 consistency audit",
+     "the sweep shows the factor is set by the prevalence"),
+
+    (r"IoT Traffic in O-RAN Edge Data Centers",
+     "round-2 R3",
+     "the corpora hold no IoT-specific traffic and no edge property is measured"),
 ]
 
 # Lines that are allowed to mention a forbidden phrase because they are the

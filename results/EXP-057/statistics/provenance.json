@@ -1,0 +1,9 @@
+{
+  "experiment": "EXP-057",
+  "question": "round-2 R1-W1: the BA 0.75 plateau on D_B",
+  "content_space": "Encoded.csv minus Unnamed: 0, Seq, Offset and the three labels",
+  "ceiling_rule": "attack iff n_attack(record)/N_attack > n_benign(record)/N_benign, in sample",
+  "capture_files": "resets of Offset (20)",
+  "n_flows": 1215890,
+  "attack_prevalence": 0.607088634662675
+}

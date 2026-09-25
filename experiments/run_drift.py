@@ -95,7 +95,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=20,
                     help="random control repetitions per configuration")
+    ap.add_argument("--out", default=None,
+                    help="results directory (default results/EXP-034)")
     args = ap.parse_args()
+    global OUT
+    if args.out:
+        OUT = Path(args.out)
     t0 = time.time()
     for d in ("raw", "processed", "statistics", "logs"):
         (OUT / d).mkdir(parents=True, exist_ok=True)
@@ -195,7 +200,8 @@ def main() -> int:
     summ.to_csv(OUT / "processed/drift_summary.csv", index=False)
 
     (OUT / "statistics/provenance.json").write_text(json.dumps(dict(
-        experiment="EXP-034", layer="radio (network layer has NO time column)",
+        experiment=OUT.name, layer="radio (network layer has NO time column)",
+        mlp_class_weighting="balanced sample_weight (D-021)",
         n_sessions=int(n_sess), time_span_days=52.96,
         train_fracs=list(TRAIN_FRACS), control_reps=args.reps,
         models=list(MODELS), pi=PI, lambda_b=LAMBDA_B,

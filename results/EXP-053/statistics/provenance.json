@@ -1,0 +1,48 @@
+{
+  "experiment": "EXP-053",
+  "layer": "radio",
+  "answers": [
+    "R1-W2",
+    "R1-W3",
+    "R1-W6",
+    "R2-C4",
+    "R1-minor-5"
+  ],
+  "design": {
+    "A": "coverage audit of EXP-051 session-order splits",
+    "B": "latest (forward) or earliest (reverse) session of every category held out, against a random session of every category",
+    "C": "leave-one-benign-session-out FPR"
+  },
+  "n_sessions": 30,
+  "sessions_per_category": {
+    "benign": 10,
+    "probe": 3,
+    "bruteforce": 3,
+    "dos": 3,
+    "web": 5,
+    "ddos": 6
+  },
+  "control_reps": 50,
+  "temporal_model_seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "control_model_seed": 11,
+  "models": [
+    "logreg",
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp",
+    "stratified",
+    "majority"
+  ],
+  "false_alert_unit": "per benign UE-hour (FPR x 225)",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 630.9
+}

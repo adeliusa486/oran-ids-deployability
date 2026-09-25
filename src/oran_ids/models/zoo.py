@@ -29,6 +29,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.utils.class_weight import compute_sample_weight
 
 
 @dataclass(frozen=True)
@@ -133,6 +134,11 @@ def fit_model(key: str, X, y, seed: int):
     set from the *training* prior here. Leaving it unset would hand every other
     model a balancing advantage and make the comparison unfair in exactly the
     way plan risk R7 describes.
+
+    The MLP has no ``class_weight`` either. Until D-021 it was trained with no
+    weighting at all, while the paper stated an identical policy for every
+    family. It now receives the same balanced weights as ``class_weight=
+    "balanced"`` would give, passed as ``sample_weight`` (scikit-learn >= 1.7).
     """
     model = build(key, seed)
     if key == "xgboost":
@@ -140,6 +146,10 @@ def fit_model(key: str, X, y, seed: int):
         n_neg = float((y == 0).sum())
         if n_pos > 0:
             model.set_params(scale_pos_weight=max(n_neg / n_pos, 1e-6))
+    if key == "mlp":
+        w = compute_sample_weight("balanced", np.asarray(y))
+        model.fit(X, y, clf__sample_weight=w)
+        return model
     model.fit(X, y)
     return model
 

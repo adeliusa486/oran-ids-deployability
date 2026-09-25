@@ -44,22 +44,22 @@
 
 % ===== training protocol ===================================================
 \node[card, text width=2.95cm, minimum height=1.00cm] (src) at (1.34,7.28)
-  {\textbf{$D_A$: O-RAN testbed}\\[0.5pt]{\tiny Zeek flow records $+$ radio KPIs}};
+  {\textbf{$D_A$: NetsLab-5GORAN-IDD}\\[0.5pt]{\tiny Zeek flow records; 1\,Hz radio KPIs}};
 \node at (3.62,7.28) {\ficon{src_testbed}{4.8mm}};
 
 \node[card, text width=2.95cm, minimum height=1.00cm] (fsp) at (1.34,5.52)
   {\textbf{Shared feature space}\\[0.5pt]{\tiny 15 concepts / 18 columns}\\[0.5pt]
-   {\tiny semantic harmonisation}};
+   {\tiny semantic harmonization}};
 \node at (3.66,5.52) {\ficon{schema}{5.4mm}};
 
 \node[card, text width=2.95cm, minimum height=1.00cm] (spl) at (1.34,3.76)
-  {\textbf{Group-disjoint split}\\[0.5pt]{\tiny \texttt{src\_ip}, 20 split seeds}};
+  {\textbf{Group-disjoint splits}\\[0.5pt]{\tiny capture run (radio), \texttt{src\_ip} (flows); 20 seeds}};
 \node at (3.68,3.76) {\ficon{grouplock}{4.9mm}};
 
 \node[card, text width=2.95cm, minimum height=1.55cm] (trn) at (1.34,1.62)
   {\textbf{Train}\\[0.5pt]{\tiny 8 architectures, 2 of them trivial floors}\\[1pt]
    {\tiny L1\;\; majority, stratified}\\[-0.5pt]
-   {\tiny L2\;\; logreg, tree, RF, XGB, HGB}\\[-0.5pt]
+   {\tiny L2\;\; LR, DT, RF, XGB, HGB}\\[-0.5pt]
    {\tiny L3\;\; MLP}};
 
 \foreach \a/\b in {src/fsp, fsp/spl, spl/trn} {\draw[stepflow] (\a) -- (\b);}
@@ -68,24 +68,27 @@
 \draw[dataflow, line width=1.5pt] (trn.east) -- (4.54,1.62);
 \draw[draw=fgMute, line width=0.7pt] (4.54,1.62) -- (4.54,7.28);
 \node[callout, text=fgMute, align=center] at (4.54,8.02)
-  {ONE TRAINED DETECTOR};
+  {ONE PIPELINE, TWO LAYERS};
 
 % ===== the evaluation ladder ===============================================
+% round 2: each rung names its layer and metric, because the rungs do not share
+% one detector (radio windows for 01, 02; flows for 03, 04)
 \node[rungA] (r1) at (8.82,7.28)
-  {\textbf{Held-out $D_A$}, group-disjoint\\[0.5pt]
-   {\tiny in-distribution reference: the number this literature usually reports}};
+  {\textbf{Held-out $D_A$}, run-disjoint\\[0.5pt]
+   {\tiny radio windows, macro-$F_1$; in-distribution reference, a random split
+   scores higher}};
 \node[rungB] (r2) at (8.82,5.52)
-  {\textbf{Time-disjoint $D_A$}\\[0.5pt]
-   {\tiny train the earliest capture runs, test the latest; 52.96 days of real
-   elapsed time}};
+  {\textbf{Held-out benign sessions of $D_A$}\\[0.5pt]
+   {\tiny radio windows, false positive rate; each benign session scored by
+   models trained on the other 29}};
 \node[rungC] (r3) at (8.82,3.76)
   {\textbf{$D_B$: 5G-NIDD}\\[0.5pt]
-   {\tiny an independently collected deployment, evaluated once; every access
-   logged}};
+   {\tiny flows, balanced accuracy; independent corpus, different exporter;
+   labels audited, conflicting records set aside}};
 \node[rungD] (r4) at (8.82,1.62)
   {\textbf{Operational analysis}\\[0.5pt]
-   {\tiny base rate $\pi$, decision threshold $\tau$, benign arrival rate
-   $\lambda_b$, alert burden}};
+   {\tiny $D_B$ flows, precision at base rate $\pi$; threshold $\tau$, benign
+   arrival rate $\lambda_b$, alert burden}};
 
 \node[badge]  (n1) at (5.40,7.28) {01};
 \node[badgeG] (n2) at (5.40,5.52) {02};
@@ -95,18 +98,18 @@
   {\draw[stepflow] (4.54,\y) -- (\n.west);}
 \foreach \n/\r in {n1/r1, n2/r2, n3/r3, n4/r4} {\draw[stepflow] (\n) -- (\r.west);}
 
-\node[cost] at (11.30,7.28) {reference};
-\node[cost] at (11.30,5.52) {$-0.27\ F_{1}$};
-\node[cost, text width=2.00cm] at (11.30,3.76) {to the trivial floor};
+\node[cost, text width=2.00cm] at (11.30,7.28) {reference\\{\tiny random split $+\LeakAvg\ F_{1}$}};
+\node[cost, text width=2.00cm] at (11.30,5.52) {FPR 0.00 to \BenHighMax\\{\tiny \BenHighN{} of 10 sessions $\ge\BenHighMin$}};
+\node[cost, text width=2.00cm] at (11.30,3.76) {BA \TrCleanTgtBAmin--\TrCleanTgtBAmax\\{\tiny in-target \TgtRandShCleanBAmin--\TgtRandShCleanBAmax}};
 \node[cost, text width=2.00cm] at (11.30,1.62)
-  {PPV\\$0.93\!\to\!0.006$};
+  {PPV $\le\NetCleanPPVbest$\\{\tiny any $\tau$, recall $\ge$ 0.1}};
 \node at (11.62,4.86) {\ficon{distrib}{4.4mm}};
 \node[font=\tiny, text=fgMute, align=center] at (11.62,4.42)
       {distribution\\shift};
 
 % the arm that was designed and not executed
 \node[blkd, minimum height=0.80cm] (blk) at (8.82,-0.44)
-  {\textbf{LIVE NEAR-RT RIC --- NOT EXECUTED}\\[1pt]{\tiny see Limitations}};
+  {\textbf{LIVE NEAR-RT RIC: NOT EXECUTED}\\[1pt]{\tiny see Limitations}};
 \node at (5.40,-0.44) {\ficon{ic_warn}{4.2mm}};
 \draw[stepflow, dashed, dash pattern=on 2pt off 1.6pt]
       (4.54,1.62) -- (4.54,-0.44) -- (5.00,-0.44);
@@ -114,30 +117,26 @@
 % ===== runtime and reading =================================================
 \node[panel, text width=4.55cm] (rt) at (16.05,7.32)
   {\textbf{RUNTIME DECOMPOSITION}\\[1pt]
-   {\tiny\textsc{emulated} --- no RIC anywhere in the path}};
+   {\tiny\textsc{emulated}: one host, no RIC in the path}};
 
 \begin{scope}[shift={(13.78,5.86)}]
   \node[chev]    (s0) at (0.44,0) {E2\\indic.};
-  \node[chevhot] (s1) at (1.84,0) {feature\\constr.};
+  \node[chev]    (s1) at (1.84,0) {feature\\constr.};
   \node[chev]    (s2) at (3.16,0) {model\\infer.};
   \node[chev]    (s3) at (4.34,0) {control\\encode};
 \end{scope}
 
 \node[align=center, font=\tiny, text=fgInk, text width=4.6cm] at (16.05,4.62)
-  {$t_{\mathrm{ind}} + t_{\mathrm{feat}} + t_{\mathrm{inf}} + t_{\mathrm{act}}$\\[2pt]
-   \textbf{FEATURE CONSTRUCTION DOMINATES}\\[1pt]
-   0.058\,ms per flow, against 1--25\,$\mu$s of inference in a deployed
-   implementation};
+  {$t_{\mathrm{ind}} + t_{\mathrm{feat}} + t_{\mathrm{inf}} + t_{\mathrm{act}} + t_{q}$\\[2pt]
+   \textbf{MEASURED: $t_{\mathrm{feat}}$ AND $t_{\mathrm{inf}}$ ONLY}\\[1pt]
+   \LatFigLine};
 
 % share-of-budget blocks, in the reference's capacity idiom
-\node[font=\tiny, text=fgMute, anchor=west] at (13.78,3.52) {share of decision budget};
-\capblocks{13.78}{3.12}{8}{10}{fgCor}
-\node[font=\tiny, text=fgMute, anchor=west] at (16.08,3.14) {feature construction};
 
 \node[panel, text width=4.55cm] at (16.05,1.68)
   {\textbf{HOW TO READ THIS FIGURE}\\[2pt]
-   {\tiny Every step down the ladder is closer to what a deployment
-   experiences, and every step costs more than the choice of architecture
-   does. Rung~01 alone does not establish deployment behaviour.}};
+   {\tiny Each rung is closer to deployment conditions than the one above.
+   The held-out score of rung~01 alone does not establish how a detector
+   behaves in deployment.}};
 
 \end{tikzpicture}

@@ -1138,3 +1138,186 @@ and the runtime panel unqualified. Nothing else here is provisional.
 evidence for it.** Three of the five defects above were the render obeying a
 prompt rather than the results. A figure is an assertion; audit it against the
 results before you draw it, not after.
+
+---
+
+## D-021 — The MLP was trained without class weighting. Fixed, and every MLP number is re-measured.
+
+- **Phase:** revision 2026-09-24, prompted by simulated review R3.5
+- **Status:** `DEFECT CORRECTED 2026-09-24`
+- **Bug ID:** B-F (found by reading the code against the paper)
+
+### What the paper said
+
+Section IV-C and Table III: every architecture receives "the same class-imbalance
+policy". Eq. (9) is a class-weighted cross-entropy.
+
+### What the code did
+
+`models/zoo.py::fit_model` set `scale_pos_weight` for XGBoost and relied on
+`class_weight="balanced"` for logistic regression, the tree, the forest and HGB.
+`MLPClassifier` has no `class_weight` parameter, and nothing passed weights to
+it. The MLP was the only model trained on the raw 94.63%-attack prior.
+
+### Decision
+
+1. The MLP now receives `compute_sample_weight("balanced", y)` through
+   `clf__sample_weight`, which scikit-learn 1.8 supports. That is exactly the
+   weighting `class_weight="balanced"` gives the other families.
+2. `tests/unit/test_zoo.py` spies on `MLPClassifier.fit` and fails if the
+   weights are absent or unbalanced. The policy is now a checked property.
+3. Every experiment whose reported numbers include the MLP is re-run with the
+   corrected ladder (EXP-041 onward). Old MLP numbers are not mixed with new.
+4. **The result is reported whichever way it goes.** The unweighted MLP fell
+   beneath the stratified floor on `D_B`. If the weighted one does not, the
+   paper loses that sentence, and says in the response letter why.
+
+### Why this is not tuning after seeing the target
+
+The weighting is the policy the paper declared before any transfer result
+existed. Restoring it corrects the implementation to the protocol. It does not
+choose a protocol to suit an outcome.
+
+---
+
+## D-022 — An exporter-robust feature subset, fixed before any target result under it
+
+- **Phase:** revision 2026-09-24, prompted by R3.1, R4 and R6.1
+- **Status:** `ADOPTED 2026-09-24`
+
+### Problem
+
+The single-exporter control (A3) cannot be run on this host. 5G-NIDD's packet
+captures are not in our copy (only Argus flow CSVs), D-010 stopped the `D_A`
+pcap download, and no Zeek binary exists on Windows without WSL, which EXP-031
+found blocked. Every transfer gap therefore spans deployment and exporter.
+
+### Decision
+
+A partial control that needs neither: re-run transfer on the part of the shared
+space that a change of exporter should move least. Zeek and Argus disagree about
+where a flow ends (median duration 1.9e-4 s against 2.27 s), so duration, the
+two rates divided by it, and the seven packet and byte totals are all
+segmentation-dependent. Per-packet means and direction ratios are invariant to
+cutting a flow into pieces, and the protocol is a header field.
+
+    ROBUST = proto one-hot (4) + mean_pkt_size, src_mean_pkt_size,
+             dst_mean_pkt_size, src_byte_ratio, src_pkt_ratio      (9 columns)
+
+The subset is written into `experiments/run_transfer_v2.py` before its first
+run. It is justified by exporter semantics alone, not by any target score.
+
+### How it will be read
+
+* Gap shrinks sharply on ROBUST: much of the full-space gap is exporter.
+* Gap persists on ROBUST: the collapse is not explained by segmentation-
+  dependent features alone. It is still not a clean deployment-shift estimate,
+  because framing (40 against 42 bytes per packet) and flow definition still
+  differ.
+
+Either way the result is a sensitivity analysis, never a substitute for A3.
+
+---
+
+## D-023 — The literature survey (Table XII of the reviewed draft) is removed. It was never run.
+
+- **Phase:** revision 2026-09-24 | **Status:** `CLAIM C13 WITHDRAWN`
+- The table's counts (n = 41) were placeholders (`[SYNTHETIC]` in the source) and
+  `docs/claims.yaml` C13 was still `planned`. Section VIII-A described the screening
+  in the past tense. A reviewer asking for the list of papers (simulated R6.10) would
+  have found none. Table and protocol paragraph are deleted; Section VII-C now makes
+  only a statement the paper's own experiments support.
+
+## D-024 — Two hand-typed figures replaced by generated ones
+
+- Figs. 4 (reliability) and 5 (threshold sweep) of the reviewed draft were TikZ
+  coordinates typed by hand, contradicting the text (ECE 0.021/0.187 against measured
+  0.028-0.396) and the tables (682 alerts/h against 59,663). Replaced by
+  `fig_rev_reliability` (EXP-041 reliability bins, pooled over seeds) and
+  `fig_rev_threshold` (pooled counts, EXP-046 and EXP-041).
+
+## D-025 — Operating points from pooled counts only, in the detector's own unit
+
+- Tables IX and X of the reviewed draft averaged PPV over folds (the estimator D-018
+  withdrew) and were arithmetically impossible at the declared pi and lambda_b.
+  EXP-046 stores tp/fp/tn/fn per threshold for all eight models; every operating
+  point is pooled. Radio-layer rates are per 16 s window and volumes per benign
+  UE-hour (225 windows); flow-layer volumes are per hour at lambda_b and per 10^6
+  benign flows. Reachability requires recall >= 0.10, declared before use.
+
+## D-026 — Nadeau-Bengio corrected intervals are primary
+
+- 20 split seeds resample one population; the paired t-test was anti-conservative.
+  Consequences, all reported: no single architecture's random-split gain survives
+  Holm (across-architecture mean 0.13, NB 95% [-0.01, 0.27]); macro-F1 transfer
+  losses are not significant; balanced-accuracy transfer losses are, for 5 of 6.
+
+## D-027 — Transfer is reported in balanced accuracy first
+
+- The majority floor, which reads no features, loses as much macro-F1 as the
+  detectors (prevalence 94.63% -> 60.71%). Macro-F1 gaps minus the floor's gap are
+  -0.02 to +0.01. Balanced accuracy, which prevalence cannot move, falls 0.21-0.36
+  while the floors stay at 0.5. Headline moved to balanced accuracy and ROC-AUC.
+
+## D-028 — Two headline claims withdrawn as consequences of D-021
+
+- "The source-best model (MLP) transfers beneath the stratified floor / worse than
+  guessing": with balanced sample weights the MLP scores 0.531 macro-F1 on D_B,
+  above the 0.424 floor. The 0.422 was the missing class weighting.
+- "In-distribution rank does not predict transfer rank": rho = 0.83 (p = 0.04) in
+  macro-F1 and -0.26 (p = 0.62) in balanced accuracy. Six points cannot settle it;
+  the paper now says so.
+
+## D-029 — Calibration claim narrowed; label-free prior estimation tested
+
+- "Every standard calibration method is monotone and cannot change the achievable
+  operating points" is false: isotonic regression changes ROC-AUC by up to 0.21,
+  Platt scaling inverted the decision tree's ranking in 1 of 10 seeds. Only
+  temperature scaling preserves order everywhere (within 2e-5).
+- EM (Saerens 2002) and BBSE (Lipton 2018) estimates of the target prior range from
+  0 to 1 across seeds against a true 0.607: label shift is not the only shift.
+
+## D-030 — The radio "drift" result is withdrawn (round-2 review R1-W2/W3/W6)
+
+- EXP-051 reported drift in macro-F1 across a prevalence shift (training 50-67%
+  attack, test 88-92%), gave false alerts at the flow arrival rate for a window
+  detector, and never checked category coverage. The check (EXP-053 A) shows the
+  radio capture is ordered by scenario: every forward session-order split holds
+  out 1-4 attack categories and tests one benign session. It measured unseen
+  categories, not drift.
+- Replacement (EXP-053 B, C): with category coverage fixed, time order stays
+  inside session-to-session variation; the held-out benign session decides the
+  false positive rate (0.00-0.07 for six sessions, 0.81-0.98 for sessions 4, 8,
+  29). "Costs a further 0.26 and roughly triples the false-alert rate" is retired.
+
+## D-031 — Pooled operating points get cluster-bootstrap intervals (R1-W4)
+
+- Wilson intervals on counts pooled over 20 seeds counted each radio benign window
+  about 4.3 times and each D_B flow 20 times, and ignored clustering. Intervals now
+  resample split seeds and clusters (radio sessions, D_A source addresses, D_B
+  capture files), 2,000 replicates, from EXP-056 counts that reproduce EXP-046 and
+  EXP-041 exactly.
+- Consequence for the radio layer: pooled FPR for LR goes from Wilson [0.21, 0.24]
+  to [0.02, 0.55]; best-threshold PPV intervals reach 1.0 for four architectures.
+  "No radio threshold reaches 0.05" is retired; the radio alert burden is reported
+  as not determined by ten benign sessions.
+
+## D-032 — 5G-NIDD label conflicts are reported and every D_B result is given without them
+
+- EXP-057: 281,525 of D_B's 477,737 benign flows (59%) are exact copies (all
+  fields but row index, Seq, Offset) of the 281,529 UDPFlood flows of capture
+  file 15, in equal counts for 33,704 of 33,708 distinct records, labelled Benign
+  in file 5. The balanced-accuracy ceiling of any function of the record content
+  is 0.766 (native) and 0.753 (shared 18 columns, the 0.75 plateau of R1-W1).
+- We cannot tell which label is correct. Every D_B operating point and transfer
+  score is reported on all flows and on the flows without the benign copies. We do
+  not relabel.
+
+## D-033 — A published pipeline is reproduced and run down the ladder (R2-C2)
+
+- Samarakoon et al. (arXiv:2212.01298), the 5G-NIDD authors' own pipeline:
+  Encoded.csv, ANOVA top-10 features (Seq and Offset rank first and second),
+  z-score, random 70/30 split, DT/RF/KNN/NB/MLP. Reproduced (EXP-055) and then
+  changed one step per rung: without Seq/Offset, capture-file-disjoint,
+  base-station-disjoint. Deviations: 2 repeats instead of 10, scikit-learn
+  defaults (grid not reported), MLP with early stopping.

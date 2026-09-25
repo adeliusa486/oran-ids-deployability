@@ -1,0 +1,27 @@
+{
+  "experiment": "EXP-045 part B",
+  "n_per_domain": 100000,
+  "seed": 7,
+  "classifier": "HistGradientBoosting(max_iter=200), 5-fold stratified CV",
+  "w1": "scipy wasserstein_distance on a QuantileTransformer fitted on D_A rows only and applied to both corpora (Eq. 2 corrected)",
+  "domain_classifier": [
+    {
+      "feature_set": "shared (18)",
+      "n_features": 18,
+      "balanced_accuracy": 0.999085,
+      "ba_sd": 0.0001567242801865416
+    },
+    {
+      "feature_set": "robust (9)",
+      "n_features": 9,
+      "balanced_accuracy": 0.9971399999999999,
+      "ba_sd": 0.00015572411502395723
+    }
+  ],
+  "w1_mean_shared": 0.2783938931934592,
+  "w1_mean_robust": 0.282395481275361,
+  "w1_mean_nonrobust": 0.2743923051115572,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 48.7
+}

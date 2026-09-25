@@ -1,0 +1,43 @@
+  seed 101 [1/20] iforest     src F1 0.175 AUC 0.724 -> tgt F1 0.334 AUC 0.486  37.2s
+  seed 101 [1/20] autoencoder src F1 0.086 AUC 0.686 -> tgt F1 0.320 AUC 0.456  3.4s
+  seed 102 [2/20] iforest     src F1 0.117 AUC 0.644 -> tgt F1 0.277 AUC 0.461  18.6s
+  seed 102 [2/20] autoencoder src F1 0.047 AUC 0.562 -> tgt F1 0.270 AUC 0.350  2.3s
+  seed 103 [3/20] iforest     src F1 0.099 AUC 0.779 -> tgt F1 0.276 AUC 0.445  25.1s
+  seed 103 [3/20] autoencoder src F1 0.122 AUC 0.445 -> tgt F1 0.329 AUC 0.624  11.5s
+  seed 104 [4/20] iforest     src F1 0.119 AUC 0.599 -> tgt F1 0.277 AUC 0.466  15.3s
+  seed 104 [4/20] autoencoder src F1 0.059 AUC 0.796 -> tgt F1 0.375 AUC 0.588  6.7s
+  seed 105 [5/20] iforest     src F1 0.059 AUC 0.139 -> tgt F1 0.282 AUC 0.468  18.3s
+  seed 105 [5/20] autoencoder src F1 0.002 AUC 0.098 -> tgt F1 0.270 AUC 0.395  3.3s
+  seed 106 [6/20] iforest     src F1 0.106 AUC 0.650 -> tgt F1 0.272 AUC 0.459  18.1s
+  seed 106 [6/20] autoencoder src F1 0.062 AUC 0.697 -> tgt F1 0.326 AUC 0.529  15.1s
+  seed 107 [7/20] iforest     src F1 0.059 AUC 0.155 -> tgt F1 0.280 AUC 0.469  20.5s
+  seed 107 [7/20] autoencoder src F1 0.001 AUC 0.114 -> tgt F1 0.270 AUC 0.438  3.1s
+  seed 108 [8/20] iforest     src F1 0.092 AUC 0.808 -> tgt F1 0.278 AUC 0.469  18.3s
+  seed 108 [8/20] autoencoder src F1 0.074 AUC 0.649 -> tgt F1 0.325 AUC 0.488  8.1s
+  seed 109 [9/20] iforest     src F1 0.148 AUC 0.762 -> tgt F1 0.276 AUC 0.470  19.1s
+  seed 109 [9/20] autoencoder src F1 0.049 AUC 0.751 -> tgt F1 0.320 AUC 0.529  3.2s
+  seed 110 [10/20] iforest     src F1 0.042 AUC 0.134 -> tgt F1 0.281 AUC 0.471  22.9s
+  seed 110 [10/20] autoencoder src F1 0.001 AUC 0.076 -> tgt F1 0.270 AUC 0.428  4.8s
+  seed 111 [11/20] iforest     src F1 0.120 AUC 0.828 -> tgt F1 0.276 AUC 0.488  76.2s
+  seed 111 [11/20] autoencoder src F1 0.040 AUC 0.786 -> tgt F1 0.270 AUC 0.509  9.0s
+  seed 112 [12/20] iforest     src F1 0.101 AUC 0.688 -> tgt F1 0.328 AUC 0.425  41.4s
+  seed 112 [12/20] autoencoder src F1 0.124 AUC 0.713 -> tgt F1 0.312 AUC 0.430  14.1s
+  seed 113 [13/20] iforest     src F1 0.062 AUC 0.545 -> tgt F1 0.276 AUC 0.455  30.7s
+  seed 113 [13/20] autoencoder src F1 0.004 AUC 0.184 -> tgt F1 0.270 AUC 0.458  6.5s
+  seed 114 [14/20] iforest     src F1 0.082 AUC 0.819 -> tgt F1 0.277 AUC 0.465  31.5s
+  seed 114 [14/20] autoencoder src F1 0.040 AUC 0.795 -> tgt F1 0.270 AUC 0.495  5.0s
+  seed 115 [15/20] iforest     src F1 0.076 AUC 0.819 -> tgt F1 0.277 AUC 0.476  32.9s
+  seed 115 [15/20] autoencoder src F1 0.114 AUC 0.476 -> tgt F1 0.329 AUC 0.659  14.7s
+  seed 116 [16/20] iforest     src F1 0.058 AUC 0.115 -> tgt F1 0.282 AUC 0.471  41.2s
+  seed 116 [16/20] autoencoder src F1 0.006 AUC 0.089 -> tgt F1 0.312 AUC 0.394  20.2s
+  seed 117 [17/20] iforest     src F1 0.096 AUC 0.806 -> tgt F1 0.277 AUC 0.472  35.5s
+  seed 117 [17/20] autoencoder src F1 0.090 AUC 0.746 -> tgt F1 0.326 AUC 0.516  16.2s
+  seed 118 [18/20] iforest     src F1 0.110 AUC 0.774 -> tgt F1 0.277 AUC 0.479  40.4s
+  seed 118 [18/20] autoencoder src F1 0.169 AUC 0.624 -> tgt F1 0.290 AUC 0.475  40.2s
+  seed 119 [19/20] iforest     src F1 0.108 AUC 0.734 -> tgt F1 0.276 AUC 0.463  68.4s
+  seed 119 [19/20] autoencoder src F1 0.159 AUC 0.723 -> tgt F1 0.265 AUC 0.494  29.9s
+  seed 120 [20/20] iforest     src F1 0.100 AUC 0.739 -> tgt F1 0.319 AUC 0.425  34.5s
+  seed 120 [20/20] autoencoder src F1 0.161 AUC 0.415 -> tgt F1 0.277 AUC 0.417  21.7s
+
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-048  (960s)
+EXIT 0

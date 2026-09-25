@@ -5,6 +5,8 @@ between a benchmark table and a deployment: across evaluation protocols, across
 deployments, under a realistic attack base rate, and against the near-real-time
 budget.
 
+**One-file overview of the whole project and every experiment:** `EXPERIMENTS.md`.
+
 **Start here:** `MEMORY.md`, then `configs/decisions.md`, then
 `reports/SESSION_REPORT.md`. Then run the validation harness, which reports the
 live state rather than the state this file claims:
@@ -31,7 +33,8 @@ What does not exist, and is reported as not existing:
 |---|---|
 | Real Near-RT RIC runtime measurement | **NOT EXECUTED.** See below |
 | Resource scaling under load | **NOT MEASURED** |
-| Manuscript | synthetic placeholders remain; draft banner is up |
+| Manuscript | revised twice against simulated IEEE Access reviews (2026-09-24, and round 2 on 2026-09-24/25); every table, figure and in-text number is generated from `results/`. See `reports/response_to_reviewers_round2.md` and the one-file project record `EXPERIMENTS.md` |
+| Single-exporter control, third corpus | **NOT DONE**: no Zeek on this host, no 5G-NIDD captures in our copy, no third paired corpus |
 
 ### A correction to an earlier version of this file
 
@@ -46,8 +49,8 @@ this project.** All latency figures here are **emulated** — a Windows host, no
 CPU isolation, single-process Python — and support relative ordering and stage
 decomposition only. They do not support a conformance claim. For what a real
 measurement looks like, see Obiuwevwi et al., arXiv:2607.01583, who report
-microsecond-scale inference on an OpenAirInterface + FlexRIC testbed, roughly
-three orders of magnitude below our emulated figures.
+microsecond-scale inference on an OpenAirInterface + FlexRIC testbed, within an
+order of magnitude of our ONNX Runtime figures and far below our scikit-learn ones.
 
 ---
 

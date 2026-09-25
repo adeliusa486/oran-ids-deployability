@@ -9,3 +9,36 @@
 2026-09-20T19:28:27	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
 2026-09-20T19:30:42	load_target_d_b(nrows=None) reason=EXP-028 NaN diagnostic
 2026-09-20T19:31:29	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-24T09:48:53	load_target_d_b(nrows=None) reason=EXP-SMOKE a_to_b features=shared
+2026-09-24T09:49:57	load_target_d_b(nrows=None) reason=EXP-041 b_to_a features=shared (as SOURCE, reverse check)
+2026-09-24T09:50:02	load_target_d_b(nrows=None) reason=EXP-041 a_to_b features=shared
+2026-09-24T09:53:41	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-24T09:57:21	load_target_d_b(nrows=None) reason=EXP-028 calibration, target evaluation only
+2026-09-24T12:08:46	load_target_d_b(nrows=None) reason=EXP-045 a_to_b features=robust
+2026-09-24T12:08:48	load_target_d_b(nrows=None) reason=EXP-049 a_to_b features=shared
+2026-09-24T12:08:50	load_target_d_b(nrows=None) reason=EXP-048 unsupervised detectors, target evaluation
+2026-09-24T12:09:42	load_target_d_b(nrows=None) reason=EXP-045 domain classifier and W1, unlabelled features only, no detector trained
+2026-09-24T12:11:02	load_target_d_b(nrows=None) reason=EXP-048 unsupervised detectors, target evaluation
+2026-09-24T17:29:22	header and column inspection, round-2 review R1-W1/R3 (group key, in-target reference)
+2026-09-24T17:29:40	Seq/Offset reset analysis for a capture-file group key, round-2 review R3 (D_B group key)
+2026-09-24T17:30:48	Encoded.csv header inspection, round-2 review R2-C2 (published pipeline reproduction)
+2026-09-24T17:34:50	EXP-055 published-pipeline reproduction (Encoded.csv, trains on D_B)
+2026-09-24T17:37:13	EXP-054 in-target reference: Combined.csv + Encoded.csv, D_B trained on as SOURCE (round-2 R1-W1)
+2026-09-24T17:40:23	load_target_d_b(nrows=None) reason=EXP-056 a_to_b features=shared
+2026-09-24T17:51:12	round-2 plateau verification: conflicting native vectors (EXP-054 check)
+2026-09-24T17:52:34	round-2 plateau verification: conflicting native vectors, examples
+2026-09-24T17:54:41	EXP-057 label-conflict audit (Encoded.csv, Combined.csv)
+2026-09-24T17:58:16	EXP-057 follow-up: pairing of conflicting records between files 5 and 15
+2026-09-24T18:02:58	load_target_d_b(nrows=None) reason=round-2: verify conflict flag (EXP-056 re-run prep)
+2026-09-24T18:08:29	round-2: locate the single exact duplicate in Combined.csv
+2026-09-24T18:09:47	load_target_d_b(nrows=None) reason=round-2: verify dedup unchanged with conflict flag
+2026-09-24T18:11:55	load_target_d_b(nrows=None) reason=EXP-056 a_to_b features=shared
+2026-09-24T18:14:15	EXP-055 published-pipeline reproduction (Encoded.csv, trains on D_B)
+2026-09-24T18:14:16	EXP-054 in-target reference: Combined.csv + Encoded.csv, D_B trained on as SOURCE (round-2 R1-W1)
+2026-09-24T18:26:39	EXP-057 label-conflict audit (Encoded.csv, Combined.csv)
+2026-09-25T09:47:22	EXP-054 in-target reference: Combined.csv + Encoded.csv, D_B trained on as SOURCE (round-2 R1-W1)
+2026-09-25T09:47:22	EXP-055 published-pipeline reproduction (Encoded.csv, trains on D_B)
+2026-09-25T09:47:38	load_target_d_b(nrows=None) reason=EXP-056 a_to_b features=shared
+2026-09-25T10:40:20	EXP-054 in-target reference: Combined.csv + Encoded.csv, D_B trained on as SOURCE (round-2 R1-W1)
+2026-09-25T10:40:20	EXP-055 published-pipeline reproduction (Encoded.csv, trains on D_B)
+2026-09-25T10:41:12	load_target_d_b(nrows=None) reason=EXP-056 a_to_b features=shared

@@ -1,0 +1,17 @@
+{
+  "estimator_spread_radio": {
+    "pooled": 1.4527401161037647,
+    "mean": 15.977487594713944,
+    "median": 1.8892126606003954
+  },
+  "estimator_spread_network_source_heldout": {
+    "pooled": 2.980104913449621,
+    "mean": 15.954846475360343,
+    "median": 3.2318871317611415
+  },
+  "estimator_spread_network_target": {
+    "pooled": 10.376001455795855,
+    "mean": 9.343979052501869,
+    "median": 10.497587015940093
+  }
+}

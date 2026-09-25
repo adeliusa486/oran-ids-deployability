@@ -1,0 +1,13 @@
+{
+  "experiment": "EXP-043 part B",
+  "source": "C:\\Users\\adeel\\oran-ids-data\\d_a\\DDOS.zip",
+  "captures": [
+    "ddos_icmp_hping3",
+    "ddos_udp_hping3",
+    "ddos_syn_hping3"
+  ],
+  "exporter": "fast_exporter 0.1.0",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 118.4
+}

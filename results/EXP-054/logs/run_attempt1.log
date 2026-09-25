@@ -1,0 +1,10 @@
+D_B: 1215890 flows, attack 0.6071, 20 capture files; shared (1215890, 18), native (1215890, 88) (41s)
+
+plateau:
+feature_set       n  n_distinct  share_in_conflicting_vectors  share_benign_in_conflicting  share_attack_in_conflicting  lookup_ba_upper_bound  lookup_tpr  lookup_tnr
+   shared18 1215890      246281                        0.6240                       0.5973                       0.6413                 0.7014      1.0000      0.4027
+     native 1215890      374936                        0.5201                       0.5893                       0.4753                 0.7054      1.0000      0.4107
+  shared18 random         random    seed 101  BA xgb 0.752 mlp 0.747  (232s)
+  shared18 file_disjoint  file_disjoint seed 101  BA xgb 0.989 mlp 0.987  (531s)
+  shared18 random         random    seed 102  BA xgb 0.754 mlp 0.753  (913s)
+  shared18 file_disjoint  file_disjoint seed 102  BA xgb 0.990 mlp 0.988  (1680s)

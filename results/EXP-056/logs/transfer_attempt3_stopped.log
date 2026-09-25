@@ -1,0 +1,17 @@
+[a_to_b__shared] source d_a_network_shared (1640182, 18) attack 0.9463
+[a_to_b__shared] target d_b_5gnidd_shared (1215889, 18) attack 0.6071
+  seed 101 [1/20] majority   src 0.488 -> tgt 0.378  14.0s
+  seed 101 [1/20] stratified src 0.499 -> tgt 0.422  15.3s
+  seed 101 [1/20] logreg     src 0.642 -> tgt 0.464  49.9s
+  seed 101 [1/20] tree       src 0.625 -> tgt 0.581  84.5s
+  seed 101 [1/20] rf         src 0.690 -> tgt 0.565  154.2s
+  seed 101 [1/20] xgboost    src 0.676 -> tgt 0.569  149.3s
+  seed 101 [1/20] hgb        src 0.673 -> tgt 0.546  466.3s
+  seed 101 [1/20] mlp        src 0.661 -> tgt 0.582  1067.9s
+  seed 102 [2/20] majority   src 0.488 -> tgt 0.378  39.6s
+  seed 102 [2/20] stratified src 0.502 -> tgt 0.422  41.9s
+  seed 102 [2/20] logreg     src 0.670 -> tgt 0.447  48.5s
+  seed 102 [2/20] tree       src 0.504 -> tgt 0.543  39.2s
+  seed 102 [2/20] rf         src 0.762 -> tgt 0.583  135.4s
+  seed 102 [2/20] xgboost    src 0.705 -> tgt 0.571  132.8s
+  seed 102 [2/20] hgb        src 0.683 -> tgt 0.554  209.6s

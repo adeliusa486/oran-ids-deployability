@@ -1,0 +1,65 @@
+{
+  "experiment": "EXP-050",
+  "data": "load_radio_sequences (16 steps x 16 KPM features), identical windows to load_radio",
+  "n_windows": 2808,
+  "features": [
+    "dlMcs",
+    "dlBler",
+    "ulMcs",
+    "ulBler",
+    "ri",
+    "phr",
+    "pcmax",
+    "rsrq",
+    "sinr",
+    "rsrp",
+    "rssi",
+    "cqi",
+    "pucchSnr",
+    "puschSnr",
+    "dlBytes_rate",
+    "ulBytes_rate"
+  ],
+  "models": {
+    "gru": "GRU(hidden 32) -> linear",
+    "cnn1d": "2x Conv1d(32,k3) -> GAP -> linear"
+  },
+  "training": {
+    "epochs": 100,
+    "patience": 10,
+    "batch": 64,
+    "lr": 0.001,
+    "loss": "BCEWithLogits, pos_weight = n_neg/n_pos",
+    "validation": "10% of training windows"
+  },
+  "split_seeds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "model_seeds": [
+    11,
+    22
+  ],
+  "torch": "2.14.0+cpu",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 6875.6
+}

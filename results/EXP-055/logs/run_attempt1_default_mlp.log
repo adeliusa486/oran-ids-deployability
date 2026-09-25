@@ -1,0 +1,47 @@
+Encoded.csv: 1215890 rows, 96 columns
+           n  attack_share     attack_type  site
+file                                            
+1      11450      0.875022         SYNScan     1
+2      11645      0.860627  TCPConnectScan     1
+3      10043      0.785323         UDPScan     1
+4      18279      0.033536       ICMPFlood     1
+5     467717      0.375892        UDPFlood     1
+6      44636      0.107357        SYNFlood     1
+7      93803      0.811499       HTTPFlood     1
+8      31015      0.200129     SlowrateDoS     1
+9      38120      0.783972     SlowrateDoS     1
+10      1608      0.000000            none     1
+11     11526      0.869686         SYNScan     2
+12     11653      0.860723  TCPConnectScan     2
+13     10305      0.778166         UDPScan     2
+14     14452      0.037503       ICMPFlood     2
+15    286197      0.983690        UDPFlood     2
+16     14108      0.349376        SYNFlood     2
+17     93650      0.690774       HTTPFlood     2
+18     12656      0.556811     SlowrateDoS     2
+19     31669      0.946825     SlowrateDoS     2
+20      1358      0.000000            none     2
+
+Table V check (published ANOVA F against this copy):
+ published       column  F_published      F_here  rel_diff
+       Seq        'Seq'  329589.0800 469849.6391    0.4256
+    Offset     'Offset'  223791.8000 319314.4097    0.4268
+      sTtl       'sTtl'  189934.0600 271282.9004    0.4283
+         e ' e        '  159060.9100 227726.2345    0.4317
+       tcp        'tcp'  142813.2800 203833.9228    0.4273
+    AckDat     'AckDat'   80707.0000 114843.3089    0.4230
+       RST        'RST'   35379.1900  50539.5415    0.4285
+       INT        'INT'   33941.2900  48708.6073    0.4351
+    TcpRtt     'TcpRtt'   32500.8800  48169.8324    0.4821
+      icmp       'icmp'   29713.0800  42247.6490    0.4219
+sMeanPktSz 'sMeanPktSz'   26963.6100  38473.4480    0.4269
+       FIN        'FIN'   24472.8700  34926.3310    0.4271
+     sHops      'sHops'   24055.7600  34648.7069    0.4403
+      Mean       'Mean'   23238.2700  33113.4649    0.4250
+  R0  published_top10    rep0       dt   acc 0.99958  BA 0.9996  FPR 0.0005  (66s)
+  R0  published_top10    rep0       rf   acc 0.99959  BA 0.9996  FPR 0.0006  (101s)
+  R0  published_top10    rep0       knn  acc 0.99900  BA 0.9988  FPR 0.0019  (145s)
+  R0  published_top10    rep0       nb   acc 0.92738  BA 0.9311  FPR 0.0512  (146s)
+  R0  published_top10    rep0       mlp  acc 0.99863  BA 0.9984  FPR 0.0026  (1198s)
+  R1  no_position_top10  rep0       dt   acc 0.76907  BA 0.7064  FPR 0.5872  (1201s)
+  R1  no_position_top10  rep0       rf   acc 0.76907  BA 0.7064  FPR 0.5872  (1216s)

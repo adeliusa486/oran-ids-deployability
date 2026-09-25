@@ -1,0 +1,77 @@
+{
+  "experiment": "EXP-055",
+  "answers": [
+    "R2-C1",
+    "R2-C2",
+    "R1-W1"
+  ],
+  "source": "Samarakoon et al., 5G-NIDD, arXiv:2212.01298, Tables V and X",
+  "data": "data\\raw\\d_b\\Encoded.csv",
+  "n_rows": 1215890,
+  "attack_prevalence": 0.607088634662675,
+  "n_capture_files": 20,
+  "capture_file_rule": "new file wherever Offset decreases",
+  "site_rule": "files 1-10 and 11-20 are the two passes, one per base station (the dataset description names two base stations; the assignment of passes to stations is inferred from the repeated capture schedule)",
+  "feature_sets": {
+    "published_top10": [
+      "Seq",
+      "Offset",
+      "sTtl",
+      " e        ",
+      "tcp",
+      "AckDat",
+      "RST",
+      "INT",
+      "TcpRtt",
+      "icmp"
+    ],
+    "no_position_top10": [
+      "sTtl",
+      " e        ",
+      "tcp",
+      "AckDat",
+      "RST",
+      "INT",
+      "TcpRtt",
+      "icmp",
+      "sMeanPktSz",
+      "FIN"
+    ]
+  },
+  "feature_columns_repr": {
+    "published_top10": [
+      "'Seq'",
+      "'Offset'",
+      "'sTtl'",
+      "' e        '",
+      "'tcp'",
+      "'AckDat'",
+      "'RST'",
+      "'INT'",
+      "'TcpRtt'",
+      "'icmp'"
+    ],
+    "no_position_top10": [
+      "'sTtl'",
+      "' e        '",
+      "'tcp'",
+      "'AckDat'",
+      "'RST'",
+      "'INT'",
+      "'TcpRtt'",
+      "'icmp'",
+      "'sMeanPktSz'",
+      "'FIN'"
+    ]
+  },
+  "n_conflicting_benign": 281525,
+  "deviations": [
+    "2 random repeats instead of 10",
+    "scikit-learn default hyperparameters (grid not reported), except MLP early_stopping=True (attempt 1 with the default MLP reproduced accuracy 0.99863, see raw/ladder_runs_attempt1_default_mlp.csv)",
+    "StandardScaler fitted on the training part of each split"
+  ],
+  "repeats": 2,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 10923.3
+}

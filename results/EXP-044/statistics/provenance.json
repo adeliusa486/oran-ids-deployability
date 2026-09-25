@@ -1,0 +1,42 @@
+{
+  "experiment": "EXP-044",
+  "seeds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+  ],
+  "models": [
+    "logreg",
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp"
+  ],
+  "mlp_class_weighting": "balanced sample_weight (D-021)",
+  "label_free_prior_estimates": true,
+  "subsample": 300000,
+  "pi": 0.002,
+  "lambda_b": 240000.0,
+  "split": "group-disjoint three-way train/calibration/test on src_ip",
+  "calibrators": [
+    "raw",
+    "platt",
+    "isotonic",
+    "temperature"
+  ],
+  "oracle_note": "prior-corrected variants consume the TARGET prior and are an upper bound, not a deployable method",
+  "pi_source_corpus": 0.9463193718745847,
+  "pi_target_corpus": 0.6070891339587742,
+  "ece_bins": "15 equal-mass",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 5285.0
+}

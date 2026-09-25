@@ -22,3 +22,5 @@ SKIP DoS: C:\Users\adeel\oran-ids-data\d_a\DoS.zip not present yet
   max_abs_start_offset_s       0.0
 [14:28:47] finished DoS
 [14:28:47] waiting for BruteForce.zip
+      0 [main] bash 1257 dofork: child -1 - forked process 88008 died unexpectedly, retry 0, exit code 0xC000026B, errno 11
+bash: fork: retry: Resource temporarily unavailable

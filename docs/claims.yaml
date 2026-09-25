@@ -56,7 +56,9 @@ claims:
     experiment: E9
     artefact: tables/generated/survey.tex
     falsified_if: "screening finds the criteria are commonly reported"
-    status: planned
+    status: withdrawn
+    withdrawn_by: D-023 (2026-09-24). The survey was never run; the table and its
+      protocol paragraph are deleted from the manuscript.
     note: >
       No evidence exists yet. Execute Track D (EXP-D01) with a pre-registered screening
       protocol, or delete Table VIII (A9). reports/literature_audit.md is NOT that study:
@@ -245,3 +247,39 @@ campaign_2_status:
     no_composite_score: >
       Deliberate. Weights would be unmeasurable and whoever picks them picks the
       winner.
+
+  # ---- round 2 (2026-09-25) ----
+  C19:
+    status: WITHDRAWN
+    text: >
+      Holding out later radio capture sessions costs a further 0.26 macro-F1 and
+      roughly triples the false-alert rate.
+    retired_by: D-030
+    why: >
+      The session-order splits held out whole attack categories and tested one
+      benign session; macro-F1 moved with a prevalence shift; false alerts used a
+      flow arrival rate. EXP-053 replaces it: time order stays inside session
+      variation, held-out benign FPR ranges 0.00 to 0.98.
+  C20:
+    status: WITHDRAWN
+    text: >
+      On the radio layer no threshold reaches operational precision 0.05 with recall
+      above 10%, even in distribution.
+    retired_by: D-031
+    why: >
+      Cluster-bootstrap intervals over sessions and seeds reach 1.0 for four of six
+      architectures; ten benign sessions do not determine the radio alert burden.
+  C21:
+    status: SUPPORTED_NEW
+    text: >
+      Half of 5G-NIDD's flows sit on records that carry both labels; its benign class
+      is 59% copies of UDP-flood records labelled as attacks in the other base
+      station's capture; no function of the record exceeds balanced accuracy 0.766.
+    evidence: results/EXP-057/processed/ceilings.csv, results/EXP-057/statistics/pairing.json
+  C22:
+    status: SUPPORTED_NEW
+    text: >
+      The 5G-NIDD authors' published 99.9% accuracy is reproduced, and rests on the
+      record-position fields Seq and Offset; without them the same pipeline scores
+      about 77% accuracy.
+    evidence: results/EXP-055/raw/ladder_runs.csv

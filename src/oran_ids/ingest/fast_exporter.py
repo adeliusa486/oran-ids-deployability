@@ -216,7 +216,30 @@ def extract(path: Path, cfg: ExporterConfig | None = None
     df["episode"] = (gap > cfg.idle_timeout_s).fillna(False).astype(int)
     df["episode"] = df.groupby(key, sort=False)["episode"].cumsum()
 
-    key2 = key + ["episode"]
+    # Active-timeout expiry (fixed 2026-09-24, EXP-043 part B). The reference
+    # closes a flow at the first packet more than active_timeout_s after the
+    # flow's first packet, and the next packet opens a new flow. Without this,
+    # long floods came out as one record where the reference emits several:
+    # 1,199 against 1,406 records on the real ddos_icmp_hping3 capture.
+    df["seg"] = 0
+    span = df.groupby(key + ["episode"], sort=False)["ts"].transform(
+        lambda s: s.iloc[-1] - s.iloc[0])
+    long_rows = span > cfg.active_timeout_s
+    if long_rows.any():
+        for _, idx in df[long_rows].groupby(key + ["episode"], sort=False).groups.items():
+            t = df.loc[idx, "ts"].to_numpy()
+            seg = np.zeros(len(t), dtype=np.int64)
+            start, s = t[0], 0
+            while True:
+                j = int(np.searchsorted(t, start + cfg.active_timeout_s, side="right"))
+                if j >= len(t):
+                    break
+                s += 1
+                seg[j:] = s
+                start = t[j]
+            df.loc[idx, "seg"] = seg
+
+    key2 = key + ["episode", "seg"]
     first = df.groupby(key2, sort=False).head(1).set_index(key2)
     fwd_src = first["src"].to_dict()
 

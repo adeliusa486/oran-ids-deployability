@@ -13,11 +13,14 @@
 %                                    siriwardhana2025descriptor
 %      siriwardhana2025descriptor -- added, peer-reviewed descriptor
 %
-%  NOT YET CHECKED.  Every other entry was written from memory.  The
-%  works exist, but author lists, page ranges, volume numbers and DOIs
-%  may contain errors of the same kind found above.  Confirm each one
-%  against IEEE Xplore, the ACM DL, doi.org or the publisher page
-%  before submitting.
+%  REVISION 2026-09-24: every entry with a DOI was checked against
+%  Crossref (title, year, volume, pages, first author, author count).
+%  Corrected: bonati2021scope (4 authors, not 7), polese2023coloran (DOI),
+%  wen2024spector (author list was wrong; DOI added),
+%  siriwardhana2025descriptor (pages), niknam2022intelligent and
+%  layeghy2022generalisability (published versions replace arXiv).
+%  arXiv only, because no published version exists yet:
+%  obiuwevwi2026realtime, fard2026crosslayer.
 %=======================================================================
 
 % ---------------------------------------------------------------- O-RAN
@@ -61,11 +64,11 @@
   number  = {10},
   pages   = {5787--5800},
   year    = {2023},
-  doi     = {10.1109/TMC.2022.3188171}
+  doi     = {10.1109/TMC.2022.3188013}
 }
 
 @inproceedings{bonati2021scope,
-  author    = {Bonati, Leonardo and D'Oro, Salvatore and Bertizzolo, Lorenzo and Demirors, Emrecan and Guan, Zhangyu and Basagni, Stefano and Melodia, Tommaso},
+  author    = {Bonati, Leonardo and D'Oro, Salvatore and Basagni, Stefano and Melodia, Tommaso},
   title     = {{SCOPE}: An Open and Softwarized Prototyping Platform for {NextG} Systems},
   booktitle = {Proc. ACM MobiSys},
   pages     = {415--426},
@@ -113,18 +116,19 @@
   doi     = {10.1109/MNET.108.2100659}
 }
 
-@article{niknam2022intelligent,
-  author  = {Niknam, Solmaz and Roy, Abhishek and Dhillon, Harpreet S. and Singh, Sukhdeep and Banerji, Rahul and Reed, Jeffrey H. and Saxena, Navrati and Yoon, Seungil},
-  title   = {Intelligent {O-RAN} for Beyond {5G} and {6G} Wireless Networks},
-  journal = {arXiv preprint arXiv:2005.08374},
-  year    = {2022},
-  url     = {https://arxiv.org/abs/2005.08374}
+@inproceedings{niknam2022intelligent,
+  author    = {Niknam, Solmaz and Roy, Abhishek and Dhillon, Harpreet S. and Singh, Sukhdeep and Banerji, Rahul and Reed, Jeffrey H. and Saxena, Navrati and Yoon, Seungil},
+  title     = {Intelligent {O-RAN} for Beyond {5G} and {6G} Wireless Networks},
+  booktitle = {Proc. IEEE Globecom Workshops (GC Wkshps)},
+  year      = {2022},
+  doi       = {10.1109/GCWkshps56602.2022.10008676}
 }
 
 @misc{oran_wg3_ricarch,
   author       = {{O-RAN Alliance}},
   title        = {{O-RAN} Near-Real-time {RAN} Intelligent Controller Architecture},
-  howpublished = {Technical Specification O-RAN.WG3.RICARCH},
+  howpublished = {Technical Specification O-RAN.WG3.RICARCH-R003-v04.00},
+  month        = mar,
   year         = {2023},
   url          = {https://www.o-ran.org/specifications}
 }
@@ -170,11 +174,12 @@
 }
 
 @inproceedings{wen2024spector,
-  author    = {Wen, Haohuang and Zhao, Phillip and Lin, Zhiqiang and Xuan, Dong and Shin, Kang G.},
+  author    = {Wen, Haohuang and Porras, Phillip and Yegneswaran, Vinod and Gehani, Ashish and Lin, Zhiqiang},
   title     = {{5G-Spector}: An {O-RAN} Compliant Layer-3 Cellular Attack Detection Service},
   booktitle = {Proc. Network and Distributed System Security Symposium (NDSS)},
   year      = {2024},
-  url       = {https://www.ndss-symposium.org/ndss2024/}
+  url       = {https://www.ndss-symposium.org/ndss2024/},
+  doi       = {10.14722/ndss.2024.24527}
 }
 
 % ---------------------------------------------------------- IoT threats
@@ -284,7 +289,7 @@
   title   = {Descriptor: {5G} Wireless Network Intrusion Detection Dataset ({5G-NIDD})},
   journal = {IEEE Data Descriptions},
   volume  = {2},
-  pages   = {1--12},
+  pages   = {358--369},
   year    = {2025},
   doi     = {10.1109/IEEEDATA.2025.3592888}
 }
@@ -313,10 +318,12 @@
 % -------------------------------------------------- evaluation critique
 @article{layeghy2022generalisability,
   author  = {Layeghy, Siamak and Portmann, Marius},
-  title   = {On Generalisability of Machine Learning-Based Network Intrusion Detection Systems},
-  journal = {arXiv preprint arXiv:2205.04112},
-  year    = {2022},
-  url     = {https://arxiv.org/abs/2205.04112}
+  title   = {Explainable Cross-Domain Evaluation of {ML}-Based Network Intrusion Detection Systems},
+  journal = {Computers and Electrical Engineering},
+  volume  = {108},
+  pages   = {108692},
+  year    = {2023},
+  doi     = {10.1016/j.compeleceng.2023.108692}
 }
 
 @article{layeghy2023benchmarking,
@@ -418,14 +425,6 @@
   url       = {https://papers.nips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html}
 }
 
-@inproceedings{ke2017lightgbm,
-  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and Wang, Taifeng and Chen, Wei and Ma, Weidong and Ye, Qiwei and Liu, Tie-Yan},
-  title     = {{LightGBM}: A Highly Efficient Gradient Boosting Decision Tree},
-  booktitle = {Advances in Neural Information Processing Systems 30 (NeurIPS)},
-  pages     = {3146--3154},
-  year      = {2017},
-  url       = {https://papers.nips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html}
-}
 
 % --- Added by EXP-036, the campaign-2 literature re-audit (2026-09-20) -------
 % Both entries close a gap this paper was built on. They are cited as prior art
@@ -440,13 +439,7 @@
   number  = {2},
   year    = {2026},
   month   = aug,
-  url     = {https://waujpas.com/index.php/journal/article/view/509},
-  note    = {Bidirectional zero-shot transfer between 5G-NIDD and
-             NetsLab-5GORAN-IDD over 15 harmonised numerical features, with
-             CORAL alignment and few-shot target adaptation. Its
-             dataset-fingerprint audit reports a source classifier at 0.993
-             balanced accuracy on the shared features, surviving alignment and
-             Top-6 filtering. Closes gap G1.}
+  url     = {https://waujpas.com/index.php/journal/article/view/509}
 }
 
 @misc{obiuwevwi2026realtime,
@@ -462,12 +455,193 @@
   eprint       = {2607.01583},
   archivePrefix = {arXiv},
   primaryClass = {cs.NI},
-  url          = {https://arxiv.org/abs/2607.01583},
-  note         = {OpenAirInterface plus FlexRIC on commodity hardware.
-                  Inference of 1--5 us for logistic regression and 10--25 us for
-                  a shallow MLP, end-to-end service latency under 4 ms, and the
-                  10 ms near-RT budget met for more than 95\% of projected loop
-                  executions. Closes gap G5, and places our emulated Python
-                  figures three orders of magnitude above a deployed
-                  implementation of the same model families.}
+  url          = {https://arxiv.org/abs/2607.01583}
+}
+
+
+% --- Added in the revision of 2026-09-24. Each checked against Crossref,
+% the arXiv API, or the publisher's proceedings page.
+@article{abedzadeh2025netslab,
+  author  = {Zadeh, Farah Abed and Civciss, Alan and Ravihansa, Vidura and Sandeepa, Chamara and Liyanage, Madhusanka},
+  title   = {Descriptor: {5G} Open Radio Access Network Multi-Modal Intrusion Detection Dataset ({NetsLab-5GORAN-IDD})},
+  journal = {IEEE Data Descriptions},
+  volume  = {2},
+  pages   = {348--357},
+  year    = {2025},
+  doi     = {10.1109/IEEEDATA.2025.3614167}
+}
+
+@misc{fard2026crosslayer,
+  author        = {Fard, Hamed and Komarov, Ilya and Wunder, Gerhard},
+  title         = {Cross-Layer Intrusion Detection in {5G} {O-RAN}: Gains and Limits of Fusing Radio Telemetry with Network Flow Records},
+  year          = {2026},
+  howpublished  = {arXiv:2606.22450},
+  url           = {https://arxiv.org/abs/2606.22450}
+}
+
+@inproceedings{scalingi2024detran,
+  author    = {Scalingi, Alessio and D'Oro, Salvatore and Restuccia, Francesco and Melodia, Tommaso and Giustiniano, Domenico},
+  title     = {{Det-RAN}: Data-Driven Cross-Layer Real-Time Attack Detection in {5G} Open {RANs}},
+  booktitle = {Proc. IEEE Conf. on Computer Communications (INFOCOM)},
+  year      = {2024},
+  doi       = {10.1109/INFOCOM52122.2024.10621223}
+}
+
+@inproceedings{pendlebury2019tesseract,
+  author    = {Pendlebury, Feargus and Pierazzi, Fabio and Jordaney, Roberto and Kinder, Johannes and Cavallaro, Lorenzo},
+  title     = {{TESSERACT}: Eliminating Experimental Bias in Malware Classification across Space and Time},
+  booktitle = {Proc. 28th USENIX Security Symposium},
+  pages     = {729--746},
+  year      = {2019}
+}
+
+@article{kapoor2023leakage,
+  author  = {Kapoor, Sayash and Narayanan, Arvind},
+  title   = {Leakage and the Reproducibility Crisis in Machine-Learning-Based Science},
+  journal = {Patterns},
+  volume  = {4},
+  number  = {9},
+  pages   = {100804},
+  year    = {2023},
+  doi     = {10.1016/j.patter.2023.100804}
+}
+
+@article{saerens2002adjusting,
+  author  = {Saerens, Marco and Latinne, Patrice and Decaestecker, Christine},
+  title   = {Adjusting the Outputs of a Classifier to New a Priori Probabilities: A Simple Procedure},
+  journal = {Neural Computation},
+  volume  = {14},
+  number  = {1},
+  pages   = {21--41},
+  year    = {2002},
+  doi     = {10.1162/089976602753284446}
+}
+
+@inproceedings{lipton2018bbse,
+  author    = {Lipton, Zachary C. and Wang, Yu-Xiang and Smola, Alexander J.},
+  title     = {Detecting and Correcting for Label Shift with Black Box Predictors},
+  booktitle = {Proc. 35th Int. Conf. on Machine Learning (ICML)},
+  pages     = {3122--3130},
+  year      = {2018}
+}
+
+@article{nadeau2003inference,
+  author  = {Nadeau, Claude and Bengio, Yoshua},
+  title   = {Inference for the Generalization Error},
+  journal = {Machine Learning},
+  volume  = {52},
+  number  = {3},
+  pages   = {239--281},
+  year    = {2003},
+  doi     = {10.1023/A:1024068626366}
+}
+
+@article{fawcett2007pav,
+  author  = {Fawcett, Tom and Niculescu-Mizil, Alexandru},
+  title   = {{PAV} and the {ROC} Convex Hull},
+  journal = {Machine Learning},
+  volume  = {68},
+  number  = {1},
+  pages   = {97--106},
+  year    = {2007},
+  doi     = {10.1007/s10994-007-5011-0}
+}
+
+@inproceedings{ovadia2019trust,
+  author    = {Ovadia, Yaniv and Fertig, Emily and Ren, Jie and Nado, Zachary and Sculley, D. and Nowozin, Sebastian and Dillon, Joshua V. and Lakshminarayanan, Balaji and Snoek, Jasper},
+  title     = {Can You Trust Your Model's Uncertainty? {E}valuating Predictive Uncertainty under Dataset Shift},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS)},
+  year      = {2019}
+}
+
+@inproceedings{rabanser2019failing,
+  author    = {Rabanser, Stephan and G{\"u}nnemann, Stephan and Lipton, Zachary C.},
+  title     = {Failing Loudly: An Empirical Study of Methods for Detecting Dataset Shift},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS)},
+  year      = {2019}
+}
+
+@inproceedings{sun2016coral,
+  author    = {Sun, Baochen and Feng, Jiashi and Saenko, Kate},
+  title     = {Return of Frustratingly Easy Domain Adaptation},
+  booktitle = {Proc. 30th AAAI Conf. on Artificial Intelligence},
+  pages     = {2058--2065},
+  year      = {2016},
+  doi       = {10.1609/aaai.v30i1.10306}
+}
+
+@inproceedings{guo2017calibration,
+  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
+  title     = {On Calibration of Modern Neural Networks},
+  booktitle = {Proc. 34th Int. Conf. on Machine Learning (ICML)},
+  pages     = {1321--1330},
+  year      = {2017}
+}
+
+@inproceedings{cho2014gru,
+  author    = {Cho, Kyunghyun and van Merri{\"e}nboer, Bart and Gulcehre, Caglar and Bahdanau, Dzmitry and Bougares, Fethi and Schwenk, Holger and Bengio, Yoshua},
+  title     = {Learning Phrase Representations using {RNN} Encoder--Decoder for Statistical Machine Translation},
+  booktitle = {Proc. Conf. on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {1724--1734},
+  year      = {2014},
+  doi       = {10.3115/v1/D14-1179}
+}
+
+% ---------------------------------------------------------------- ROUND 2 (2026-09-24)
+% Added in answer to the round-2 review (R2-C1, R3 literature). Every entry
+% with a DOI was checked against Crossref; the two arXiv entries against their
+% arXiv abstract pages. The accuracy figures the paper quotes from
+% samarakoon2022niddarxiv were read from its Table X, those from
+% ilias2024moe5g from its abstract.
+@misc{samarakoon2022niddarxiv,
+  author       = {Samarakoon, Sehan and Siriwardhana, Yushan and Porambage, Pawani and Liyanage, Madhusanka and Chang, Sang-Yoon and Kim, Jinoh and Kim, Jonghyun and Ylianttila, Mika},
+  title        = {{5G-NIDD}: A Comprehensive Network Intrusion Detection Dataset Generated over {5G} Wireless Network},
+  howpublished = {arXiv:2212.01298},
+  year         = {2022},
+  url          = {https://arxiv.org/abs/2212.01298}
+}
+
+@misc{ilias2024moe5g,
+  author       = {Ilias, Loukas and Doukas, George and Lamprou, Vangelis and Ntanos, Christos and Askounis, Dimitris},
+  title        = {Convolutional Neural Networks and Mixture of Experts for Intrusion Detection in {5G} Networks and beyond},
+  howpublished = {arXiv:2412.03483},
+  year         = {2024},
+  url          = {https://arxiv.org/abs/2412.03483}
+}
+
+@article{dhooge2020interdataset,
+  author  = {D'hooge, Laurens and Wauters, Tim and Volckaert, Bruno and De Turck, Filip},
+  title   = {Inter-Dataset Generalization Strength of Supervised Machine Learning Methods for Intrusion Detection},
+  journal = {Journal of Information Security and Applications},
+  volume  = {54},
+  pages   = {102564},
+  year    = {2020},
+  doi     = {10.1016/j.jisa.2020.102564}
+}
+
+@inproceedings{engelen2021troubleshooting,
+  author    = {Engelen, Gints and Rimmer, Vera and Joosen, Wouter},
+  title     = {Troubleshooting an Intrusion Detection Dataset: the {CICIDS2017} Case Study},
+  booktitle = {Proc. IEEE Security and Privacy Workshops (SPW)},
+  pages     = {7--12},
+  year      = {2021},
+  doi       = {10.1109/SPW53761.2021.00009}
+}
+
+@inproceedings{flood2024smells,
+  author    = {Flood, Robert and Engelen, Gints and Aspinall, David and Desmet, Lieven},
+  title     = {Bad Design Smells in Benchmark {NIDS} Datasets},
+  booktitle = {Proc. IEEE European Symposium on Security and Privacy (EuroS\&P)},
+  pages     = {658--675},
+  year      = {2024},
+  doi       = {10.1109/EuroSP60621.2024.00042}
+}
+
+@inproceedings{kus2022falsesense,
+  author    = {Kus, Dominik and Wagner, Eric and Pennekamp, Jan and Wolsing, Konrad and Fink, Ina Berenice and Dahlmanns, Markus and Wehrle, Klaus and Henze, Martin},
+  title     = {A False Sense of Security? {R}evisiting the State of Machine Learning-Based Industrial Intrusion Detection},
+  booktitle = {Proc. ACM Cyber-Physical System Security Workshop (CPSS)},
+  pages     = {73--84},
+  year      = {2022},
+  doi       = {10.1145/3494107.3522773}
 }

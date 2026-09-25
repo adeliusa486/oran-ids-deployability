@@ -1,0 +1,13 @@
+{
+  "benign_file": 5,
+  "attack_file": 15,
+  "records": 33708,
+  "benign_flows": 281525,
+  "attack_flows": 281529,
+  "equal_counts": 33704,
+  "within_one": 33707,
+  "attack_flows_in_attack_file": 281529,
+  "attack_flows_with_benign_twin": 281529,
+  "benign_total": 477737,
+  "benign_in_benign_file": 291906
+}

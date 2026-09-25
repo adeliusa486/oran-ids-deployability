@@ -241,6 +241,88 @@ def load_radio(path: Path | None = None, *, window: bool = True) -> Corpus:
                   out["session"].to_numpy(), "session", prov)
 
 
+def radio_session_timeline(path: Path | None = None) -> pd.DataFrame:
+    """One row per radio capture session, in time order, with its category.
+
+    Uses the session rule of ``load_radio`` (a gap over ``SESSION_GAP_S``
+    starts a new session), so session ids match ``load_radio().groups``.
+    Round-2 review R1-W6 asked whether time-ordered splits hold out whole
+    attack categories. This table answers it: the capture ran the benign
+    sessions first, then each attack category in a block.
+    """
+    path = path or (RAW_DA / "Lower_Layer_Data.db")
+    con = sqlite3.connect(path)
+    df = pd.read_sql("SELECT timestamp, ue_id, attack_category, traffic_type "
+                     "FROM lower_layer_data", con)
+    con.close()
+    df["ts"] = pd.to_datetime(df["timestamp"], unit="ms")
+    df = df.sort_values("ts").reset_index(drop=True)
+    df["session"] = (df["ts"].diff().dt.total_seconds() > SESSION_GAP_S).cumsum()
+    lm = load_label_map()
+    df["category"] = _apply_canonical(
+        df["attack_category"], lm["corpus_d_a"]["radio_layer"]["map"],
+        "D_A radio (timeline)").to_numpy()
+    out = df.groupby("session").agg(
+        start=("ts", "min"), end=("ts", "max"), n_records=("ts", "size"),
+        n_ues=("ue_id", "nunique"), n_categories=("category", "nunique"),
+        category=("category", "first"),
+        attack_share=("traffic_type", "mean")).reset_index()
+    out["duration_min"] = (out.end - out.start).dt.total_seconds() / 60.0
+    out["day"] = (out.start - out.start.min()).dt.total_seconds() / 86400.0
+    return out
+
+
+def load_radio_sequences(path: Path | None = None):
+    """The windows of ``load_radio(window=True)`` as raw 16-step sequences.
+
+    EXP-050 (review R4) needs a sequence model over KPM windows. It must see the
+    SAME windows as every other radio-layer model, in the same order with the
+    same labels, or its scores are not comparable. This repeats
+    ``load_radio``'s preprocessing line for line and stops before the mean/std
+    aggregation. Callers assert equality against ``load_radio()``.
+
+    Returns ``(seq, y, category, session, feature_names)`` with ``seq`` of shape
+    ``(n_windows, 16, n_features)``, NaN filled with 0 as in ``load_radio``.
+    """
+    path = path or (RAW_DA / "Lower_Layer_Data.db")
+    con = sqlite3.connect(path)
+    df = pd.read_sql("SELECT * FROM lower_layer_data", con)
+    con.close()
+
+    df["ts"] = pd.to_datetime(df["timestamp"], unit="ms")
+    df = df.sort_values("ts").reset_index(drop=True)
+    gaps = df["ts"].diff().dt.total_seconds()
+    df["session"] = (gaps > SESSION_GAP_S).cumsum()
+
+    df = df.sort_values(["ue_id", "ts"])
+    for col in ("dlBytes", "ulBytes"):
+        dt = df.groupby("ue_id")["timestamp"].diff() / 1000.0
+        delta = df.groupby("ue_id")[col].diff().clip(lower=0)
+        df[f"{col}_rate"] = (delta / dt).replace([np.inf, -np.inf], np.nan)
+    df = df.sort_values("ts").reset_index(drop=True)
+
+    lm = load_label_map()
+    numeric = [c for c in df.columns
+               if c not in set(RADIO_IDENTITY) | set(RADIO_LABELS)
+               | {"ts", "timestamp", "session", "pmi", "in_sync", "dlBytes", "ulBytes"}
+               and pd.api.types.is_numeric_dtype(df[c])]
+
+    df["_w"] = df.groupby(["session", "ue_id"]).cumcount() // 16
+    keep = df.groupby(["session", "ue_id", "_w"])["ts"].transform("size") == 16
+    dfw = df[keep].sort_values(["session", "ue_id", "_w", "ts"], kind="mergesort")
+
+    seq = (dfw[numeric].astype(np.float32).fillna(0.0).to_numpy()
+           .reshape(-1, 16, len(numeric)))
+    meta = dfw.groupby(["session", "ue_id", "_w"]).agg(
+        category_raw=("attack_category", lambda s: s.mode().iat[0]),
+        y=("traffic_type", lambda s: int(s.max()))).reset_index()
+    category = _apply_canonical(
+        meta["category_raw"], lm["corpus_d_a"]["radio_layer"]["map"],
+        "D_A radio window (sequences)")
+    return (seq, meta["y"].to_numpy(np.int8), category.to_numpy(),
+            meta["session"].to_numpy(), list(numeric))
+
+
 # ---------------------------------------------------------------------------
 # The shared feature space, and the target corpus.
 # ---------------------------------------------------------------------------
@@ -295,8 +377,21 @@ def load_network_shared(path: Path | None = None, *, dedup: bool = True,
                   groups, "src_ip", prov)
 
 
+def d_b_capture_files(offset) -> np.ndarray:
+    """1-based capture-file id for each 5G-NIDD record, in file order.
+
+    Argus's ``Offset`` is a byte offset inside one output file, so it falls at
+    every file boundary of the concatenated ``Combined.csv``. The file has 20
+    such segments: two passes over the same ten captures, one per base station
+    (round-2 review, EXP-054/055).
+    """
+    offset = np.asarray(offset)
+    return np.cumsum(np.r_[True, offset[1:] < offset[:-1]]).astype(int)
+
+
 def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
-                    reason: str = "unspecified") -> Corpus:
+                    reason: str = "unspecified",
+                    groups: str = "none") -> Corpus:
     """D_B = 5G-NIDD, the independent target corpus. TRANSFER-ONLY.
 
     Never split, never trained on, never used to fit a scaler or pick a
@@ -318,7 +413,31 @@ def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
             "obtained_from": "https://etsin.fairdata.fi/dataset/"
                              "9d13ef28-2ca7-44b0-9950-225359afac65"}
 
-    df = df.drop_duplicates()
+    if groups == "capture_file":
+        # computed on the raw row order, before deduplication
+        df["_capture_file"] = d_b_capture_files(df["Offset"].to_numpy())
+        # EXP-057: 281,525 benign-labelled records are exact copies of records
+        # labelled UDPFlood elsewhere in the corpus. Mark every benign flow
+        # whose full record (all fields but the row index, Seq, Offset and the
+        # labels) also occurs with an attack label, so evaluations can be
+        # reported with and without them. The mark is a group suffix, never a
+        # feature.
+        content = [c for c in df.columns if c not in
+                   ("Unnamed: 0", "Seq", "Offset", "Label", "Attack Type",
+                    "Attack Tool", "_capture_file")]
+        h = pd.util.hash_pandas_object(df[content], index=False).to_numpy()
+        is_att = (df["Label"] != "Benign").to_numpy()
+        att_keys = set(h[is_att])
+        conflict = (~is_att) & np.fromiter((k in att_keys for k in h), bool, len(h))
+        df["_capture_file"] = [f"{f}|c" if c else str(f)
+                               for f, c in zip(df["_capture_file"], conflict)]
+        prov["n_benign_with_attack_twin"] = int(conflict.sum())
+    elif groups != "none":
+        raise ValueError(f"unknown groups {groups!r}")
+    # exact duplicates of the published columns only, so the helper column
+    # never changes which rows survive (the one duplicate is row 0 of each
+    # base station's file, where the row index restarts)
+    df = df.drop_duplicates(subset=[c for c in df.columns if c != "_capture_file"])
     prov["n_exact_duplicates_removed"] = int(n_raw - len(df))
 
     lm = load_label_map()["corpus_d_b"]
@@ -328,13 +447,21 @@ def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
                                 "D_B category").to_numpy()
     X = _sh.from_d_b(df)
 
-    # No group key exists here, and none is needed: D_B is evaluated whole.
-    groups = np.zeros(len(X), dtype=np.int8)
+    if groups == "capture_file":
+        g = df["_capture_file"].to_numpy()
+        prov.update(n_rows_used=int(len(X)), n_features=int(X.shape[1]),
+                    group_key="capture_file (resets of Argus Offset, 20 files)",
+                    n_groups=int(len(np.unique(g))))
+        return Corpus("d_b_5gnidd_shared", X, y, category, g, "capture_file", prov)
+    # D_B carries no address or port. Without groups="capture_file" it is
+    # evaluated whole and no group key is used.
+    g = np.zeros(len(X), dtype=np.int8)
     prov.update(n_rows_used=int(len(X)), n_features=int(X.shape[1]),
-                group_key="none (transfer-only, corpus carries no identifiers)")
-    return Corpus("d_b_5gnidd_shared", X, y, category, groups,
+                group_key="none (evaluated whole)")
+    return Corpus("d_b_5gnidd_shared", X, y, category, g,
                   "none", prov)
 
 
 __all__ = ["Corpus", "load_network", "load_radio", "load_label_map",
-           "load_network_shared", "load_target_d_b"]
+           "load_network_shared", "load_target_d_b", "radio_session_timeline",
+           "d_b_capture_files"]
