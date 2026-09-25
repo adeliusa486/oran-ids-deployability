@@ -1,0 +1,50 @@
+{
+  "experiment": "EXP-058 reference",
+  "corpus": {
+    "corpus": "d_c_5gdatasets_shared",
+    "n_rows": 39425,
+    "n_features": 18,
+    "attack_prevalence_pct": 2.13,
+    "group_key": "capture_file",
+    "n_groups": 3,
+    "categories": {
+      "background": 23536,
+      "benign": 15050,
+      "syn_flood": 580,
+      "icmp_flood": 156,
+      "pfcp_deletion": 103
+    },
+    "source_files": [
+      "004-syn-flood.csv",
+      "005-icmp-flood.csv",
+      "003a-pfcp.csv"
+    ],
+    "n_rows_raw": 39425,
+    "n_rows_used": 39425,
+    "background_included": true,
+    "exporter": "NFStream",
+    "byte_accounting": "link layer; Ethernet and GTP-U overhead removed per packet"
+  },
+  "native_features": 48,
+  "native_dropped": [
+    "src_ip",
+    "dst_ip",
+    "src_mac",
+    "dst_mac",
+    "src_oui",
+    "dst_oui",
+    "src_port",
+    "dst_port",
+    "vlan_id",
+    "tunnel_id",
+    "id",
+    "expiration_id",
+    "label",
+    "*_first_seen_ms",
+    "*_last_seen_ms"
+  ],
+  "model_seed": 11,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26120-SP0",
+  "runtime_s": 131.1
+}

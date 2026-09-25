@@ -462,6 +462,54 @@ def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
                   "none", prov)
 
 
-__all__ = ["Corpus", "load_network", "load_radio", "load_label_map",
+RAW_DC = Path("data/raw/d_c")
+D_C_FILES = {"004-syn-flood.csv": "syn_flood", "005-icmp-flood.csv": "icmp_flood",
+             "003a-pfcp.csv": "pfcp_deletion"}
+D_C_LABELS = {"malicious": 1, "benign": 0, "background": 0}
+
+
+def load_target_d_c(*, reason: str = "unspecified", groups: str = "capture_file",
+                    background: bool = True) -> Corpus:
+    """D_C = the DLTeamTUC 5G datasets (Nugraha et al., IEEE CSR 2025): NFStream
+    flow records from an Open5GS 5G core in Docker. A third corpus, a third
+    flow exporter, a third site (EXP-058). Only the three flow-level files are
+    used; the others hold per-interval NAS message counts, not flows.
+
+    Labels: "malicious" is attack; "benign" (user traffic) and "background"
+    (the core's own signalling) are benign. ``background=False`` drops the
+    background flows. Categories name the attack of each file (syn_flood,
+    icmp_flood, pfcp_deletion), and "benign" / "background" otherwise. The
+    group key is the capture file. Every call is logged like D_B.
+    """
+    from .features import shared as _sh
+
+    _log_target_access(f"load_target_d_c(background={background}) reason={reason}")
+    frames = []
+    for name, attack in D_C_FILES.items():
+        df = pd.read_csv(RAW_DC / name, low_memory=False)
+        unknown = set(df["label"].unique()) - set(D_C_LABELS)
+        if unknown:
+            raise ValueError(f"D_C {name}: unmapped label(s) {sorted(unknown)}")
+        df["_file"] = name
+        df["_category"] = np.where(df["label"] == "malicious", attack, df["label"])
+        frames.append(df)
+    df = pd.concat(frames, ignore_index=True)
+    n_raw = len(df)
+    if not background:
+        df = df[df["label"] != "background"].reset_index(drop=True)
+    y = df["label"].map(D_C_LABELS).to_numpy(np.int8)
+    X = _sh.from_d_c(df)
+    g = (df["_file"].to_numpy() if groups == "capture_file"
+         else np.zeros(len(df), dtype=np.int8))
+    prov = {"source_files": list(D_C_FILES), "n_rows_raw": n_raw,
+            "n_rows_used": int(len(X)), "n_features": int(X.shape[1]),
+            "background_included": background, "exporter": "NFStream",
+            "byte_accounting": "link layer; Ethernet and GTP-U overhead removed per packet",
+            "group_key": groups, "n_groups": int(len(np.unique(g)))}
+    return Corpus("d_c_5gdatasets_shared", X, y, df["_category"].to_numpy(), g,
+                  groups, prov)
+
+
+__all__ = ["Corpus", "load_network", "load_radio", "load_label_map", "load_target_d_c",
            "load_network_shared", "load_target_d_b", "radio_session_timeline",
            "d_b_capture_files"]

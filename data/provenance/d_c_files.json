@@ -1,0 +1,32 @@
+{
+ "003a-pfcp.csv": {
+  "status": "present",
+  "bytes": 5059316,
+  "sha256": "0fab149dd8c78ca9a096602e2ae32bb7334a9aa01b85b9ab780c2c02eac0a942",
+  "source": "https://raw.githubusercontent.com/DLTeamTUC/5GDatasets/e71267ca84f6f38ab39f830a2c515555bb5f5898/csv/003a-pfcp.csv",
+  "upstream_repo": "https://github.com/DLTeamTUC/5GDatasets",
+  "upstream_commit": "e71267ca84f6f38ab39f830a2c515555bb5f5898",
+  "licence": "none stated in the upstream repository; used for research, not redistributed",
+  "retrieved": "2026-09-25"
+ },
+ "004-syn-flood.csv": {
+  "status": "present",
+  "bytes": 5833851,
+  "sha256": "dbeea8126de6062232c606ce61e492b7338cf4655c8a02910802bbacd054e847",
+  "source": "https://raw.githubusercontent.com/DLTeamTUC/5GDatasets/e71267ca84f6f38ab39f830a2c515555bb5f5898/csv/004-syn-flood.csv",
+  "upstream_repo": "https://github.com/DLTeamTUC/5GDatasets",
+  "upstream_commit": "e71267ca84f6f38ab39f830a2c515555bb5f5898",
+  "licence": "none stated in the upstream repository; used for research, not redistributed",
+  "retrieved": "2026-09-25"
+ },
+ "005-icmp-flood.csv": {
+  "status": "present",
+  "bytes": 3118253,
+  "sha256": "59d6c266fda32c056724fbddb7fe74e79d8f4f0d0634debe2295ee38a34a5c3e",
+  "source": "https://raw.githubusercontent.com/DLTeamTUC/5GDatasets/e71267ca84f6f38ab39f830a2c515555bb5f5898/csv/005-icmp-flood.csv",
+  "upstream_repo": "https://github.com/DLTeamTUC/5GDatasets",
+  "upstream_commit": "e71267ca84f6f38ab39f830a2c515555bb5f5898",
+  "licence": "none stated in the upstream repository; used for research, not redistributed",
+  "retrieved": "2026-09-25"
+ }
+}

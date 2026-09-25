@@ -1,0 +1,39 @@
+feature_space  n_features  n_flows  n_distinct  share_in_conflicting  attack_share_in_conflicting  ba_ceiling
+     shared18          18    39425        4680                0.0315                       0.7330      0.9919
+       native          48    39425        5494                0.0153                       0.6937      0.9997
+  shared18 done (97s)
+  native done (131s)
+feature_set       protocol      model    ba   auc   fpr  recall  n
+     native leave_one_file        hgb 0.500 0.663 0.001   0.000  3
+     native leave_one_file     logreg 0.659 0.809 0.015   0.333  3
+     native leave_one_file   majority 0.500 0.500 0.000   0.000  3
+     native leave_one_file        mlp 0.499 0.809 0.002   0.000  3
+     native leave_one_file         rf 0.500 0.605 0.000   0.000  3
+     native leave_one_file stratified 0.504 0.504 0.018   0.026  3
+     native leave_one_file       tree 0.493 0.493 0.013   0.000  3
+     native leave_one_file    xgboost 0.666 0.920 0.001   0.333  3
+     native         random        hgb 0.997 0.999 0.001   0.995  5
+     native         random     logreg 0.996 0.997 0.002   0.994  5
+     native         random   majority 0.500 0.500 0.000   0.000  5
+     native         random        mlp 0.997 0.997 0.001   0.994  5
+     native         random         rf 0.998 0.999 0.001   0.996  5
+     native         random stratified 0.500 0.500 0.019   0.018  5
+     native         random       tree 0.991 0.991 0.001   0.983  5
+     native         random    xgboost 0.998 0.999 0.001   0.996  5
+   shared18 leave_one_file        hgb 0.826 0.824 0.014   0.667  3
+   shared18 leave_one_file     logreg 0.665 0.374 0.003   0.333  3
+   shared18 leave_one_file   majority 0.500 0.500 0.000   0.000  3
+   shared18 leave_one_file        mlp 0.666 0.518 0.001   0.333  3
+   shared18 leave_one_file         rf 0.660 0.821 0.014   0.333  3
+   shared18 leave_one_file stratified 0.504 0.504 0.018   0.026  3
+   shared18 leave_one_file       tree 0.826 0.826 0.014   0.667  3
+   shared18 leave_one_file    xgboost 0.660 0.669 0.014   0.333  3
+   shared18         random        hgb 0.990 0.995 0.016   0.996  5
+   shared18         random     logreg 0.987 0.989 0.020   0.994  5
+   shared18         random   majority 0.500 0.500 0.000   0.000  5
+   shared18         random        mlp 0.989 0.992 0.016   0.994  5
+   shared18         random         rf 0.990 0.995 0.016   0.996  5
+   shared18         random stratified 0.500 0.500 0.019   0.018  5
+   shared18         random       tree 0.990 0.993 0.016   0.995  5
+   shared18         random    xgboost 0.990 0.995 0.016   0.995  5
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-058\reference (131s)

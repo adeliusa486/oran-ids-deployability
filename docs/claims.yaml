@@ -283,3 +283,11 @@ campaign_2_status:
       record-position fields Seq and Offset; without them the same pipeline scores
       about 77% accuracy.
     evidence: results/EXP-055/raw/ladder_runs.csv
+  C23:
+    status: SUPPORTED_NEW
+    text: >
+      On a third corpus with consistent labels (a 5G core testbed, NFStream flows),
+      detectors trained on either other corpus detect the SYN flood (recall 0.71-1.00)
+      but flag 16-81% of the site's normal flows, and none passes the deployability test.
+    evidence: results/EXP-058/
+

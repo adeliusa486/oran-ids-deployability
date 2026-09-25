@@ -54,19 +54,24 @@ def t_corpora():
     pa = json.loads((RES / "EXP-041/a_to_b__shared/statistics/provenance.json").read_text())
     pr = json.loads((RES / "EXP-042/statistics/provenance.json").read_text())["corpus"]
     a, b = pa["source"], pa["target"]
+    pc_ = RES / "EXP-058/a_to_c__shared/statistics/provenance.json"
+    c = json.loads(pc_.read_text())["target"] if pc_.exists() else None
+    col = (lambda v: f" & {v}") if c else (lambda v: "")
     rows = [
-        f"Unit & flow & 16\\,s UE window & flow {BS}",
-        f"Source & Zeek & KPM, 1\\,Hz & Argus {BS}",
-        f"Samples & {_num(a['n_rows'])} & {_num(pr['n_rows'])} & {_num(b['n_rows'])} {BS}",
-        f"Features & 18 & {pr['n_features']} & 18 {BS}",
+        f"Unit & flow & 16\\,s UE window & flow{col('flow')} {BS}",
+        f"Source & Zeek & KPM, 1\\,Hz & Argus{col('NFStream')} {BS}",
+        f"Samples & {_num(a['n_rows'])} & {_num(pr['n_rows'])} & {_num(b['n_rows'])}"
+        f"{col(_num(c['n_rows'])) if c else ''} {BS}",
+        f"Features & 18 & {pr['n_features']} & 18{col(18)} {BS}",
         f"Attack prevalence & {a['attack_prevalence_pct']:.2f}\\% & "
-        f"{pr['attack_prevalence_pct']:.2f}\\% & {b['attack_prevalence_pct']:.2f}\\% {BS}",
-        f"Attack categories & 5 & 5 & 2 {BS}",
-        f"Groups & {a['n_groups']} hosts & {pr['n_groups']} runs & none {BS}",
-        f"Role & train, test & train, test & target {BS}",
+        f"{pr['attack_prevalence_pct']:.2f}\\% & {b['attack_prevalence_pct']:.2f}\\%"
+        f"{col(format(c['attack_prevalence_pct'], '.2f') + chr(92) + '%') if c else ''} {BS}",
+        f"Attack categories & 5 & 5 & 2{col(3)} {BS}",
+        f"Groups & {a['n_groups']} hosts & {pr['n_groups']} runs & 20 files{col('3 files')} {BS}",
+        f"Role & train, test & train, test & target{col('target')} {BS}",
     ]
-    _write("rev_corpora", rows, "EXP-041, EXP-042 provenance", "lccc",
-           r"& \DA{} network & \DA{} radio & \DB{} " + BS)
+    _write("rev_corpora", rows, "EXP-041, EXP-042, EXP-058 provenance", "lcccc" if c else "lccc",
+           r"& \DA{} network & \DA{} radio & \DB{}" + (r" & \DC{}" if c else "") + " " + BS)
 
 
 def t_leakage():
@@ -263,6 +268,29 @@ def t_conflict():
            r"& & & All & Benign & Attack & ceiling " + BS)
 
 
+def t_third():
+    """EXP-058: transfer to the third corpus D_C, per architecture."""
+    f = P / "third_transfer.csv"
+    if not f.exists():
+        print("  skip third corpus"); return
+    T = pd.read_csv(f)
+    A = T[T.direction == "a_to_c"].set_index("model")
+    B = T[T.direction == "b_to_c"].set_index("model")
+    pa = pd.read_csv(P / "third_percat_a_to_c.csv").set_index("model")
+    rows = []
+    for m in NT + ["majority"]:
+        if m not in A.index:
+            continue
+        a, c = A.loc[m], pa.loc[m]
+        b = (f"{B.loc[m, 'tgt_ba']:.3f} & {B.loc[m, 'tgt_auc']:.3f}" if m in B.index else "-- & --")
+        rows.append(f"{NAME[m]} & {a.src_ba:.3f} & {a.tgt_ba:.3f} & {a.tgt_auc:.3f} & "
+                    f"{c.syn_flood:.2f} & {c.icmp_flood:.2f} & {c.pfcp_deletion:.2f} & "
+                    f"{c.background:.2f} & {b} {BS}")
+    _write("rev_third", rows, "EXP-052 third_* (EXP-058)", "lccccccccc",
+           r"& \multicolumn{7}{c}{Trained on \DA{}} & \multicolumn{2}{c}{Trained on \DB{}} \\" + "\n"
+           r"Model & Src.\ BA & Tgt.\ BA & AUC & SYN & ICMP & PFCP & Bkg. & Tgt.\ BA & AUC " + BS)
+
+
 def t_ladder():
     """EXP-055: balanced accuracy of the 5G-NIDD authors' pipeline per rung."""
     f = P / "published_ladder.csv"
@@ -391,7 +419,7 @@ def main() -> int:
     for fn in (t_corpora, t_leakage, t_drift, t_benign_sessions, t_time_split,
                lambda: t_transfer("a_to_b", "rev_transfer_fwd"),
                lambda: t_transfer("b_to_a", "rev_transfer_rev"), t_percat, t_harm,
-               t_pooled, t_estimator, t_conflict, t_ladder, t_target_ref, t_calibration, t_sequence, t_arms, t_predicate, t_latency):
+               t_pooled, t_estimator, t_conflict, t_ladder, t_target_ref, t_third, t_calibration, t_sequence, t_arms, t_predicate, t_latency):
         try:
             fn()
         except FileNotFoundError as exc:

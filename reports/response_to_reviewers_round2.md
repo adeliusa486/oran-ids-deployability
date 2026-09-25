@@ -166,6 +166,21 @@ operator parameters; the verdict's insensitivity to them is stated in VII-B.
   incident grouping (D_B has no addresses). Stated in Limitations.
 - Attacker addresses per split side: not added (open item).
 
+## Additional analysis: a third corpus (EXP-058)
+
+Both reviews noted that two corpora cannot show how the gap varies across
+deployments. We added a third, D_C: the flow-level files of the 5G core datasets
+of Nugraha et al. (IEEE CSR 2025), an Open5GS core in Docker exported by
+NFStream (39,425 flows, 839 attacks: SYN flood, ICMP flood, PFCP session
+deletion). NFStream's link-layer byte counts and the 44 bytes of GTP-U
+encapsulation on tunnelled flows are removed so the shared columns hold inner IP
+bytes. Its labels are consistent (balanced-accuracy ceiling 0.992), and models
+trained and tested on it reach 0.99. Transferred from NetsLab (20 seeds),
+balanced accuracy is 0.60-0.74 and every architecture detects the SYN flood, but
+the false positive rate is 0.23-0.81; from 5G-NIDD (10 seeds) it is 0.42-0.85.
+No architecture passes the deployability test in either direction. New Section
+VI-F and Table tab:third; Limitations now describe three corpora.
+
 ## Still open
 
 Author biographies and photographs; real RIC

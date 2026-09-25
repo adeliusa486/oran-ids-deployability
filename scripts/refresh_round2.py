@@ -14,6 +14,8 @@ if (r.RES / "EXP-055/raw/ladder_runs.csv").exists():
     r.published_ladder().to_csv(r.OUT / "published_ladder.csv", index=False)
 if (r.RES / "EXP-054/raw/runs.csv").exists():
     r.target_reference().to_csv(r.OUT / "target_reference.csv", index=False)
+for k, v in r.third_corpus().items():
+    v.to_csv(r.OUT / f"{k}.csv", index=False)
 for s in ("analysis/make_numbers.py", "analysis/make_tables_v2.py"):
     subprocess.run([sys.executable, str(ROOT / s)], check=True, cwd=ROOT,
                    stdout=subprocess.DEVNULL)

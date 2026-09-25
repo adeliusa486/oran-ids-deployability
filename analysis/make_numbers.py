@@ -425,6 +425,57 @@ def main() -> int:
         cc = PF[PF.group.astype(str).str.endswith("|c") & PF.model.isin(NONTRIVIAL)]
         put("NetCopyFlagMin", cc.fpr.min())
         put("NetCopyFlagMax", cc.fpr.max())
+    # ---- third corpus D_C (EXP-058) -------------------------------------------
+    tt = P / "third_transfer.csv"
+    if tt.exists():
+        TT = pd.read_csv(tt)
+        for lab, k in (("a_to_c", "ThA"), ("b_to_c", "ThB")):
+            g = TT[(TT.direction == lab) & TT.model.isin(NONTRIVIAL)]
+            if not len(g):
+                continue
+            put(k + "SrcBAmin", g.src_ba.min(), source="EXP-058")
+            put(k + "SrcBAmax", g.src_ba.max())
+            put(k + "TgtBAmin", g.tgt_ba.min())
+            put(k + "TgtBAmax", g.tgt_ba.max())
+            put(k + "TgtAUCmin", g.tgt_auc.min())
+            put(k + "TgtAUCmax", g.tgt_auc.max())
+            put(k + "DropMin", g.dBA_mean.min())
+            put(k + "DropMax", g.dBA_mean.max())
+            put(k + "Sig", str(int((g.dBA_p_nb_holm < 0.05).sum())))
+            put(k + "Seeds", str(int(g.n_seeds.max())))
+            pc = pd.read_csv(P / f"third_percat_{lab}.csv").set_index("model").loc[NONTRIVIAL]
+            for col, nm in (("syn_flood", "Syn"), ("icmp_flood", "Icmp"),
+                            ("pfcp_deletion", "Pfcp")):
+                put(k + nm + "Min", pc[col].min())
+                put(k + nm + "Max", pc[col].max())
+            put(k + "BgFlagMax", pc["background"].max())
+            put(k + "BenSpecMin", pc["benign"].min())
+            po = pd.read_csv(P / f"third_pooled_{lab}.csv").set_index("model").loc[NONTRIVIAL]
+            put(k + "FPRmin", po.fpr.min(), "{:.3f}")
+            put(k + "FPRmax", po.fpr.max(), "{:.3f}")
+            put(k + "PPVmax", po.ppv.max(), "{:.4f}")
+            rc = pd.read_csv(P / f"third_reach_{lab}.csv").set_index("model").loc[NONTRIVIAL]
+            put(k + "PPVbest", rc.ppv_max.max(), "{:.3f}")
+            pr = pd.read_csv(P / f"third_predicate_{lab}.csv")
+            put(k + "PredPass", str(int(pr.verdict.sum())))
+        Rf = pd.read_csv(P / "third_reference.csv")
+        Rf = Rf[Rf.model.isin(NONTRIVIAL)]
+        for (fs, pr_), g in Rf.groupby(["feature_set", "protocol"]):
+            kk = "ThRef" + {"shared18": "Sh", "native": "Nat"}[fs] + {"random": "Rand",
+                                                                      "leave_one_file": "Lofo"}[pr_]
+            put(kk + "BAmin", g.ba.min(), "{:.3f}")
+            put(kk + "BAmax", g.ba.max(), "{:.3f}")
+        Ce = pd.read_csv(P / "third_ceilings.csv").set_index("feature_space")
+        put("ThCeilShared", Ce.loc["shared18", "ba_ceiling"], "{:.3f}")
+        put("ThCeilNative", Ce.loc["native", "ba_ceiling"], "{:.3f}")
+        put("ThConfShare", 100 * Ce.loc["shared18", "share_in_conflicting"], "{:.1f}")
+        put("ThNflows", num(Ce.loc["shared18", "n_flows"]))
+        pv = json.loads((RES / "EXP-058/a_to_c__shared/statistics/provenance.json").read_text())
+        put("ThPrev", pv["target"]["attack_prevalence_pct"], "{:.1f}")
+        pcn = pd.read_csv(RES / "EXP-058/a_to_c__shared/processed/per_category_recall.csv").iloc[0]
+        put("ThNattack", num(sum(int(pcn[c + "__n"]) for c in
+                                 ("syn_flood", "icmp_flood", "pfcp_deletion"))))
+
     # ---- in-target references on D_B (EXP-054) -----------------------------
     tr_ = P / "target_reference.csv"
     if tr_.exists():

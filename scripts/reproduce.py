@@ -42,16 +42,16 @@ EXPERIMENTS = [
      [["experiments/run_leakage_v2.py"]], True, "20 min", "VI-A, Table of protocol sensitivity"),
     ("EXP-043", "per-stage latency, ONNX Runtime; extraction on real captures",
      [["experiments/run_latency_v2.py"], ["experiments/run_extraction_real.py"]],
-     True, "40 min (run alone, quiet machine)", "VI-G, latency table"),
+     True, "40 min (run alone, quiet machine)", "VI-I, latency table"),
     ("EXP-044", "calibration and label-free prior estimation",
      [["experiments/run_calibration.py", "--estimate-prior", "--out", "results/EXP-044"]],
-     True, "1-2 h", "VI-F, calibration table"),
+     True, "1-2 h", "VI-H, calibration table"),
     ("EXP-045", "domain classifier, exporter-robust subset",
      [["experiments/run_exporter_sensitivity.py"],
       ["experiments/run_transfer_v2.py", "--exp", "EXP-045", "--features", "robust", "--sweeps"]],
      True, "2-3 h", "VI-E, arms table"),
     ("EXP-046", "radio alert burden from pooled counts",
-     [["experiments/run_alert_burden_v2.py"]], True, "15 min", "VI-F, pooled table"),
+     [["experiments/run_alert_burden_v2.py"]], True, "15 min", "VI-G, pooled table"),
     ("EXP-047", "cost of the shared space on D_A",
      [["experiments/run_transfer_v2.py", "--exp", "EXP-047", "--features", "transferable", "--source-only"]],
      True, "1-2 h", "VI-E, harmonisation table"),
@@ -74,11 +74,17 @@ EXPERIMENTS = [
      [["experiments/run_alert_burden_v2.py", "--out", "results/EXP-056", "--by-session"],
       ["experiments/run_transfer_v2.py", "--exp", "EXP-056", "--direction", "a_to_b", "--sweeps",
        "--group-counts", "--seeds", "10"]],
-     True, "2 h", "VI-F, pooled table; VI-D clean target"),
+     True, "2 h", "VI-G, pooled table; VI-D clean target"),
     ("EXP-057", "5G-NIDD label-conflict audit",
      [["analysis/label_conflict_audit.py"]], True, "5 min", "VI-C, conflict table"),
+    ("EXP-058", "third corpus D_C: transfer from D_A (20 seeds) and D_B (10 seeds), references",
+     [["experiments/run_transfer_v2.py", "--exp", "EXP-058", "--direction", "a_to_c", "--sweeps", "--group-counts"],
+      ["experiments/run_transfer_v2.py", "--exp", "EXP-058", "--direction", "b_to_c", "--sweeps",
+       "--group-counts", "--seeds", "10"],
+      ["experiments/run_third_corpus_reference.py"]],
+     True, "35 min + 1.5 h + 3 min", "VI-F, third-corpus table"),
     ("diag", "Platt inversion diagnosis (EXP-044 seed 110)",
-     [["analysis/platt_diagnosis.py"]], True, "2 min", "VI-F"),
+     [["analysis/platt_diagnosis.py"]], True, "2 min", "VI-H"),
 ]
 
 PACKAGES = ["numpy", "pandas", "scipy", "sklearn", "xgboost", "matplotlib", "yaml",
@@ -119,7 +125,7 @@ def cmd_check() -> int:
             ok = False
     tex = subprocess.run(["pdflatex", "--version"], capture_output=True, text=True)
     print("  pdflatex    ", (tex.stdout.splitlines() or ["MISSING"])[0])
-    for corpus in ("d_a", "d_b"):
+    for corpus in ("d_a", "d_b", "d_c"):
         manifest = json.loads((ROOT / "data/provenance" / f"{corpus}_files.json").read_text())
         for name, info in manifest.items():
             path = ROOT / "data/raw" / corpus / name

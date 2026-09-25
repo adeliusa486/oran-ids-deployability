@@ -1321,3 +1321,18 @@ Either way the result is a sensitivity analysis, never a substitute for A3.
   changed one step per rung: without Seq/Offset, capture-file-disjoint,
   base-station-disjoint. Deviations: 2 repeats instead of 10, scikit-learn
   defaults (grid not reported), MLP with early stopping.
+
+## D-034 — A third corpus is added (EXP-058, 2026-09-25)
+
+- D_C = flow-level files of the DLTeamTUC 5G datasets (Nugraha et al., IEEE CSR
+  2025): Open5GS core in Docker, NFStream exporter, 39,425 flows, 839 attacks
+  (SYN flood, ICMP flood, PFCP session deletion). Chosen because it is public,
+  flow-level, and changes site, exporter and vantage point at once. It is a 5G
+  core testbed, not O-RAN, and holds no radio telemetry; stated as such.
+- NFStream link-layer bytes and GTP-U encapsulation (44 B per tunnelled packet)
+  are removed so the shared columns hold inner IP bytes, as for D_A.
+- D_A -> D_C: 20 split seeds (same training as EXP-041). D_B -> D_C: 10 seeds.
+  No cluster intervals on D_C: three capture files.
+- Result: labels consistent (ceiling 0.992); in-target BA 0.99; transfer BA
+  0.60-0.74 from D_A and 0.42-0.85 from D_B; SYN flood recall 1.00 from D_A and
+  0.71-1.00 from D_B, false positive rate 0.16-0.81; deployability test 0 of 6 in both directions.

@@ -48,7 +48,8 @@ Facts about the data the analysis depends on:
   `Offset` resets recover 20 capture files: two passes of ten captures, one per
   base station. 281,525 of 477,737 benign flows are exact copies of UDPFlood
   records of another file (EXP-057).
-- Every read of D_B is logged to `results/EXP-026/logs/target_access.log`.
+- D_C: DLTeamTUC 5G datasets (Nugraha et al., IEEE CSR 2025), https://github.com/DLTeamTUC/5GDatasets at commit e71267c, files `csv/003a-pfcp.csv`, `csv/004-syn-flood.csv`, `csv/005-icmp-flood.csv` into `data/raw/d_c/` (no licence stated upstream; not redistributed). NFStream bytes are converted to inner IP bytes (EXP-058).
+- Every read of D_B and D_C is logged to `results/EXP-026/logs/target_access.log`.
 
 ## 3. Repository layout
 
@@ -149,6 +150,7 @@ Review: `reports/peer_review_round2_2026-09-24.md`; decisions D-030 to D-033.
 | EXP-055 | Published pipeline down the ladder | `run_published_pipeline.py --repeats 2` | complete | Reproduces 99.87-99.96% accuracy; without Seq/Offset 76.9% (BA 0.71), though RF still scores 0.9999 on flows without the conflicting copies; held-out capture files BA 0.80 without the counters (folds 0.50-1.00); across base stations 0.66-0.69; passes the deployability test only at R0 |
 | EXP-056 | Cluster-bootstrap intervals | `run_alert_burden_v2.py --out results/EXP-056 --by-session`; `run_transfer_v2.py --exp EXP-056 --direction a_to_b --sweeps --group-counts` | complete (flows on 10 seeds) | Counts equal EXP-046/EXP-041. Radio FPR for LR [0.02, 0.55] (Wilson [0.21, 0.24]); best-threshold PPV interval reaches 1.0. D_B without conflicting copies: transfer BA 0.61-0.78 (LR 0.61, others 0.74-0.78), 0.06-0.25 below the in-target reference; FPR 0.026-0.183; deployability test 0 of 6 |
 | EXP-057 | Are D_B labels a function of the record? | `analysis/label_conflict_audit.py` | complete | 52% of flows on records with both labels; file 5 benign = copies of file 15 UDPFlood (33,704 of 33,708 equal counts); BA ceiling 0.766 native, 0.753 shared, 1.000 with Seq/Offset |
+| EXP-058 | Does the transfer result hold on a third corpus? | `run_transfer_v2.py --exp EXP-058 --direction a_to_c` (20 seeds) and `b_to_c` (10 seeds); `run_third_corpus_reference.py` | complete | Third corpus = DLTeamTUC 5G core datasets (NFStream, 39,425 flows, 839 attacks). Labels consistent (ceiling 0.992), in-target BA 0.99. Transfer BA 0.60-0.74 from NetsLab, 0.42-0.85 from 5G-NIDD; SYN flood recall 1.00 from NetsLab and 0.71-1.00 from 5G-NIDD; FPR 0.16-0.81; deployability test 0 of 6 |
 | diag. | Platt inversion | `analysis/platt_diagnosis.py` | complete | Calibration fold AUC 0.48 vs test 0.97; slope -0.55 |
 
 ## 6. Claims withdrawn
@@ -166,7 +168,7 @@ Review: `reports/peer_review_round2_2026-09-24.md`; decisions D-030 to D-033.
 ## 7. Known limitations
 
 - No real near-RT RIC; latency emulated on one Windows host.
-- Two corpora, two exporters; the D_B base-station split holds the exporter fixed.
+- Three corpora, three exporters; the third is a 5G core testbed, not O-RAN, with three capture files.
 - Radio layer: 30 sessions (10 benign) in scenario blocks six weeks apart.
 - 5G-NIDD labels conflict for 59% of benign flows; results given with and without.
 - Author biographies and photographs are still to be added before submission.

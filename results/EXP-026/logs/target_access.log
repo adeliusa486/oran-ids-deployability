@@ -42,3 +42,16 @@
 2026-09-25T10:40:20	EXP-054 in-target reference: Combined.csv + Encoded.csv, D_B trained on as SOURCE (round-2 R1-W1)
 2026-09-25T10:40:20	EXP-055 published-pipeline reproduction (Encoded.csv, trains on D_B)
 2026-09-25T10:41:12	load_target_d_b(nrows=None) reason=EXP-056 a_to_b features=shared
+2026-09-25T14:55:24	load_target_d_c(background=True) reason=EXP-058 loader check
+2026-09-25T14:55:55	load_target_d_c(background=True) reason=EXP-058smoke a_to_c features=shared
+2026-09-25T14:56:34	load_target_d_c(background=True) reason=EXP-058smoke b_to_c features=shared
+2026-09-25T14:56:34	load_target_d_b(nrows=None) reason=EXP-058smoke b_to_c features=shared (as SOURCE for D_C)
+2026-09-25T15:00:35	load_target_d_c(background=True) reason=EXP-058 b_to_c features=shared
+2026-09-25T15:00:35	load_target_d_c(background=True) reason=EXP-058 a_to_c features=shared
+2026-09-25T15:00:36	load_target_d_b(nrows=None) reason=EXP-058 b_to_c features=shared (as SOURCE for D_C)
+2026-09-25T15:01:19	load_target_d_c(background=True) reason=EXP-058 reference (D_C trained on as SOURCE)
+2026-09-25T15:01:20	EXP-058 reference: native NFStream fields of D_C
+2026-09-25T15:03:53	load_target_d_c(background=True) reason=EXP-058 b_to_c features=shared
+2026-09-25T15:03:53	load_target_d_b(nrows=None) reason=EXP-058 b_to_c features=shared (as SOURCE for D_C)
+2026-09-25T16:45:19	load_target_d_c(background=True) reason=EXP-058 b_to_c features=shared
+2026-09-25T16:45:19	load_target_d_b(nrows=None) reason=EXP-058 b_to_c features=shared (as SOURCE for D_C)

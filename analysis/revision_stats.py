@@ -440,6 +440,33 @@ def published_ladder() -> pd.DataFrame:
     return S
 
 
+def third_corpus() -> dict[str, pd.DataFrame]:
+    """EXP-058: transfer from D_A and from D_B to the third corpus D_C.
+    D_C has three capture files, too few to resample, so its operating points
+    are pooled point estimates without a cluster interval."""
+    out = {}
+    tr = []
+    for tag, lab in (("EXP-058/a_to_c__shared", "a_to_c"), ("EXP-058/b_to_c__shared", "b_to_c")):
+        if (RES / tag / "raw/runs.csv").exists():
+            tr.append(transfer(tag, lab))
+            pc = pd.read_csv(RES / tag / "processed/per_category_recall.csv")
+            keep = [c for c in pc.columns if not c.endswith("__n") and c not in ("split_seed",)]
+            out[f"third_percat_{lab}"] = pc[keep].groupby("model").mean(numeric_only=True).reset_index()
+            cnt = pd.read_csv(RES / tag / "raw/tau_counts.csv")
+            cnt = cnt[cnt.domain == "target"]
+            a, s, r = pooled(cnt, "flow")
+            out[f"third_pooled_{lab}"] = a
+            out[f"third_reach_{lab}"] = r
+            out[f"third_predicate_{lab}"] = predicate(tr[-1], cnt)
+    if tr:
+        out["third_transfer"] = pd.concat(tr)
+    ref = RES / "EXP-058/reference/processed"
+    if ref.exists():
+        out["third_reference"] = pd.read_csv(ref / "summary.csv")
+        out["third_ceilings"] = pd.read_csv(ref / "ceilings.csv")
+    return out
+
+
 def target_reference() -> pd.DataFrame:
     """EXP-054: balanced accuracy of models trained and tested on D_B itself."""
     R = pd.read_csv(RES / "EXP-054/raw/runs.csv")
@@ -648,6 +675,8 @@ def main() -> int:
         published_ladder().to_csv(OUT / "published_ladder.csv", index=False)
     if (RES / "EXP-054/raw/runs.csv").exists():
         target_reference().to_csv(OUT / "target_reference.csv", index=False)
+    for k, v in third_corpus().items():
+        v.to_csv(OUT / f"{k}.csv", index=False)
 
     (OUT / "notes.json").write_text(json.dumps(notes, indent=2, default=float),
                                     encoding="utf-8")

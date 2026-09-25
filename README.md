@@ -27,8 +27,9 @@ against the paper (see [Reproducing](#reproducing)).
 | Are 5G-NIDD's labels consistent? | No. 59% of its benign flows are exact copies of UDP-flood records labeled as attacks in the other base station's capture. No classifier reading the record can exceed balanced accuracy 0.766 (0.753 in the shared feature space). | VI-C |
 | Does a published 99.9% survive? | The dataset authors' pipeline reproduces (99.87% to 99.96% accuracy) but rests on two record-position fields; without them it scores 76.9%, lower again on held-out capture files and base stations. | VI-C |
 | Does a detector transfer between corpora? | Balanced accuracy on 5G-NIDD is 0.53 to 0.63 on all flows and 0.61 to 0.78 on flows with consistent labels, below what the target itself allows. | VI-D |
-| Is it usable at a realistic base rate? | At attack prevalence 0.002, operational precision on 5G-NIDD reaches at most 0.063 at any threshold keeping recall above 10%, even on flows with consistent labels. No architecture passes the deployability test; the published pipeline passes it only on its own random split. | VI-F, VII-B |
-| How should precision be estimated? | Averaging precision over folds inflates the best-to-worst ratio between architectures from 1.45 (pooled counts) to 16.0. | VI-F |
+| Is it usable at a realistic base rate? | At attack prevalence 0.002, operational precision on 5G-NIDD reaches at most 0.063 at any threshold keeping recall above 10%, even on flows with consistent labels. No architecture passes the deployability test; the published pipeline passes it only on its own random split. | VI-G, VII-B |
+| Does it hold on a third corpus? | Yes. On a 5G core testbed with consistent labels (NFStream flows), detectors find the SYN flood (recall 1.00 from NetsLab, 0.71 to 1.00 from 5G-NIDD) but flag 16% to 81% of normal flows; balanced accuracy 0.60 to 0.74 from NetsLab, 0.42 to 0.85 from 5G-NIDD, against 0.99 in-target. | VI-F |
+| How should precision be estimated? | Averaging precision over folds inflates the best-to-worst ratio between architectures from 1.45 (pooled counts) to 16.0. | VI-G |
 
 Latency is emulated on one host (no RIC in the path). All claims that earlier
 versions made and later measurements retired are listed in
@@ -62,7 +63,7 @@ Full instructions for reviewers: **[REPRODUCE.md](REPRODUCE.md)**.
 pip install -r requirements.lock && pip install -e .
 python -m pytest -q                      # 61 tests
 python scripts/reproduce.py paper        # regenerate every number, table and figure
-                                         # from results/, verify 36 of 36 identical,
+                                         # from results/, verify 37 of 37 identical,
                                          # rebuild paper/main.pdf (minutes, no data)
 python scripts/reproduce.py list         # every experiment with its exact command
 python scripts/reproduce.py experiment EXP-055   # re-run one from raw data
@@ -73,15 +74,15 @@ Versions that produced every result are pinned in `requirements.lock`.
 
 ## Data
 
-The corpora are public (CC-BY-4.0) and are not redistributed here.
+The corpora are public and are not redistributed here (the first two are CC-BY-4.0; the third states no licence).
 
-| | NetsLab-5GORAN-IDD | 5G-NIDD |
-|---|---|---|
-| Role | source (training) | target (transfer), audited |
-| Flow exporter | Zeek | Argus |
-| Download | https://zenodo.org/records/18923275 | https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65 |
-| Place in | `data/raw/d_a/` | `data/raw/d_b/` |
-| Checksums | `data/provenance/d_a_files.json` | `data/provenance/d_b_files.json` |
+| | NetsLab-5GORAN-IDD | 5G-NIDD | 5G core datasets (third) |
+|---|---|---|---|
+| Role | source (training) | target (transfer), audited | second target |
+| Flow exporter | Zeek | Argus | NFStream |
+| Download | https://zenodo.org/records/18923275 | https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65 | https://github.com/DLTeamTUC/5GDatasets (commit e71267c) |
+| Place in | `data/raw/d_a/` | `data/raw/d_b/` | `data/raw/d_c/` |
+| Checksums | `data/provenance/d_a_files.json` | `data/provenance/d_b_files.json` | `data/provenance/d_c_files.json` |
 
 `python scripts/reproduce.py check` verifies the files. Every read of 5G-NIDD is
 logged to `results/EXP-026/logs/target_access.log`.
@@ -108,8 +109,8 @@ is at the end of `MEMORY.md`.
 
 ## Limitations
 
-No measurement inside a real near-real-time RIC (latency is emulated). Two
-corpora from two different flow exporters. The radio layer has 30 capture
+No measurement inside a real near-real-time RIC (latency is emulated). Three
+corpora, the third a 5G core testbed rather than O-RAN. The radio layer has 30 capture
 sessions, 10 of them benign. 5G-NIDD's label conflicts cannot be resolved from
 the published files; results are reported with and without the conflicting
 records.

@@ -146,6 +146,40 @@ def from_d_b(df: pd.DataFrame) -> pd.DataFrame:
     return _finish(out)
 
 
+ETH_BYTES = 14          # Ethernet header, counted by NFStream's default accounting
+GTPU_OVERHEAD = 44      # outer IPv4 (20) + UDP (8) + GTP-U with extension header (16)
+_PROTO_NUMBERS = {1: "icmp", 6: "tcp", 17: "udp"}
+
+
+def from_d_c(df: pd.DataFrame) -> pd.DataFrame:
+    """NFStream flow records (DLTeamTUC 5G datasets, EXP-058) -> shared space.
+
+    NFStream counts bytes at the link layer, so a bare TCP packet is 54 bytes
+    where Zeek's ip_bytes counts 40. Flows seen inside the GTP-U tunnel
+    (``tunnel_id != 0``) carry a further 44 bytes per packet of encapsulation
+    (TCP 98 against 54, ICMP echo 86 against 42 in these captures). Both are
+    removed per packet and per direction, so the columns hold IP-layer bytes of
+    the inner packet, as they do for D_A.
+    """
+    need = {"bidirectional_duration_ms", "src2dst_bytes", "dst2src_bytes",
+            "src2dst_packets", "dst2src_packets", "protocol", "tunnel_id"}
+    missing = need - set(df.columns)
+    if missing:
+        raise KeyError(f"D_C is missing shared-space source columns: {sorted(missing)}")
+    per_pkt = ETH_BYTES + np.where(_num(df["tunnel_id"]) != 0, GTPU_OVERHEAD, 0)
+    out = pd.DataFrame(index=df.index)
+    out["duration"] = _num(df["bidirectional_duration_ms"]) / 1000.0
+    out["src_pkts"] = _num(df["src2dst_packets"])
+    out["dst_pkts"] = _num(df["dst2src_packets"])
+    out["src_bytes"] = (_num(df["src2dst_bytes"]) - out["src_pkts"] * per_pkt).clip(lower=0)
+    out["dst_bytes"] = (_num(df["dst2src_bytes"]) - out["dst_pkts"] * per_pkt).clip(lower=0)
+    out["tot_pkts"] = out["src_pkts"] + out["dst_pkts"]
+    out["tot_bytes"] = out["src_bytes"] + out["dst_bytes"]
+    out["proto"] = _normalise_proto(_num(df["protocol"]).astype(int).map(_PROTO_NUMBERS)
+                                    .fillna("other"))
+    return _finish(out)
+
+
 def assert_compatible(a: pd.DataFrame, b: pd.DataFrame) -> None:
     """Fail loudly if the two matrices are not the same space.
 
@@ -161,5 +195,5 @@ def assert_compatible(a: pd.DataFrame, b: pd.DataFrame) -> None:
 
 
 __all__ = ["COLUMNS", "BASE_NUMERIC", "DERIVED", "PROTO_LEVELS", "PROTO_COLS",
-           "from_d_a", "from_d_b", "assert_compatible", "load_spec",
+           "from_d_a", "from_d_b", "from_d_c", "assert_compatible", "load_spec",
            "DURATION_FLOOR_S"]

@@ -55,11 +55,11 @@ This runs, in order:
    for every number that appears in the text. No number is typed by hand.
 3. `analysis/make_tables_v2.py` and `analysis/make_figures_v2.py`: every table
    and data figure.
-4. A comparison of the 36 regenerated files in `tables/generated/` against
+4. A comparison of the 37 regenerated files in `tables/generated/` against
    `reproducibility/expected_outputs.json` (comment lines, which carry the
-   date and commit, are ignored). Expected result: `36 of 36 generated files
+   date and commit, are ignored). Expected result: `37 of 37 generated files
    identical`.
-5. `scripts/build_paper.py` (expected: 17 pages, 0 errors, 0 undefined
+5. `scripts/build_paper.py` (expected: 18 pages, 0 errors, 0 undefined
    references), `scripts/check_withdrawn_claims.py` (no retired claim in the
    text) and `scripts/check_no_placeholders.py`.
 
@@ -74,10 +74,11 @@ line in `tables/generated/numbers.tex`, whose comment names the source file.
 |---|---|---|---|
 | NetsLab-5GORAN-IDD | `Network_Dataset.csv`, `Lower_Layer_Data.db` | https://zenodo.org/records/18923275 (DOI 10.1109/IEEEDATA.2025.3614167) | `data/raw/d_a/` |
 | 5G-NIDD | `Combined.csv`, `Encoded.csv` (from `Combined.zip`, `Encoded.zip`) | https://etsin.fairdata.fi/dataset/9d13ef28-2ca7-44b0-9950-225359afac65 | `data/raw/d_b/` |
+| 5G core datasets (Nugraha et al., IEEE CSR 2025) | `csv/003a-pfcp.csv`, `csv/004-syn-flood.csv`, `csv/005-icmp-flood.csv` | https://github.com/DLTeamTUC/5GDatasets at commit e71267ca84f6f38ab39f830a2c515555bb5f5898 | `data/raw/d_c/` |
 
-Both are CC-BY-4.0 and are not redistributed here. `python scripts/reproduce.py
+The first two are CC-BY-4.0; the third states no licence. None is redistributed here. `python scripts/reproduce.py
 check` verifies each file against the SHA-256 recorded in
-`data/provenance/d_a_files.json` and `d_b_files.json`.
+`data/provenance/d_a_files.json`, `d_b_files.json` and `d_c_files.json`.
 
 ### Running
 
@@ -112,9 +113,10 @@ runs can be started detached with `scripts/round2_launch.ps1` (Windows).
 | EXP-057, EXP-055, EXP-054 | Sec. VI-C | 59% of 5G-NIDD benign flows are copies of flood records; BA ceiling 0.766; the published 99.87-99.96% falls to 76.9% without Seq/Offset |
 | EXP-041, EXP-056 | Sec. VI-D | Transfer BA 0.53-0.63 on all flows, 0.61-0.78 without conflicting copies |
 | EXP-045, 047, 048, 049 | Sec. VI-E | Robust subset, CORAL and novelty detectors do not transfer |
-| EXP-046, EXP-056 | Sec. VI-F | Pooled operating points with cluster-bootstrap intervals |
-| EXP-044, diag. | Sec. VI-G | Calibration and prior estimation |
-| EXP-043 | Sec. VI-H | Emulated per-stage latency |
+| EXP-058 | Sec. VI-F | A third corpus (5G core, NFStream): floods are found, most normal traffic is flagged |
+| EXP-046, EXP-056 | Sec. VI-G | Pooled operating points with cluster-bootstrap intervals |
+| EXP-044, diag. | Sec. VI-H | Calibration and prior estimation |
+| EXP-043 | Sec. VI-I | Emulated per-stage latency |
 
 Details of every experiment, including the withdrawn ones, are in `EXPERIMENTS.md`.
 

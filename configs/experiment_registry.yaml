@@ -833,17 +833,17 @@ campaign_2:
   EXP-054:
     title: In-target references on D_B (random, capture-file-disjoint, base-station-disjoint; shared and native features)
     runner: experiments/run_target_reference.py --seeds 3 --native-seeds 2
-    status: running
+    status: complete
     answers: [R1-W1, R2-C3]
   EXP-055:
     title: The 5G-NIDD authors' published pipeline reproduced and run down the ladder
     runner: experiments/run_published_pipeline.py --repeats 2
-    status: running
+    status: complete
     answers: [R2-C1, R2-C2]
   EXP-056:
     title: Cluster-bootstrap intervals for pooled operating points (deterministic re-runs of EXP-046 and EXP-041 with per-cluster counts)
     runner: [experiments/run_alert_burden_v2.py --out results/EXP-056 --by-session, experiments/run_transfer_v2.py --exp EXP-056 --direction a_to_b --sweeps --group-counts --seeds 10]
-    status: running
+    status: complete
     answers: [R1-W4]
   EXP-057:
     title: 5G-NIDD label-conflict audit
@@ -851,3 +851,10 @@ campaign_2:
     status: complete
     answers: [R1-W1]
     result: 52% of flows on records carrying both labels; file 5 benign flows are copies of file 15 UDPFlood flows (33,704 of 33,708 records in equal counts); BA ceiling 0.766 native, 0.753 shared.
+  EXP-058:
+    title: Third corpus D_C (DLTeamTUC 5G datasets, NFStream) as a second transfer target
+    runner: [experiments/run_transfer_v2.py --exp EXP-058 --direction a_to_c --sweeps --group-counts, experiments/run_transfer_v2.py --exp EXP-058 --direction b_to_c --sweeps --group-counts --seeds 10, experiments/run_third_corpus_reference.py]
+    status: complete
+    answers: [round-2 open item, third corpus]
+    result: D_C labels consistent (BA ceiling 0.992); in-target BA 0.99; transfer BA 0.60-0.74 from D_A (20 seeds, 0 of 6 significant drops), 0.42-0.85 from D_B (10 seeds); SYN flood recall 1.00 from D_A, 0.71-1.00 from D_B; FPR 0.16-0.81; deployability test 0 of 6 both directions.
+

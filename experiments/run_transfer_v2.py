@@ -51,7 +51,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from oran_ids.data import (load_network, load_network_shared,  # noqa: E402
-                           load_target_d_b)
+                           load_target_d_b, load_target_d_c)
 from oran_ids.features.shared import (COLUMNS, PROTO_COLS,  # noqa: E402
                                       assert_compatible)
 from oran_ids.metrics import detection_metrics  # noqa: E402
@@ -151,6 +151,14 @@ def load_pair(direction: str, features: str, source_only: bool):
         tgt = None if source_only else load_target_d_b(
             reason=reason, groups="capture_file" if GROUP_COUNTS else "none")
         return src, tgt, src.groups, True
+    if direction in ("a_to_c", "b_to_c"):
+        # EXP-058: a third corpus (NFStream, Open5GS core) as target
+        tgt = None if source_only else load_target_d_c(reason=reason)
+        if direction == "a_to_c":
+            src = load_network_shared()
+            return src, tgt, src.groups, True
+        src = load_target_d_b(reason=reason + " (as SOURCE for D_C)")
+        return src, tgt, np.arange(len(src.y)), False
     src = load_target_d_b(reason=reason + " (as SOURCE, reverse check)")
     tgt = None if source_only else load_network_shared()
     return src, tgt, np.arange(len(src.y)), False
@@ -221,7 +229,10 @@ def run(args) -> None:
                 # round-2 R1-W4: counts per cluster, for a cluster bootstrap.
                 # source clusters are source addresses, target clusters are
                 # capture files.
-                glist = [("source_heldout", yte, s_src, np.asarray(gs)[sp.test_idx])]
+                # a source without a group key (random split, one "group" per
+                # row) has no clusters; counting per row built ~10^7 tables
+                glist = ([("source_heldout", yte, s_src, np.asarray(gs)[sp.test_idx])]
+                         if grouped else [])
                 if Xt_eval is not None:
                     glist.append(("target", tgt.y, s_tgt, np.asarray(tgt.groups)))
                 for dom, yy, ss, gg in glist:
@@ -298,7 +309,7 @@ def main() -> None:
     global EXP, GROUP_COUNTS
     ap = argparse.ArgumentParser()
     ap.add_argument("--exp", required=True)
-    ap.add_argument("--direction", default="a_to_b", choices=["a_to_b", "b_to_a"])
+    ap.add_argument("--direction", default="a_to_b", choices=["a_to_b", "b_to_a", "a_to_c", "b_to_c"])
     ap.add_argument("--features", default="shared",
                     choices=["shared", "robust", "transferable"])
     ap.add_argument("--adapt", default="none", choices=["none", "coral"])

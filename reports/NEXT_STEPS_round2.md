@@ -12,7 +12,7 @@ done; what remains open is at the end.
   VI-A..VI-G, VII-B, IX, X; Fig. 2; new Tables tab:timesplit, tab:benign,
   tab:conflict, tab:target_ref, tab:ladder; Table XIII with cluster-bootstrap
   intervals and a "D_B without conflicts" block. Every number is a macro.
-- Checks: build 17 pages, 0 errors, 0 undefined refs, 0 overfull boxes;
+- Checks: build 18 pages, 0 errors, 0 undefined refs, 0 overfull boxes;
   check_withdrawn_claims OK (23 patterns); check_no_placeholders OK;
   pytest 61/61; diff.pdf (track changes vs the reviewed manuscript) 22 pages.
 - Records: MEMORY.md change log, configs/decisions.md D-030..D-033,
@@ -27,13 +27,14 @@ done; what remains open is at the end.
 - Corresponding-author line and e-mail addresses (not given yet).
 - Real near-RT RIC measurement (EXP-031 blocked on this host).
 - A LICENSE file for the public repository (not chosen yet).
-- Optional, deliberately left out: more seeds for EXP-054/055/056, a third
-  corpus, attacker addresses per split side, informing the 5G-NIDD authors.
+- Optional, deliberately left out: more seeds for EXP-054/055/056, attacker
+  addresses per split side, informing the 5G-NIDD authors.
+- Done 2026-09-25 afternoon: third corpus (EXP-058, Section VI-F).
 
 Done on 2026-09-25: authors and affiliation set; paper moved to the official
 IEEE Access class (template of 2026-05-13, `paper/access/`, three documented
 compatibility fixes in the preamble); `REPRODUCE.md` and
-`scripts/reproduce.py` (Level 1 reproduces 36 of 36 generated files); new
+`scripts/reproduce.py` (Level 1 reproduces 37 of 37 generated files); new
 README; reproducibility zip; pushed to GitHub.
 
 ## If a new session continues
