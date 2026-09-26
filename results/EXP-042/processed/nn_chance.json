@@ -1,0 +1,7 @@
+{
+  "sessions": 30,
+  "windows": 2808,
+  "chance_any": 0.05311467642308098,
+  "chance_same_category": 0.2701196226635742,
+  "note": "expected share of test windows whose nearest training window shares their session if that neighbour were random"
+}

@@ -67,11 +67,11 @@ def t_corpora():
         f"{pr['attack_prevalence_pct']:.2f}\\% & {b['attack_prevalence_pct']:.2f}\\%"
         f"{col(format(c['attack_prevalence_pct'], '.2f') + chr(92) + '%') if c else ''} {BS}",
         f"Attack categories & 5 & 5 & 2{col(3)} {BS}",
-        f"Groups & {a['n_groups']} hosts & {pr['n_groups']} runs & 20 files{col('3 files')} {BS}",
+        f"Groups & {a['n_groups']} hosts & {pr['n_groups']} sessions & 20 files{col('3 files')} {BS}",
         f"Role & train, test & train, test & target{col('target')} {BS}",
     ]
     _write("rev_corpora", rows, "EXP-041, EXP-042, EXP-058 provenance", "lcccc" if c else "lccc",
-           r"& \DA{} network & \DA{} radio & \DB{}" + (r" & \DC{}" if c else "") + " " + BS)
+           r"& \DA{} flows & \DA{} radio & \DB{}" + (r" & \DC{}" if c else "") + " " + BS)
 
 
 def t_leakage():
@@ -92,7 +92,7 @@ def t_leakage():
                     f"{_iv(r.rg_nb_lo, r.rg_nb_hi)} & {r.rs_mean:+.3f} "
                     f"{_iv(r.rs_nb_lo, r.rs_nb_hi)} {BS}")
     _write("rev_leakage", rows, "EXP-052 leakage_stats, leakage_nn1 (EXP-042)", "lccccc",
-           r"Model & Random & Run-disj. & Cat.-strat. & $\Delta_{\mathrm{R-RD}}$ [95\% CI] & "
+           r"Model & Random & Sess.-disj. & Cat.-strat. & $\Delta_{\mathrm{R-SD}}$ [95\% CI] & "
            r"$\Delta_{\mathrm{R-CS}}$ [95\% CI] " + BS)
 
 
@@ -219,13 +219,13 @@ def t_pooled():
     (round-2 R1-W4) where it exists, otherwise Wilson (flagged in the log)."""
     rows = []
     blocks = [("pooled_radio_tau05.csv", r"\DA{} radio", "ue", "pooled_radio_bootstrap.csv"),
-              ("pooled_network_source_heldout_tau05.csv", r"\DA{} network", "flow",
+              ("pooled_network_source_heldout_tau05.csv", r"\DA{} flows", "flow",
                "pooled_network_source_heldout_bootstrap.csv"),
               ("pooled_network_target_tau05.csv", r"\DB{} (transfer)", "flow",
                "pooled_network_target_bootstrap.csv")]
     if (P / "pooled_network_target_clean_tau05.csv").exists():
         blocks.append(("pooled_network_target_clean_tau05.csv",
-                       r"\DB{} w/o conflicts", "flow",
+                       r"\DB{} w/o copies", "flow",
                        "pooled_network_target_clean_bootstrap.csv"))
     for fname, label, unit, bfile in blocks:
         A = _ord(pd.read_csv(P / fname))
@@ -249,7 +249,7 @@ def t_pooled():
     rows.pop()
     _write("rev_pooled", rows, "EXP-052 pooled_* and *_bootstrap (EXP-046, EXP-041, EXP-056)",
            "llcccccc",
-           r"Corpus & Model & TPR & FPR [95\% CI] & Corpus $P$ & PPV & False alerts$^{\dagger}$ & "
+           r"Corpus & Model & Recall & FPR [95\% CI] & Corpus prec. & PPV & False alerts$^{\dagger}$ & "
            r"Best PPV$^{\ddagger}$ " + BS)
 
 def t_conflict():
@@ -310,12 +310,17 @@ def t_ladder():
             continue
         cells = [f"{g.loc[m, 'ba']:.4f}" if m in g.index else "--"
                  for m in ("dt", "rf", "knn", "nb", "mlp")]
+        # RF columns on ONE label set, and pass counts on both (writing audit
+        # C-03, H-26: the earlier BA was clean while the FPR was all flows)
         rf = g.loc["rf"] if "rf" in g.index else None
-        tail = (f"{rf.ba_clean:.4f} & {rf.fpr:.4f}" if rf is not None else "-- & --")
-        rows.append(f"{rung} & {split} & {feats} & " + " & ".join(cells) + f" & {tail} {BS}")
-    _write("rev_ladder", rows, "EXP-052 published_ladder (EXP-055)", "lllccccccc",
-           r"& & & \multicolumn{5}{c}{Balanced accuracy} & \multicolumn{2}{c}{RF} \\" + "\n"
-           r"Rung & Split & Features & DT & RF & KNN & NB & MLP & BA$^{\ast}$ & FPR " + BS)
+        tail = (f"{rf.ba_clean:.4f} & {rf.fpr_clean:.4f}" if rf is not None else "-- & --")
+        npass = f"{int(g.verdict.sum())} / {int(g.verdict_clean.sum())}"
+        rows.append(f"{rung} & {split} & {feats} & " + " & ".join(cells)
+                    + f" & {tail} & {npass} {BS}")
+    _write("rev_ladder", rows, "EXP-052 published_ladder (EXP-055)", "lllcccccccc",
+           r"& & & \multicolumn{5}{c}{Balanced accuracy, all flows} & "
+           r"\multicolumn{2}{c}{RF, w/o copies} & \\" + "\n"
+           r"Rung & Split & Features & DT & RF & KNN & NB & MLP & BA & FPR & Pass " + BS)
 
 
 def t_target_ref():
@@ -365,7 +370,9 @@ def t_calibration():
     for cal in ("temperature", "platt", "isotonic"):
         c2 = C[C.calibrator == cal].set_index(["seed", "model", "domain"]).roc_auc
         dev[cal] = (c2 - raw).abs().groupby(level="model").max()
-    tg = C[C.domain == "target"].groupby(["model", "calibrator"]).f1_macro.mean().unstack()
+    # judged by balanced accuracy, the metric Section VI-D argues for (audit H-33)
+    T = C[C.domain == "target"].assign(ba=lambda d: (d.recall + 1 - d.fpr) / 2)
+    tg = T.groupby(["model", "calibrator"]).ba.mean().unstack()
     rows = []
     for m in NT:
         rows.append(f"{NAME[m]} & {_small(dev['temperature'][m])} & {_small(dev['platt'][m])} & "
@@ -373,7 +380,7 @@ def t_calibration():
                     f"{tg.loc[m, 'platt']:.3f} & {tg.loc[m, 'isotonic']:.3f} & "
                     f"{tg.loc[m, 'platt+prior_EM']:.3f} & {tg.loc[m, 'platt+prior_ORACLE']:.3f} {BS}")
     _write("rev_calibration", rows, "EXP-044 calibration_runs", "lcccccccc",
-           r"& \multicolumn{3}{c}{max $|\Delta$ROC-AUC$|$} & \multicolumn{5}{c}{Target macro-$F_1$ at $\tau=0.5$} " + BS + "\n"
+           r"& \multicolumn{3}{c}{max $|\Delta$ROC-AUC$|$} & \multicolumn{5}{c}{Target balanced accuracy at $\tau=0.5$} " + BS + "\n"
            r"Model & Temp. & Platt & Iso. & Raw & Platt & Iso. & +EM & +Oracle " + BS)
 
 
@@ -406,7 +413,7 @@ def t_predicate():
                     f"{mk(r.alert_pass)} & {lat} & {int(r.verdict)} {BS}")
     _write("rev_predicate", rows, "EXP-052 predicate (EXP-041, EXP-061)", "lccccccc",
            r"Model & $\overline{\Delta}_{\mathrm{BA}}$ & Gen. & Best PPV & Min.\ alerts/h & Alert & "
-           r"$B_{\min}$ (ms) & $\mathcal{P}$ " + BS)
+           r"$B_{\min}^{\dagger}$ (ms) & $\mathcal{P}$ " + BS)
 
 
 def t_latency():

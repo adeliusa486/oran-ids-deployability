@@ -111,8 +111,8 @@ def fig_leakage():
         v = [r["random"], r["group_disjoint"], r["stratified_group"]]
         ax.plot([min(v), max(v)], [yi, yi], color=GREY, lw=0.8, zorder=1)
     for col, lab, c, mk, fc in (("random", "Random split", VERM, "o", VERM),
-                                ("group_disjoint", "Run-disjoint", BLUE, "s", BLUE),
-                                ("stratified_group", "Category-stratified run-disjoint",
+                                ("group_disjoint", "Session-disjoint", BLUE, "s", BLUE),
+                                ("stratified_group", "Category-stratified session-disjoint",
                                  GREEN, "^", "white")):
         ax.plot(L[col], y, ls="none", marker=mk, ms=4.2, mfc=fc, mec=c, mew=0.9,
                 label=lab, zorder=3)
@@ -384,7 +384,12 @@ def fig_sensitivity():
     ax2 = fig.add_subplot(gs[1, 1])
     d = np.linspace(0, 0.6, 601)
     n = [(pred.dBA_upper <= v).sum() for v in d]
-    ax2.step(d, n, where="post", color=BLUE, lw=1.1)
+    ax2.step(d, n, where="post", color=BLUE, lw=1.1, label="all flows")
+    # the same term on the flows without the benign copies (writing audit C-04)
+    pc = pd.read_csv(P / "predicate_clean.csv").set_index("model").loc[NT]
+    nc = [(pc.dBA_upper <= v).sum() for v in d]
+    ax2.step(d, nc, where="post", color=VERM, lw=1.0, ls="--", label="w/o copies")
+    ax2.legend(loc="lower right", fontsize=6, handlelength=1.6, borderpad=0.25)
     ax2.axvline(0.10, color=INK2, lw=0.6, ls=(0, (3, 2)))
     ax2.text(0.115, 5.4, "$\\delta = 0.10$", fontsize=6.3, color=INK2)
     ax2.set_xlim(0, 0.6); ax2.set_ylim(-0.3, 6.5)

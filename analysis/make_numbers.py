@@ -33,7 +33,9 @@ def put(name: str, value, fmt: str = "{:.2f}", source: str = ""):
     if isinstance(value, float) and not np.isfinite(value):
         raise ValueError(f"{name} is not finite ({value}) from {source}")
     s = fmt.format(value) if not isinstance(value, str) else value
-    N[name] = re.sub(r"(?<=\d),(?=\d{3})", "{,}", s)   # thousands only
+    s = re.sub(r"(?<=\d),(?=\d{3})", "{,}", s)   # thousands only
+    # a leading minus must not become a line-break point ("[-" / "0.01")
+    N[name] = r"\mbox{" + s + "}" if re.match(r"^-\d", s) else s
     SRC[name] = source
 
 
@@ -87,11 +89,14 @@ def main() -> int:
         "EXP-052 nn_probe")
     put("NNSameMin", 100 * nn.loc["random", "nn_same_session_min"], "{:.0f}")
     put("NNSameMax", 100 * nn.loc["random", "nn_same_session_max"], "{:.0f}")
-    put("NNoneRandom", nn.loc["random", "nn1_f1"])
-    put("NNoneRun", nn.loc["group_disjoint", "nn1_f1"])
-    # from the displayed (two-decimal) values, so the prose difference matches
-    put("NNGain", round(nn.loc["random", "nn1_f1"], 2)
-        - round(nn.loc["group_disjoint", "nn1_f1"], 2))
+    # three decimals, as in Table 3; the gain from unrounded values, so that it
+    # equals the table's 1-NN row (writing audit M-27)
+    put("NNoneRandom", nn.loc["random", "nn1_f1"], "{:.3f}")
+    put("NNoneRun", nn.loc["group_disjoint", "nn1_f1"], "{:.3f}")
+    put("NNGain", nn.loc["random", "nn1_f1"] - nn.loc["group_disjoint", "nn1_f1"])
+    ch = json.loads((RES / "EXP-042/processed/nn_chance.json").read_text())
+    put("NNChanceAny", 100 * ch["chance_any"], "{:.0f}", "analysis/nn_chance.py")
+    put("NNChanceCat", 100 * ch["chance_same_category"], "{:.0f}")
     put("NNgapBest", L.group_disjoint.max() - nn.loc["group_disjoint", "nn1_f1"])
 
     # ---- temporal ------------------------------------------------------------
@@ -141,6 +146,18 @@ def main() -> int:
         days = [f"{d:.0f}" for d in high.day]
         put("BenHighDays", ", ".join(days[:-1]) + " and " + days[-1])
         put("BenLateFPR", float(Bn.set_index("session").loc[Bn.session.max(), "fpr_mean"]))
+        # the early (first-week) sessions among the high ones, and the one
+        # session that is neither low nor high (writing audit H-22)
+        eh = high[high.session != Bn.session.max()]
+        put("BenEarlyHighSessions", " and ".join(str(int(v)) for v in eh.session))
+        put("BenEarlyHighDays", " and ".join(f"{v:.0f}" for v in eh.day))
+        put("BenEarlyHighMin", eh.fpr_mean.min())
+        put("BenEarlyHighMax", eh.fpr_mean.max())
+        mid = Bn[(Bn.fpr_mean > 0.10) & (Bn.fpr_mean < 0.80)]
+        if len(mid) == 1:
+            put("BenMidSession", str(int(mid.session.iloc[0])))
+            put("BenMidFPR", float(mid.fpr_mean.iloc[0]))
+            put("BenMidFPRmax", float(mid.fpr_max.iloc[0]))
         put("BenLateFA", float(Bn.set_index("session").loc[Bn.session.max(),
                                                          "false_alerts_per_benign_ue_hour"]),
             "{:.0f}")
@@ -203,6 +220,11 @@ def main() -> int:
     put("TrRevTgtBAmin", r.tgt_ba.min())
     put("TrRevTgtBAmax", r.tgt_ba.max())
     put("TrRevSigBA", str(int((r.dBA_p_nb_holm < 0.05).sum())))
+    # sign convention: dBA = source - target; LR gains on D_A (writing audit M-38)
+    put("TrRevLRgain", -r.loc["logreg", "dBA_mean"], "{:.3f}")
+    put("TrRevLRsig", "yes" if r.loc["logreg", "dBA_p_nb_holm"] < 0.05 else "no")
+    put("TrRevTreeLossMin", r.loc[["tree", "rf"], "dBA_mean"].min())
+    put("TrRevTreeLossMax", r.loc[["tree", "rf"], "dBA_mean"].max())
     RC = pd.read_csv(P / "rank_correlation.csv")
     rc = RC[(RC.direction == "a_to_b") & (RC.subset == "all six")].set_index("metric")
     put("RhoFone", rc.loc["f1", "rho"], source="EXP-052 rank_correlation")
@@ -285,7 +307,9 @@ def main() -> int:
     for cal in ("platt", "temperature", "isotonic"):
         c2 = C[C.calibrator == cal].set_index(["seed", "model", "domain"]).roc_auc
         dev[cal] = (c2 - raw).abs().groupby(level="model").max()
-    put("CalTempMax", float(dev["temperature"].max()), "{:.0e}", "EXP-044 raw")
+    tm = float(dev["temperature"].max())
+    e_ = int(np.floor(np.log10(tm)))       # printed as 2\times10^{-5} (audit L-34)
+    put("CalTempMax", "%.0f" % (tm / 10 ** e_) + r"\times10^{%d}" % e_, source="EXP-044 raw")
     put("CalIsoMin", float(dev["isotonic"].min()))
     put("CalIsoMax", float(dev["isotonic"].max()))
     put("CalPlattFlip", float(dev["platt"].max()))
@@ -303,6 +327,27 @@ def main() -> int:
         put("PlattSlope", float(inv.platt_slope))
     PE = pd.read_csv(RES / "EXP-044/processed/prior_estimates.csv")
     put("PriorTrue", float(PE.pi_true.iloc[0]), "{:.3f}")
+    # target balanced accuracy and false positive rate at tau 0.5 per calibrator,
+    # and the sign of the isotonic ROC-AUC change (writing audit H-33, L-35)
+    tgt = C[C.domain == "target"].copy()
+    tgt["ba"] = (tgt.recall + 1 - tgt.fpr) / 2
+    gba = tgt.groupby(["calibrator", "model"]).ba.mean().unstack(0)
+    dba = gba.sub(gba["raw"], axis=0)
+    cals = ["platt", "isotonic", "platt+prior_EM", "platt+prior_ORACLE"]
+    put("CalBAchgMin", float(dba[cals].min().min()), "{:+.2f}")
+    put("CalBAchgMax", float(dba[cals].max().max()), "{:+.2f}")
+    if (dba[cals] >= 0).any().any():
+        raise ValueError("a calibrator raised target balanced accuracy; revise the text")
+    gf = tgt.groupby(["calibrator", "model"]).fpr.mean().unstack(0)
+    put("CalFPRrawMin", float(gf["raw"].min()))
+    put("CalFPRrawMax", float(gf["raw"].max()))
+    put("CalFPRcalMin", float(gf[["platt", "isotonic"]].min().min()))
+    put("CalFPRcalMax", float(gf[["platt", "isotonic"]].max().max()))
+    iso_t = (C[(C.calibrator == "isotonic") & (C.domain == "target")]
+             .set_index(["seed", "model", "domain"]).roc_auc
+             - raw.xs("target", level="domain", drop_level=False))
+    put("CalIsoDownMax", float(-iso_t.min()))
+    put("CalIsoUpMax", float(iso_t.max()))
     put("PriorMeanMin", PE.groupby(["method", "calibrator", "model"]).pi_hat.mean().min())
     put("PriorMeanMax", PE.groupby(["method", "calibrator", "model"]).pi_hat.mean().max())
     put("PriorFracExtreme", 100 * float(((PE.pi_hat < 0.05) | (PE.pi_hat > 0.95)).mean()),
@@ -390,6 +435,15 @@ def main() -> int:
             "{:.0f}")
         put("LcBenignFileConf", 100 * pf_.loc[pr_["benign_file"], "conflicting_native"], "{:.0f}")
         put("LcAttackFileConf", 100 * pf_.loc[pr_["attack_file"], "conflicting_native"], "{:.0f}")
+        # conflicting flows that are neither copies nor their originals: the
+        # benign-file station's own flood records whose content equals a
+        # benign-labelled copy (writing audit H-25)
+        own = int(nat.flows_in_conflicting) - int(pr_["benign_flows"]) - int(pr_["attack_flows"])
+        f5 = pf_.loc[pr_["benign_file"]]
+        f5_conf = int(round(f5.conflicting_native * f5.n))
+        if f5_conf != own + int(pr_["benign_flows"]):
+            raise ValueError("conflicts outside the two flood files; revise the text")
+        put("LcOwnConf", num(own))
 
     # ---- addresses of the conflicting records (EXP-062) ----------------------
     la = RES / "EXP-062/statistics/conflict_addresses.json"
@@ -472,6 +526,13 @@ def main() -> int:
         put("PredCleanPPVmax", PC.best_ppv_at_rmin.max(), "{:.4f}")
         put("PredCleanFAmin", num(PC.min_false_alerts_at_rmin.min()))
         put("PredCleanPiStar", pi_star(PC.best_ppv_at_rmin.max()), "{:.3f}")
+        # generalisation term on the same (clean) flows (writing audit C-04)
+        put("PredCleanGenMin", PC.dBA_upper.min())
+        put("PredCleanGenMax", PC.dBA_upper.max())
+        put("PredCleanGenPass", str(int(PC.gen_pass.sum())))
+        oth = NC.drop("logreg")
+        put("FwdEnsCleanFPRmin", oth.fpr.min())
+        put("FwdEnsCleanFPRmax", oth.fpr.max())
         for dom, key in (("target", "NetTgtCb"), ("target_clean", "NetCleanCb"),
                          ("source_heldout", "NetSrcCb")):
             f_ = P / f"pooled_network_{dom}_bootstrap.csv"
@@ -485,6 +546,8 @@ def main() -> int:
         cc = PF[PF.group.astype(str).str.endswith("|c") & PF.model.isin(NONTRIVIAL)]
         put("NetCopyFlagMin", cc.fpr.min())
         put("NetCopyFlagMax", cc.fpr.max())
+        # the range for the five nonlinear architectures; LR flags none (audit L-24)
+        put("NetCopyFlagOthMin", cc[cc.model != "logreg"].fpr.min())
     # ---- third corpus D_C (EXP-058) -------------------------------------------
     tt = P / "third_transfer.csv"
     if tt.exists():
@@ -648,6 +711,13 @@ def main() -> int:
                 put(k + "FPRmax", g.fpr.max(), "{:.3f}")
                 put(k + "PassN", str(int(g.verdict.sum())))
                 put(k + "PassCleanN", str(int(g.verdict_clean.sum())))
+        # clean verdict on one label set (writing audit C-03): DT and RF at R1
+        g3 = PL[(PL.rung == "R3") & (PL.feature_set == "no_position_top10")
+                & PL.model.isin(["dt", "rf"])]
+        put("PubThreeNoposCleanDropMin", g3.clean_ba_drop_from_r0.min())
+        put("PubOneCleanPassModels", " and ".join(
+            {"dt": "DT", "rf": "RF", "mlp": "the MLP", "nb": "NB"}[m] for m in
+            PL[(PL.rung == "R1") & PL.verdict_clean].model))
         r1rf = PL[(PL.rung == "R1") & (PL.model == "rf")]
         if len(r1rf):
             put("PubOneRFclean", float(r1rf.ba_clean.iloc[0]), "{:.4f}")
@@ -679,6 +749,18 @@ def main() -> int:
     if lo.available():
         lo.numbers(put)
 
+    # counts that the prose reads as words ("one of six", "two captures");
+    # zero to nine are spelled out, as in the surrounding text (writing audit L-47)
+    words = "zero one two three four five six seven eight nine".split()
+    for k in ("TrCleanSig", "TrSigBA", "TrSigFone", "TrChanceSig", "TrChanceSigHolm",
+              "TrRevSigBA", "BenLowN", "BenHighN", "ZkSigNeg", "ZkSigPos", "ZkCleanSigNeg",
+              "ZkCleanSigPos", "PredPass", "PredCleanPass", "PredCleanGenPass",
+              "ThAPredPass", "ThBPredPass", "ThASig", "ThBSig", "RadCbBestHiN",
+              "CalPlattFlipSeeds", "PubRzPassN", "LatEqCaptures", "DvAuditUnseenMin",
+              "DvAuditUnseenMax", "LeakSigNb", "PubOneNoposPassCleanN",
+              "PubThreePubPassCleanN"):
+        if k in N and N[k].isdigit() and int(N[k]) < 10:
+            N[k] = words[int(N[k])]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     lines = ["% GENERATED by analysis/make_numbers.py. DO NOT EDIT.",
              "% Every macro is computed from results/; see SRC comments."]

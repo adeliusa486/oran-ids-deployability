@@ -429,14 +429,20 @@ def published_ladder() -> pd.DataFrame:
         S[pre + "pooled_tpr"], S[pre + "pooled_fpr"] = tpr, fpr
         S[pre + "ppv"] = [ppv(a, b) for a, b in zip(tpr, fpr)]
         S[pre + "fa_h"] = fpr * LAMBDA_B
-    r0 = S[S.rung == "R0"].set_index("model").ba
-    S["ba_drop_from_r0"] = [r0.get(m, np.nan) - b for m, b in zip(S.model, S.ba)]
+    r0 = S[S.rung == "R0"].set_index("model")
+    S["ba_drop_from_r0"] = [r0.ba.get(m, np.nan) - b for m, b in zip(S.model, S.ba)]
+    # clean verdict on ONE label set: the drop is taken between clean balanced
+    # accuracies (forensic writing audit C-03; the earlier version combined the
+    # clean alert term with the all-flows generalisation term)
+    S["clean_ba_drop_from_r0"] = [r0.ba_clean.get(m, np.nan) - b
+                                  for m, b in zip(S.model, S.ba_clean)]
     for pre in ("", "clean_"):
         S[pre + "alert_pass"] = ((S[pre + "pooled_tpr"] >= R_MIN) & (S[pre + "ppv"] >= RHO)
                                  & (S[pre + "fa_h"] <= A_MAX))
     S["gen_pass"] = S.ba_drop_from_r0 <= DELTA
+    S["clean_gen_pass"] = S.clean_ba_drop_from_r0 <= DELTA
     S["verdict"] = S.gen_pass & S.alert_pass
-    S["verdict_clean"] = S.gen_pass & S.clean_alert_pass
+    S["verdict_clean"] = S.clean_gen_pass & S.clean_alert_pass
     return S
 
 
@@ -495,17 +501,24 @@ def summarise_simple(path: Path, label: str, group="model") -> pd.DataFrame:
 DELTA, R_MIN, RHO, A_MAX = 0.10, 0.50, 0.10, 200.0   # Eq. (7), declared
 
 
-def predicate(fwd: pd.DataFrame, counts: pd.DataFrame) -> pd.DataFrame:
+def predicate(fwd: pd.DataFrame, counts: pd.DataFrame,
+              gen_upper: pd.Series | None = None) -> pd.DataFrame:
     """Eq. (7) per architecture. Every alert term is evaluated on the target.
 
-    generalisation  upper NB bound of Delta_BA <= DELTA
+    generalisation  upper NB bound of Delta_BA <= DELTA; ``gen_upper`` (indexed
+                    by model) replaces fwd.dBA_nb_hi so that the clean verdict
+                    takes both terms from the same label set
     alert           some tau with R >= R_MIN, PPV >= RHO and false alerts per
                     hour at lambda_b <= A_MAX (pooled counts on D_B)
-    latency         smallest budget whose p99 upper bound the radio decision
-                    path (window aggregation + ONNX Runtime) meets, EXP-043;
-                    and the same for the full loop through a live FlexRIC
-                    (indication to CONTROL-ACK, every UE of the indication,
-                    10 ms reporting), EXP-061
+    latency         smallest budget whose p99 upper bound the full loop
+                    through a live FlexRIC meets (indication to CONTROL-ACK,
+                    every UE of the indication, 10 ms reporting), EXP-061.
+                    This loop scores RADIO WINDOWS: it is the latency term of
+                    the window-level detectors with these architectures, not
+                    of the flow-level detectors whose other two terms are
+                    tested here (no flow path to the xApp exists). The
+                    aggregation + ONNX column of EXP-043 is kept for reference
+                    only and is not the test's latency term.
     """
     g = counts.groupby(["model", "tau"])[["tp", "fp", "tn", "fn"]].sum().reset_index()
     g["tpr"] = g.tp / (g.tp + g.fn)
@@ -522,7 +535,8 @@ def predicate(fwd: pd.DataFrame, counts: pd.DataFrame) -> pd.DataFrame:
         f = fwd.set_index("model").loc[m]
         gm = g[(g.model == m) & (g.tpr >= R_MIN)]
         ok = gm[(gm.ppv >= RHO) & (gm.fa_h <= A_MAX)]
-        rec = dict(model=m, dBA_upper=f.dBA_nb_hi, gen_pass=bool(f.dBA_nb_hi <= DELTA),
+        up = float(gen_upper.loc[m]) if gen_upper is not None else float(f.dBA_nb_hi)
+        rec = dict(model=m, dBA_upper=up, gen_pass=bool(up <= DELTA),
                    best_ppv_at_rmin=float(gm.ppv.max()) if len(gm) else float("nan"),
                    min_false_alerts_at_rmin=float(gm.fa_h.min()) if len(gm) else float("nan"),
                    alert_pass=bool(len(ok)))
@@ -622,7 +636,6 @@ def main() -> int:
             a3.to_csv(OUT / "pooled_network_target_clean_tau05.csv", index=False)
             s3.to_csv(OUT / "pooled_network_target_clean_pi_sweep.csv", index=False)
             r3.to_csv(OUT / "pooled_network_target_clean_reachability.csv", index=False)
-            predicate(fwd, cs).to_csv(OUT / "predicate_clean.csv", index=False)
             # per-seed balanced accuracy on the clean target, and its gap
             c5 = cs[np.isclose(cs.tau, 0.5)].copy()
             c5["ba_clean"] = (c5.tp / (c5.tp + c5.fn) + c5.tn / (c5.tn + c5.fp)) / 2
@@ -641,6 +654,9 @@ def main() -> int:
             ntm = dfc.model.isin(NONTRIVIAL)
             dfc.loc[ntm, "dBA_clean_p_nb_holm"] = holm(dfc.loc[ntm, "dBA_clean_p_nb"])
             dfc.to_csv(OUT / "transfer_target_clean.csv", index=False)
+            # both terms of the clean verdict from the flows without the copies
+            predicate(fwd, cs, gen_upper=dfc.set_index("model").dBA_clean_nb_hi
+                      ).to_csv(OUT / "predicate_clean.csv", index=False)
             # per-file false positive rate at tau 0.5, pooled over seeds
             pf = sub[np.isclose(sub.tau, 0.5)].groupby(["model", "group"])[cols].sum().reset_index()
             pf["fpr"] = pf.fp / (pf.fp + pf.tn).replace(0, np.nan)

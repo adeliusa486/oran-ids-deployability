@@ -59,7 +59,7 @@ This runs, in order:
    `reproducibility/expected_outputs.json` (comment lines, which carry the
    date and commit, are ignored). Expected result: `38 of 38 generated files
    identical`.
-5. `scripts/build_paper.py` (expected: 21 pages, 0 errors, 0 undefined
+5. `scripts/build_paper.py` (expected: 19 pages, 0 errors, 0 undefined
    references), `scripts/check_withdrawn_claims.py` (no retired claim in the
    text) and `scripts/check_no_placeholders.py`.
 

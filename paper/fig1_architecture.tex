@@ -71,11 +71,13 @@
 % ===== column rules and headers ============================================
 \foreach \x in {3.45, 5.55, 9.90, 14.95}
   {\draw[colrule] (\x,0.25) -- (\x,9.15);}
-\node[hdr] at (1.70,9.30) {01\enspace NETWORK EDGE};
-\node[hdr] at (4.50,9.30) {02\enspace O-RAN ACCESS};
-\node[hdr] at (7.75,9.30) {03\enspace NEAR-RT RIC};
-\node[hdr] at (12.42,9.30) {04\enspace TELEMETRY \& FEATURE SPACE};
-\node[hdr] at (16.68,9.30) {05\enspace DETECTION \& CONTROL};
+% column headers carry no numbers, so that 01-03 mean only the measurement
+% markers (writing audit M-14)
+\node[hdr] at (1.70,9.30) {NETWORK EDGE};
+\node[hdr] at (4.50,9.30) {O-RAN ACCESS};
+\node[hdr] at (7.75,9.30) {NEAR-RT RIC};
+\node[hdr] at (12.42,9.30) {TELEMETRY \& FEATURE SPACE};
+\node[hdr] at (16.68,9.30) {DETECTION \& CONTROL};
 
 % ===== 01 network edge ======================================================
 \node (camera)  at (0.75,8.30) {\ficon{f1_camera}{7.0mm}};
@@ -137,7 +139,7 @@
 \node[draw=fInk, fill=fXapp, rounded corners=3pt, line width=1.6pt,
       minimum width=25mm, minimum height=13mm, align=center, font=\small]
       (xapp) at (7.775,3.95) {IoT intrusion\\detection xApp};
-\node[smallbox, minimum width=13.5mm, minimum height=7.5mm] at (6.98,2.12) {KPI\\monitor};
+\node[smallbox, minimum width=13.5mm, minimum height=7.5mm] at (6.98,2.12) {KPM\\monitor};
 \node[smallbox, minimum width=13.5mm, minimum height=7.5mm] at (8.57,2.12) {Traffic\\steering};
 \draw[both] (xapp.north) -- (e2t.south);
 
@@ -164,7 +166,7 @@
       (kpm) at (10.72,7.55) {E2SM-KPM};
 \node (chart) at (12.10,7.55) {\ficon{f1_kpichart}{7.2mm}};
 \node (win)   at (13.875,7.58) {\ficon{f1_windows}{6.6mm}};
-\node[lbl] at (chart.south) {1 Hz radio KPI\\time series};
+\node[lbl] at (chart.south) {1 Hz radio KPM\\time series};
 \node[lbl] (win-l) at (win.south) {window features\\16 records $\times$\\16 KPM fields};
 \draw[plain, line width=0.8pt] (e2t.east) -- (9.78,5.40) -- (9.78,7.55) -- (kpm.west);
 \draw[flow] (kpm) -- (chart);
@@ -212,7 +214,7 @@
   \draw[opt] (16.40,#2) -- (#1.west);}
 \fOneAct{lock}{6.25}{block flow}
 \fOneAct{isolate}{5.08}{isolate device}
-\fOneAct{scales}{3.92}{update policy}
+\fOneAct{scales}{3.92}{remap QoS flow}
 \fOneAct{reroute}{2.76}{reroute / steer}
 \fOneAct{mitig}{1.55}{mitigation}
 \draw[draw=fInk!60, line width=0.6pt, dash pattern=on 2.2pt off 1.6pt]

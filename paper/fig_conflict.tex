@@ -28,14 +28,14 @@
 \node[text=fInk!75, align=center] at (4.17,5.00) {Seq,\\Offset};
 
 % row A: capture file 5, labelled benign
-\node[anchor=west, align=left] at (-0.05,4.42) {\textbf{file \LcBenignFile}\\pass 1};
+\node[anchor=west, align=left] at (-0.05,4.42) {\textbf{file \LcBenignFile}\\station 1};
 \fcRecord{4.42}{20}{45}
 \node[chipB] (lb) at (5.55,4.42) {benign};
 \draw[arr] (4.52,4.42) -- (lb.west);
 \node[anchor=west, align=left, text=fInk!80] at (6.35,4.42) {\LcTwinBenign{}\\flows};
 
 % row B: capture file 15, labelled UDP flood
-\node[anchor=west, align=left] at (-0.05,3.34) {\textbf{file \LcAttackFile}\\pass 2};
+\node[anchor=west, align=left] at (-0.05,3.34) {\textbf{file \LcAttackFile}\\station 2};
 \fcRecord{3.34}{70}{90}
 \node[chipA] (la) at (5.55,3.34) {UDP flood};
 \draw[arr] (4.52,3.34) -- (la.west);
@@ -54,7 +54,7 @@
 \node[anchor=west, font=\scriptsize\bfseries] at (-0.05,1.50) {+ Seq, Offset};
 \draw[arr] (1.72,1.50) -- (2.12,1.50);
 \node[anchor=west, align=left] at (2.16,1.50)
-     {every record unique: ceiling \LcCeilPos{}; four published\\classifiers reach \PubRzAccMin--\PubRzAccMax\% accuracy; DT, RF\\and MLP fall to \PubOneNoposAccMin--\PubOneNoposAccMax\% without the two fields};
+     {every record unique: ceiling \LcCeilPos{}; four reproduced\\classifiers reach \PubRzAccMin--\PubRzAccMax\% accuracy; DT, RF\\and MLP fall to \PubOneNoposAccMin--\PubOneNoposAccMax\% without the two fields};
 
 % the conclusion
 \node[draw=fInk!70, rounded corners=2.4pt, line width=0.6pt, fill=fRicI,
