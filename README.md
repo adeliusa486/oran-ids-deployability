@@ -107,25 +107,3 @@ is at the end of `MEMORY.md`.
   is withdrawn, recorded in `configs/decisions.md`, and blocked from the text by
   `scripts/check_withdrawn_claims.py`.
 
-## Limitations
-
-No measurement inside a real near-real-time RIC (latency is emulated). Three
-corpora, the third a 5G core testbed rather than O-RAN. The radio layer has 30 capture
-sessions, 10 of them benign. 5G-NIDD's label conflicts cannot be resolved from
-the published files; results are reported with and without the conflicting
-records.
-
-## Citation
-
-If you use this code, please cite the paper (details will be updated on
-publication):
-
-```bibtex
-@misc{ali2026oranids,
-  author = {Ali, Arshad and Ahmad, Adeel},
-  title  = {What Held-Out Accuracy Predicts About Deploying Intrusion Detection in {O-RAN}},
-  year   = {2026},
-  note   = {Manuscript in preparation for IEEE Access},
-  url    = {https://github.com/adeliusa486/oran-ids-deployability}
-}
-```
