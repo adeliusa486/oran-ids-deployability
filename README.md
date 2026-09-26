@@ -23,15 +23,15 @@ against the paper (see [Reproducing](#reproducing)).
 
 | Question | Result | Paper |
 |---|---|---|
-| Does a random split inflate scores? | Radio-layer macro-F1 rises by 0.13 over a run-disjoint split (95% corrected interval -0.01 to 0.27); for two sequence models the gain is 0.16 to 0.19 and significant. A nearest-neighbor lookup shows the models recognize capture sessions. | VI-A |
-| Do detectors drift over time? | The radio capture is ordered by scenario, so a time split hides attack categories. With categories covered, time order is inside session-to-session variation. A held-out benign session draws a false positive rate between 0.00 and 0.98. | VI-B |
-| Are 5G-NIDD's labels consistent? | No. 59% of its benign flows are exact copies of UDP-flood records labeled as attacks in the other base station's capture. No classifier reading the record can exceed balanced accuracy 0.766 (0.753 in the shared feature space). | VI-C |
+| Does a random split inflate scores? | Radio-layer macro-F1 rises by 0.13 over a session-disjoint split (95% corrected interval -0.01 to 0.27, not significant for any single architecture); for two sequence models the gain is 0.16 to 0.19 and significant. A nearest-neighbor lookup gains about as much, consistent with the recognition of capture sessions. | VI-A |
+| Do detectors drift over time? | The radio capture is ordered by scenario, so a time split hides attack categories. With categories covered, the design cannot separate time order from session-to-session variation. A held-out benign session draws a false positive rate between 0.00 and 0.98. | VI-B |
+| Are 5G-NIDD's labels consistent? | No. 59% of its benign flows are content copies of UDP-flood records labeled as attacks in the other base station's capture, and their addresses point to that station's attacker (not confirmed by the dataset authors). No classifier reading the record can exceed balanced accuracy 0.766 (0.753 in the shared feature space). | VI-C |
 | Does a published 99.9% survive? | The dataset authors' pipeline reproduces (99.87% to 99.96% accuracy) but rests on two record-position fields; without them it scores 76.9%, lower again on held-out capture files and base stations. | VI-C |
-| Does a detector transfer between corpora? | Balanced accuracy on 5G-NIDD is 0.53 to 0.63 on all flows and 0.61 to 0.78 on flows with consistent labels, below what the target itself allows. | VI-D |
-| Is it usable at a realistic base rate? | At attack prevalence 0.002, operational precision on 5G-NIDD reaches at most 0.063 at any threshold keeping recall above 10%, even on flows with consistent labels. No architecture passes the deployability test; the published pipeline passes it only on its own random split. | VI-G, VII-B |
-| Does it hold on a third corpus? | Yes. On a 5G core testbed with consistent labels (NFStream flows), detectors find the SYN flood (recall 1.00 from NetsLab, 0.71 to 1.00 from 5G-NIDD) but flag 16% to 81% of normal flows; balanced accuracy 0.60 to 0.74 from NetsLab, 0.42 to 0.85 from 5G-NIDD, against 0.99 in-target. | VI-F |
-| Is the exporter the cause? | No. Re-extracting 5G-NIDD from its captures with Zeek, the exporter of NetsLab, leaves transfer no better: balanced accuracy 0.43 to 0.56 on all flows (lower for all six models) and 0.41 to 0.79 without the copies. | VI-E |
-| Does it meet the latency budget in a RIC? | Yes. As a C xApp in FlexRIC with an emulated E2 node, a decision and its control message take at most 5.0 ms at the 99th percentile (10 ms reports); the RIC path, not inference, takes most of that time. | VI-I |
+| Does a detector transfer between corpora? | Balanced accuracy on 5G-NIDD is 0.53 to 0.63 on all flows and 0.61 to 0.78 on flows with consistent labels, below what the target itself allows; on those flows the loss against held-out source data is significant for one of six architectures. | VI-D |
+| Is it usable at a realistic base rate? | At a declared attack prevalence of 0.002, no transferred detector exceeds an operational precision of 0.092 at any threshold keeping recall above 10% (0.063 on 5G-NIDD with consistent labels). No transferred architecture passes the deployability test. Within 5G-NIDD, the published pipeline passes on its own random split and, once the benign copies are removed, also without the record-position fields; it never passes with capture files held out. | VI-G, VII-B |
+| Does it hold on a third corpus? | Largely. On a 5G core testbed with nearly consistent labels (NFStream flows), detectors find the SYN flood (recall 1.00 from NetsLab, 0.71 to 1.00 from 5G-NIDD) but flag 16% to 81% of normal flows; balanced accuracy 0.60 to 0.74 from NetsLab, 0.42 to 0.85 from 5G-NIDD, against 0.99 in-target on a random split and 0.66 to 0.83 when an attack type is held out; the loss against source data is not significant from NetsLab. | VI-F |
+| Is the exporter the cause? | Not on its own. Re-extracting 5G-NIDD from its captures with Zeek, the exporter of NetsLab, leaves transfer no better: balanced accuracy 0.43 to 0.56 on all flows (lower for all six models) and 0.41 to 0.79 without the copies. Traffic composition, or differences from the undocumented Zeek configuration of NetsLab, remain as explanations. | VI-E |
+| Does it meet the latency budget in a RIC? | For window-level (radio) detectors, yes on one host: as a C xApp in FlexRIC with an emulated E2 node, a decision and its control message take 4.45 to 4.95 ms at the 99th percentile (10 ms reports), mostly in the RIC path. The flow-level latency term was not measured (no path for flow records to the xApp). | VI-I |
 | How should precision be estimated? | Averaging precision over folds inflates the best-to-worst ratio between architectures from 1.45 (pooled counts) to 16.0. | VI-G |
 
 Latency is measured on one host, off-platform and through FlexRIC with an
@@ -110,26 +110,3 @@ is at the end of `MEMORY.md`.
 - A negative result is kept and reported. A claim that measurement contradicts
   is withdrawn, recorded in `configs/decisions.md`, and blocked from the text by
   `scripts/check_withdrawn_claims.py`.
-
-## Limitations
-
-The RIC loop uses FlexRIC's emulated E2 node on one host, not a radio deployment. Three
-corpora, the third a 5G core testbed rather than O-RAN. The radio layer has 30 capture
-sessions, 10 of them benign. 5G-NIDD's conflicting benign records are, by their
-addresses, the flood of a second attacker; the dataset authors have not confirmed
-this, so results are reported with and without them.
-
-## Citation
-
-If you use this code, please cite the paper (details will be updated on
-publication):
-
-```bibtex
-@misc{ahmad2026oranids,
-  author = {Ahmad, Adeel and Ali, Arshad and Khan, Eraj and Hossain, Gahangir and Akarma, Ali},
-  title  = {What Held-Out Scores Predict About Deploying Intrusion Detection in {O-RAN}},
-  year   = {2026},
-  note   = {Manuscript in preparation for IEEE Access},
-  url    = {https://github.com/adeliusa486/oran-ids-deployability}
-}
-```
