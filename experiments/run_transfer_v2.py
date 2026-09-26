@@ -51,7 +51,8 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from oran_ids.data import (load_network, load_network_shared,  # noqa: E402
-                           load_target_d_b, load_target_d_c)
+                           load_target_d_b, load_target_d_b_zeek,
+                           load_target_d_c)
 from oran_ids.features.shared import (COLUMNS, PROTO_COLS,  # noqa: E402
                                       assert_compatible)
 from oran_ids.metrics import detection_metrics  # noqa: E402
@@ -150,6 +151,11 @@ def load_pair(direction: str, features: str, source_only: bool):
             src = load_network_shared()
         tgt = None if source_only else load_target_d_b(
             reason=reason, groups="capture_file" if GROUP_COUNTS else "none")
+        return src, tgt, src.groups, True
+    if direction == "a_to_bz":
+        # EXP-063: D_B re-extracted with Zeek, the exporter of D_A
+        src = load_network_shared()
+        tgt = None if source_only else load_target_d_b_zeek(reason=reason)
         return src, tgt, src.groups, True
     if direction in ("a_to_c", "b_to_c"):
         # EXP-058: a third corpus (NFStream, Open5GS core) as target
@@ -309,7 +315,7 @@ def main() -> None:
     global EXP, GROUP_COUNTS
     ap = argparse.ArgumentParser()
     ap.add_argument("--exp", required=True)
-    ap.add_argument("--direction", default="a_to_b", choices=["a_to_b", "b_to_a", "a_to_c", "b_to_c"])
+    ap.add_argument("--direction", default="a_to_b", choices=["a_to_b", "b_to_a", "a_to_c", "b_to_c", "a_to_bz"])
     ap.add_argument("--features", default="shared",
                     choices=["shared", "robust", "transferable"])
     ap.add_argument("--adapt", default="none", choices=["none", "coral"])

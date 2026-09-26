@@ -1,0 +1,104 @@
+{
+  "n_windows": 589,
+  "records": 16,
+  "windows_differing_from_load_radio": 1,
+  "kpm": 16,
+  "n_features": 32,
+  "feature_order": [
+    "dlMcs_mean",
+    "dlMcs_std",
+    "dlBler_mean",
+    "dlBler_std",
+    "ulMcs_mean",
+    "ulMcs_std",
+    "ulBler_mean",
+    "ulBler_std",
+    "ri_mean",
+    "ri_std",
+    "phr_mean",
+    "phr_std",
+    "pcmax_mean",
+    "pcmax_std",
+    "rsrq_mean",
+    "rsrq_std",
+    "sinr_mean",
+    "sinr_std",
+    "rsrp_mean",
+    "rsrp_std",
+    "rssi_mean",
+    "rssi_std",
+    "cqi_mean",
+    "cqi_std",
+    "pucchSnr_mean",
+    "pucchSnr_std",
+    "puschSnr_mean",
+    "puschSnr_std",
+    "dlBytes_rate_mean",
+    "dlBytes_rate_std",
+    "ulBytes_rate_mean",
+    "ulBytes_rate_std"
+  ],
+  "labels_attack": 422,
+  "models": {
+    "tree": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 6.039608480001846e-09,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 5565
+    },
+    "logreg": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 3.338978020739347e-07,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 1094
+    },
+    "xgboost": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 8.16071406006813e-08,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 154248
+    },
+    "mlp": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 2.2351741790771484e-07,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 51991
+    },
+    "hgb": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 1.8877603502609475e-07,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 474253
+    },
+    "rf": {
+      "ok": true,
+      "decision_agreement": 1.0,
+      "max_abs_diff": 8.4289484914013e-07,
+      "outputs": [
+        "label",
+        "probabilities"
+      ],
+      "bytes": 1244257
+    }
+  }
+}

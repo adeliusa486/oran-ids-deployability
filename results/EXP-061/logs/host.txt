@@ -1,0 +1,8 @@
+date: 2026-09-26T02:22:08+03:00
+kernel: 6.18.33.1-microsoft-standard-WSL2
+cpus: 20
+model name	: 13th Gen Intel(R) Core(TM) i9-13900H
+flexric: v2.0.0 1f04cc55
+onnxruntime: 1.30.0 (C API)
+load before runs: 0.09 0.07 0.02 1/331 836
+load after runs: 0.61 0.39 0.17 1/304 1242

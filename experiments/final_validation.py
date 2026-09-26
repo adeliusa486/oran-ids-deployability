@@ -249,6 +249,11 @@ def check_latency():
     floor = env.get("floor", {}).get("p99")
     if floor is None:
         return check("LATENCY", FAIL, "no floor experiment; p99 uninterpretable")
+    ric = ROOT / "results" / "EXP-061" / "processed" / "ric_latency.csv"
+    if ric.exists():
+        return check("LATENCY", PASS,
+                     f"off-platform floor p99 {floor:.3f} ms; full loop through FlexRIC "
+                     "measured (EXP-061), emulated E2 node, one host, no CPU isolation")
     check("LATENCY", WARN,
           f"EMULATED only (floor p99 {floor:.3f} ms). No RIC measurement -- D-005")
 
@@ -258,6 +263,17 @@ def check_resource():
 
 
 def check_ric():
+    ric = ROOT / "results" / "EXP-061" / "statistics" / "summary.json"
+    if ric.exists():
+        s = json.loads(ric.read_text(encoding="utf-8"))
+        runs = len(s)
+        dropped = sum(v["dropped"] for v in s.values())
+        worst = max(v["verify_max_abs"] for v in s.values())
+        state = PASS if dropped == 0 and worst < 1e-5 else FAIL
+        return check("RIC INTEGRATION", state,
+                     f"EXP-061: {runs} runs through FlexRIC v2.0.0 with the emulated gNB, "
+                     f"{dropped} reports dropped, C vs Python max |diff| {worst:.1e}; "
+                     "no real E2 node or radio")
     f = ROOT / "reports" / "EXP-031_real_ric_blocked.md"
     detail = "Level 2 not executed (D-005)"
     if f.exists():
@@ -461,9 +477,9 @@ def main() -> int:
         print("  Fix the work, not the check.")
     elif n_blocked:
         print("\n  Nothing is broken. BLOCKED items are honest gaps: work that has")
-        print("  not been done and is reported as not done. The remaining ones")
-        print("  need a Linux host with isolated cores, which this machine")
-        print("  cannot provide -- see reports/EXP-031_real_ric_blocked.md.")
+        print("  not been done and is reported as not done. The RIC loop runs")
+        print("  in WSL2 (EXP-061); CPU and memory under load still need a Linux")
+        print("  host with isolated cores, which this machine cannot provide.")
         print()
         print("  RQ1 now HAS a result, and it is negative: transfer largely")
         print("  fails and one architecture lands below the trivial floor. A")

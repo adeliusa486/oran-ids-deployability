@@ -100,6 +100,13 @@
 \newcommand{\LatRepMedRatioMax}{2.1}
 \newcommand{\LatRepMedRatioMin}{1.02}
 \newcommand{\LatRepStages}{31}  % EXP-060
+\newcommand{\LcAddrAttackFile}{15}
+\newcommand{\LcAddrAttackFlows}{281{,}529}
+\newcommand{\LcAddrDst}{10.\allowbreak 41.\allowbreak 150.\allowbreak 68}
+\newcommand{\LcAddrOwnSrc}{10.\allowbreak 155.\allowbreak 15.\allowbreak 4}
+\newcommand{\LcAddrSameWindow}{yes}
+\newcommand{\LcAddrSharePct}{100}  % EXP-062
+\newcommand{\LcAddrSrc}{10.\allowbreak 155.\allowbreak 15.\allowbreak 7}
 \newcommand{\LcAttackFile}{15}
 \newcommand{\LcAttackFileConf}{98}
 \newcommand{\LcBenignFile}{5}
@@ -112,6 +119,8 @@
 \newcommand{\LcFlowsAll}{632{,}378}
 \newcommand{\LcNFeat}{90}
 \newcommand{\LcShareAll}{52}  % EXP-057
+\newcommand{\LcSiteFiles}{10}
+\newcommand{\LcSiteMatched}{10}
 \newcommand{\LcTwinAttack}{281{,}529}
 \newcommand{\LcTwinBenign}{281{,}525}
 \newcommand{\LcTwinEqual}{33{,}704}
@@ -190,11 +199,14 @@
 \newcommand{\PredCleanFAmin}{5{,}603}
 \newcommand{\PredCleanPPVmax}{0.0419}
 \newcommand{\PredCleanPass}{0}
+\newcommand{\PredCleanPiStar}{0.005}
 \newcommand{\PredFAmin}{95{,}507}
 \newcommand{\PredGenMax}{0.50}
 \newcommand{\PredGenMin}{0.32}  % EXP-052 predicate
 \newcommand{\PredPPVmax}{0.0027}
 \newcommand{\PredPass}{0}
+\newcommand{\PredPiStar}{0.076}
+\newcommand{\PredPiStarRatio}{38}
 \newcommand{\PrevDa}{94.63}
 \newcommand{\PrevDb}{60.71}
 \newcommand{\PrevRadio}{76.5}
@@ -297,6 +309,42 @@
 \newcommand{\RhoBAP}{0.62}
 \newcommand{\RhoFone}{0.83}  % EXP-052 rank_correlation
 \newcommand{\RhoFoneP}{0.04}
+\newcommand{\RicActOnePfifty}{0.21}
+\newcommand{\RicActOnePnn}{0.60}
+\newcommand{\RicActTenPfifty}{0.78}
+\newcommand{\RicActTenPnn}{1.50}
+\newcommand{\RicDropped}{0}
+\newcommand{\RicIndOnePfifty}{0.52}
+\newcommand{\RicIndOnePnn}{0.98}
+\newcommand{\RicIndTenPfifty}{1.64}
+\newcommand{\RicIndTenPnn}{3.05}
+\newcommand{\RicInfOnePnnMax}{0.050}
+\newcommand{\RicInfOnePnnMin}{0.038}
+\newcommand{\RicInfTenPnnMax}{0.229}
+\newcommand{\RicInfTenPnnMin}{0.134}
+\newcommand{\RicLoopOneMax}{4.8}
+\newcommand{\RicLoopOnePfiftyMax}{0.86}
+\newcommand{\RicLoopOnePfiftyMin}{0.77}
+\newcommand{\RicLoopOnePnnHiMax}{1.76}
+\newcommand{\RicLoopOnePnnMax}{1.69}
+\newcommand{\RicLoopOnePnnMin}{1.42}
+\newcommand{\RicLoopOnePnnnMax}{3.07}
+\newcommand{\RicLoopTenMax}{11.2}
+\newcommand{\RicLoopTenPfiftyMax}{3.18}
+\newcommand{\RicLoopTenPfiftyMin}{2.48}
+\newcommand{\RicLoopTenPnnHiMax}{5.01}
+\newcommand{\RicLoopTenPnnMax}{4.95}
+\newcommand{\RicLoopTenPnnMin}{4.45}
+\newcommand{\RicLoopTenPnnnMax}{5.71}
+\newcommand{\RicModels}{6}  % EXP-061
+\newcommand{\RicNone}{20{,}016}
+\newcommand{\RicNten}{5{,}000}
+\newcommand{\RicQOnePnn}{0.07}
+\newcommand{\RicQTenPnn}{0.21}
+\newcommand{\RicQueueMax}{4}
+\newcommand{\RicTransportShareMin}{86}
+\newcommand{\RicUEs}{7.7}
+\newcommand{\RicUEsMax}{12}
 \newcommand{\RobAUCmax}{0.58}
 \newcommand{\RobAUCmin}{0.47}
 \newcommand{\RobBAmax}{0.53}
@@ -482,3 +530,38 @@
 \newcommand{\UnsupFPRmin}{0.02}
 \newcommand{\WoneNonrobust}{0.27}
 \newcommand{\WoneRobust}{0.28}
+\newcommand{\ZkArgBAmax}{0.62}
+\newcommand{\ZkArgBAmin}{0.54}
+\newcommand{\ZkArgFPRmax}{0.58}
+\newcommand{\ZkArgFPRmin}{0.02}
+\newcommand{\ZkArgusFlows}{1{,}215{,}890}
+\newcommand{\ZkAttackPct}{76}
+\newcommand{\ZkBAmax}{0.56}
+\newcommand{\ZkBAmin}{0.43}
+\newcommand{\ZkCleanArgBAmax}{0.78}
+\newcommand{\ZkCleanArgBAmin}{0.61}
+\newcommand{\ZkCleanArgFPRmax}{0.18}
+\newcommand{\ZkCleanArgFPRmin}{0.03}
+\newcommand{\ZkCleanBAmax}{0.79}
+\newcommand{\ZkCleanBAmin}{0.41}
+\newcommand{\ZkCleanDiffMax}{0.04}
+\newcommand{\ZkCleanDiffMin}{-0.20}
+\newcommand{\ZkCleanFPRmax}{0.46}
+\newcommand{\ZkCleanFPRmin}{0.13}
+\newcommand{\ZkCleanLRdiff}{-0.20}
+\newcommand{\ZkCleanLRloss}{0.20}
+\newcommand{\ZkCleanOthDiffMax}{0.04}
+\newcommand{\ZkCleanOthDiffMin}{-0.06}
+\newcommand{\ZkCleanSigNeg}{1}
+\newcommand{\ZkCleanSigPos}{0}
+\newcommand{\ZkCopies}{66{,}033}
+\newcommand{\ZkDiffMax}{-0.06}
+\newcommand{\ZkDiffMin}{-0.15}
+\newcommand{\ZkFPRmax}{0.85}
+\newcommand{\ZkFPRmin}{0.16}
+\newcommand{\ZkFlows}{346{,}882}  % EXP-063
+\newcommand{\ZkRuleAgreePct}{100}
+\newcommand{\ZkSeeds}{10}
+\newcommand{\ZkSigNeg}{6}
+\newcommand{\ZkSigPos}{0}
+\newcommand{\ZkVersion}{8.0.10}

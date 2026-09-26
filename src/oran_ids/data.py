@@ -462,6 +462,36 @@ def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
                   "none", prov)
 
 
+def load_target_d_b_zeek(path: Path | None = None, *, reason: str = "unspecified") -> Corpus:
+    """D_B re-extracted with Zeek (EXP-063), the exporter behind D_A. TRANSFER-ONLY.
+
+    Built by experiments/build_d_b_zeek.py from the dataset's GTP-removed pcapng
+    files, with labels carried over from the published labels by host pair. Zeek
+    records map to the shared space with the same function as D_A's. Groups are
+    capture files, with the suffix "|c" on the benign flows of the host pair that
+    EXP-062 identified as the second attacker's flood, as for the Argus release.
+    """
+    from .features import shared as _sh
+
+    path = path or Path("data/processed/d_b_zeek.parquet")
+    _log_target_access(f"load_target_d_b_zeek reason={reason}")
+    df = pd.read_parquet(path)
+    z = pd.DataFrame({"duration": df["duration"], "src_ip_bytes": df["orig_ip_bytes"],
+                      "dst_ip_bytes": df["resp_ip_bytes"], "src_pkts": df["orig_pkts"],
+                      "dst_pkts": df["resp_pkts"], "proto": df["proto"]})
+    X = _sh.from_d_a(z)
+    y = df["y"].to_numpy(dtype=np.int8)
+    lm = load_label_map()["corpus_d_b"]
+    category = _apply_canonical(df["attack_type"], lm["map"], "D_B (Zeek) category").to_numpy()
+    g = np.where(df["copy"].to_numpy(), df["file"].astype(str) + "|c",
+                 df["file"].astype(str))
+    prov = {"source_file": path.name, "exporter": "Zeek (EXP-063)",
+            "n_rows_used": int(len(X)), "n_features": int(X.shape[1]),
+            "group_key": "capture_file (20), '|c' marks the flood copies",
+            "role": "transfer_only"}
+    return Corpus("d_b_5gnidd_zeek_shared", X, y, category, g, "capture_file", prov)
+
+
 RAW_DC = Path("data/raw/d_c")
 D_C_FILES = {"004-syn-flood.csv": "syn_flood", "005-icmp-flood.csv": "icmp_flood",
              "003a-pfcp.csv": "pfcp_deletion"}

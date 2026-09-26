@@ -393,16 +393,18 @@ def t_sequence():
 
 def t_predicate():
     PR = pd.read_csv(P / "predicate.csv")
-    has_lat = "radio_min_budget_ms" in PR.columns
+    # the latency column uses the live-RIC loop (EXP-061) when present
+    col = ("ric_min_budget_ms" if "ric_min_budget_ms" in PR.columns
+           else "radio_min_budget_ms")
+    has_lat = col in PR.columns
     rows = []
     for _, r in _ord(PR).iterrows():
         mk = lambda b: r"\checkmark" if b else r"$\times$"
-        lat = (f"{r.radio_min_budget_ms:.0f}" if has_lat and pd.notna(r.radio_min_budget_ms)
-               else "--")
+        lat = f"{r[col]:.0f}" if has_lat and pd.notna(r[col]) else "--"
         rows.append(f"{NAME[r.model]} & {r.dBA_upper:.2f} & {mk(r.gen_pass)} & "
                     f"{r.best_ppv_at_rmin:.4f} & {_num(r.min_false_alerts_at_rmin)} & "
                     f"{mk(r.alert_pass)} & {lat} & {int(r.verdict)} {BS}")
-    _write("rev_predicate", rows, "EXP-052 predicate (EXP-041, EXP-043)", "lccccccc",
+    _write("rev_predicate", rows, "EXP-052 predicate (EXP-041, EXP-061)", "lccccccc",
            r"Model & $\overline{\Delta}_{\mathrm{BA}}$ & Gen. & Best PPV & Min.\ alerts/h & Alert & "
            r"$B_{\min}$ (ms) & $\mathcal{P}$ " + BS)
 
@@ -415,11 +417,42 @@ def t_latency():
         print('  skip latency table (EXP-043 not run)')
 
 
+def t_ric():
+    """EXP-061: decision loop through a live FlexRIC, emulated E2 node."""
+    R = pd.read_csv(RES / "EXP-061/processed/ric_latency.csv")
+    def f(v):
+        if v < 0.0005:
+            return r"$<$0.001"
+        return f"{v:.3f}" if v < 0.1 else f"{v:.2f}"
+
+    def rng(s):
+        lo, hi = f(s.min()), f(s.max())
+        return lo if lo == hi else f"{lo}--{hi}"
+
+    label = {"t_ind": r"$t_{\mathrm{ind}}$", "t_q": r"$t_{q}$",
+             "t_feat": r"$t_{\mathrm{feat}}$", "t_inf": r"$t_{\mathrm{inf}}$",
+             "t_act": r"$t_{\mathrm{act}}$", "e2e_one": r"Loop, 1 UE",
+             "e2e_all": r"Loop, all"}
+    rows = []
+    for term, lab in label.items():
+        if term == "e2e_one":
+            rows.append(r"\midrule")
+        cells = [lab]
+        for per in (10, 1):
+            s = R[(R.term == term) & (R.period_ms == per)]
+            cells += [rng(s.p50), rng(s.p99)]
+        rows.append(" & ".join(cells) + " " + BS)
+    _write("rev_ric", rows, "EXP-061 ric_latency", "lcccc",
+           r"& \multicolumn{2}{c}{10\,ms, six models} & "
+           r"\multicolumn{2}{c}{1\,ms, LR and RF} " + BS + "\n"
+           r"Term & $p_{50}$ & $p_{99}$ & $p_{50}$ & $p_{99}$ " + BS)
+
+
 def main() -> int:
     for fn in (t_corpora, t_leakage, t_drift, t_benign_sessions, t_time_split,
                lambda: t_transfer("a_to_b", "rev_transfer_fwd"),
                lambda: t_transfer("b_to_a", "rev_transfer_rev"), t_percat, t_harm,
-               t_pooled, t_estimator, t_conflict, t_ladder, t_target_ref, t_third, t_calibration, t_sequence, t_arms, t_predicate, t_latency):
+               t_pooled, t_estimator, t_conflict, t_ladder, t_target_ref, t_third, t_calibration, t_sequence, t_arms, t_predicate, t_latency, t_ric):
         try:
             fn()
         except FileNotFoundError as exc:

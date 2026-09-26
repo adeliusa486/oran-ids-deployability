@@ -55,3 +55,9 @@
 2026-09-25T15:03:53	load_target_d_b(nrows=None) reason=EXP-058 b_to_c features=shared (as SOURCE for D_C)
 2026-09-25T16:45:19	load_target_d_c(background=True) reason=EXP-058 b_to_c features=shared
 2026-09-25T16:45:19	load_target_d_b(nrows=None) reason=EXP-058 b_to_c features=shared (as SOURCE for D_C)
+2026-09-26T02:47:10	EXP-062 probe: addresses of conflicting records (fields_preserved)
+2026-09-26T02:48:09	EXP-062 addresses of conflicting records (Encoded.csv, fields_preserved)
+2026-09-26T02:49:19	EXP-062 addresses of conflicting records (Encoded.csv, fields_preserved)
+2026-09-26T02:58:43	EXP-063 build D_B from Zeek conn logs (labels from fields_preserved)
+2026-09-26T02:59:04	EXP-063 build D_B from Zeek conn logs (labels from fields_preserved)
+2026-09-26T02:59:29	load_target_d_b_zeek reason=EXP-063 a_to_bz features=shared

@@ -55,9 +55,9 @@ This runs, in order:
    for every number that appears in the text. No number is typed by hand.
 3. `analysis/make_tables_v2.py` and `analysis/make_figures_v2.py`: every table
    and data figure.
-4. A comparison of the 37 regenerated files in `tables/generated/` against
+4. A comparison of the 38 regenerated files in `tables/generated/` against
    `reproducibility/expected_outputs.json` (comment lines, which carry the
-   date and commit, are ignored). Expected result: `37 of 37 generated files
+   date and commit, are ignored). Expected result: `38 of 38 generated files
    identical`.
 5. `scripts/build_paper.py` (expected: 21 pages, 0 errors, 0 undefined
    references), `scripts/check_withdrawn_claims.py` (no retired claim in the
@@ -119,6 +119,9 @@ runs can be started detached with `scripts/round2_launch.ps1` (Windows).
 | EXP-043 | Sec. VI-I | Emulated per-stage latency |
 | EXP-060 | Sec. VI-I | Latency CDF from a repeat that kept every call |
 | EXP-059 | Sec. IV-A | Session rule against the 42 runs of Fard et al. |
+| EXP-061 | Sec. VI-I, VII-B | Decision loop through FlexRIC with an emulated E2 node (WSL2; `scripts/ric/run_exp061.py`) |
+| EXP-062 | Sec. VI-C, Limitations | Addresses of the conflicting 5G-NIDD records (fields-preserved release) |
+| EXP-063 | Sec. VI-E | 5G-NIDD re-extracted with Zeek from its captures; transfer paired with EXP-056 |
 
 Details of every experiment, including the withdrawn ones, are in `EXPERIMENTS.md`.
 

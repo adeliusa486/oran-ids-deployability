@@ -1,0 +1,115 @@
+{
+  "experiment": "EXP-062",
+  "aligned_rows": 1215890,
+  "bs1_files_matched": 10,
+  "bs1_files": 10,
+  "bs1_matches_first_pass": true,
+  "site_check": [
+    {
+      "bs1_file": "Goldeneye1.csv",
+      "rows": 93803,
+      "attacker": "10.155.15.3",
+      "matching_capture_files": [
+        7
+      ]
+    },
+    {
+      "bs1_file": "ICMPFlood1.csv",
+      "rows": 18279,
+      "attacker": "10.155.15.9",
+      "matching_capture_files": [
+        4
+      ]
+    },
+    {
+      "bs1_file": "SSH1.csv",
+      "rows": 1608,
+      "attacker": "",
+      "matching_capture_files": [
+        10
+      ]
+    },
+    {
+      "bs1_file": "SYNFlood1.csv",
+      "rows": 44636,
+      "attacker": "10.155.15.4",
+      "matching_capture_files": [
+        6
+      ]
+    },
+    {
+      "bs1_file": "SYNScan1.csv",
+      "rows": 11450,
+      "attacker": "10.155.15.1",
+      "matching_capture_files": [
+        1
+      ]
+    },
+    {
+      "bs1_file": "Slowloris1.csv",
+      "rows": 31015,
+      "attacker": "10.155.15.0",
+      "matching_capture_files": [
+        8
+      ]
+    },
+    {
+      "bs1_file": "TCPConnect1.csv",
+      "rows": 11645,
+      "attacker": "10.155.15.1",
+      "matching_capture_files": [
+        2
+      ]
+    },
+    {
+      "bs1_file": "Torshammer1.csv",
+      "rows": 38120,
+      "attacker": "10.155.15.4",
+      "matching_capture_files": [
+        9
+      ]
+    },
+    {
+      "bs1_file": "UDPFlood1.csv",
+      "rows": 467717,
+      "attacker": "10.155.15.4",
+      "matching_capture_files": [
+        5
+      ]
+    },
+    {
+      "bs1_file": "UDPScan1.csv",
+      "rows": 10043,
+      "attacker": "10.155.15.9",
+      "matching_capture_files": [
+        3
+      ]
+    }
+  ],
+  "benign_copies": 281525,
+  "benign_copies_share_top_pair": 1.0,
+  "pairs": [
+    {
+      "benign_file": 5,
+      "src": "10.155.15.7",
+      "dst": "10.41.150.68",
+      "proto": "udp",
+      "benign_copies": 281525,
+      "benign_window": "03:49.0-13:32.4",
+      "attack_files_same_hosts": [
+        15
+      ],
+      "attack_flows_same_hosts": 281529,
+      "attack_types_same_hosts": {
+        "UDPFlood": 281529
+      },
+      "attack_window_same_hosts": "03:49.0-13:32.4",
+      "own_file_attack_sources": {
+        "10.155.15.4": 175811
+      },
+      "own_file_attack_types": {
+        "UDPFlood": 175811
+      }
+    }
+  ]
+}

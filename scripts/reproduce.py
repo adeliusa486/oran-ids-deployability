@@ -88,6 +88,18 @@ EXPERIMENTS = [
     ("EXP-060", "latency repeat of EXP-043 (radio) keeping every call, for the CDF",
      [["experiments/run_latency_v2.py", "--exp", "EXP-060", "--radio-only", "--keep-samples"]],
      True, "25 min, run alone", "VI-I, latency CDF figure"),
+    ("EXP-061", "decision loop through a live FlexRIC, emulated E2 node (needs WSL2 Ubuntu)",
+     [["scripts/ric/run_exp061.py"]],
+     False, "15 min + first build, run alone", "VI-I, RIC loop table; VII predicate"),
+    ("EXP-062", "addresses of the conflicting 5G-NIDD records (needs the fields-preserved release: "
+     "python scripts/fetch_5gnidd_file.py BTS1_BTS2_fields_preserved.zip data/raw/d_b/pcap)",
+     [["analysis/label_conflict_addresses.py"]], True, "3 min", "VI-C, Limitations"),
+    ("EXP-063", "D_B re-extracted with Zeek (needs WSL2 and the GTP-removed pcaps; see scripts/zeek/)",
+     [["experiments/build_d_b_zeek.py"],
+      ["experiments/run_transfer_v2.py", "--exp", "EXP-063", "--direction", "a_to_bz", "--sweeps",
+       "--group-counts", "--seeds", "10"],
+      ["analysis/exporter_control.py"]],
+     True, "1 h after extraction", "VI-E, exporter control"),
     ("diag", "Platt inversion diagnosis (EXP-044 seed 110)",
      [["analysis/platt_diagnosis.py"]], True, "2 min", "VI-H"),
 ]

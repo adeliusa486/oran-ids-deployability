@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-063",
+  "zeek": "/home/adeel/zeek/root/opt/zeek/bin/zeek version 8.0.10",
+  "flows": 346882,
+  "attack": 263939,
+  "attack_share": 0.7608898703305447,
+  "copies": 66033,
+  "argus_flows": 1215890,
+  "argus_attack": 738153,
+  "label_rule_agreement_on_argus": 1.0,
+  "captures": 20
+}

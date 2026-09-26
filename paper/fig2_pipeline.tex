@@ -19,9 +19,12 @@
 %      floors and six supervised models (8 architectures).
 %    * "booster" beside XGB and "tracking progression toward realism" were
 %      prompt text. Removed.
-%    * its "MEASURED OFF-PLATFORM" brace spanned t_ind to t_act. Only t_feat
-%      and t_inf were timed (EXP-043); the brace now covers those two, and the
-%      untimed terms are dashed and labelled.
+%    * its "MEASURED OFF-PLATFORM" brace spanned t_ind to t_act. At first only
+%      t_feat and t_inf were timed (EXP-043) and the other terms were dashed.
+%      EXP-061 timed all five through FlexRIC with an EMULATED E2 node on one
+%      host, so every stage is drawn as timed and labelled with its p99 at a
+%      10 ms reporting period. Flow feature construction keeps its EXP-043
+%      figure: the RIC loop carries radio windows only.
 %    * rung 03 named D_B only; the third corpus D_C is added with its range.
 %    * the "HOW TO READ" panel became a plain note; group keys use the paper's
 %      terms (capture session, source address).
@@ -156,34 +159,32 @@
          stOff/.style={draw=gBorder, fill=white, line width=0.7pt, rounded corners=2pt,
                        dash pattern=on 2pt off 1.5pt, minimum width=22mm,
                        minimum height=5mm, font=\scriptsize, text=gHead}}
-\node[stOff] (s1) at (16.40,7.85) {indication decoding};
+\node[stOn]  (s1) at (16.40,7.85) {indication delivery};
 \node[stOn]  (s2) at (16.40,7.10) {feature construction};
 \node[stOn]  (s3) at (16.40,6.35) {model inference};
-\node[stOff] (s4) at (16.40,5.60) {control encoding};
-\node[stOff] (s5) at (16.40,4.85) {queueing};
+\node[stOn]  (s4) at (16.40,5.60) {control to ACK};
+\node[stOn]  (s5) at (16.40,4.85) {queueing};
 \foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5} {\draw[arr] (\a) -- (\b);}
 \foreach \n/\t in {s1/{$t_{\mathrm{ind}}$}, s2/{$t_{\mathrm{feat}}$}, s3/{$t_{\mathrm{inf}}$},
                    s4/{$t_{\mathrm{act}}$}, s5/{$t_{q}$}}
   {\node[lbl, anchor=east] at ($(\n.west)+(-0.06,0)$) {\t};}
-\node[lbl, anchor=west, align=left, text=gHead] at (17.62,7.85) {not timed};
-\node[lbl, anchor=west, align=left] at (17.62,7.10) {\LatExtrMin--\LatExtrMax\,ms per flow\\vectorized, real captures};
-\node[lbl, anchor=west, align=left] at (17.62,6.35) {\LatNetOnnxPnnMax\,ms $p_{99}$\\ONNX Runtime};
-\node[lbl, anchor=west, align=left, text=gHead] at (17.62,5.60) {not timed};
-\node[lbl, anchor=west, align=left, text=gHead] at (17.62,4.85) {not timed};
+\node[lbl, anchor=west, align=left] at (17.62,7.85) {\RicIndTenPnn\,ms $p_{99}$\\E2 node to xApp};
+\node[lbl, anchor=west, align=left] at (17.62,7.10) {radio \LatAggPnn\,ms $p_{99}$\\flow \LatExtrMin--\LatExtrMax\,ms};
+\node[lbl, anchor=west, align=left] at (17.62,6.35) {\RicInfTenPnnMax\,ms $p_{99}$\\ONNX Runtime};
+\node[lbl, anchor=west, align=left] at (17.62,5.60) {\RicActTenPnn\,ms $p_{99}$\\RC control};
+\node[lbl, anchor=west, align=left] at (17.62,4.85) {\RicQTenPnn\,ms $p_{99}$\\in the xApp};
 
-% live-RIC arm, drawn as in Figure 1
-\draw[draw=fCor, fill=fPink, rounded corners=3pt, line width=0.7pt,
-      dash pattern=on 2.4pt off 1.8pt] (14.95,3.15) rectangle (19.80,4.30);
-\node[font=\footnotesize] at (17.37,4.01) {LIVE NEAR-RT RIC PATH};
-\node[font=\footnotesize\bfseries, text=fRed] at (17.37,3.70) {NOT EXECUTED};
-\node[lbl] at (17.37,3.38) {one host, no RIC in the path};
+% live-RIC loop (EXP-061), drawn as in Figure 1
+\draw[draw=fTeal, fill=fXapp, rounded corners=3pt, line width=0.7pt]
+      (14.95,3.15) rectangle (19.80,4.30);
+\node[font=\footnotesize] at (17.37,4.01) {NEAR-RT RIC LOOP};
+\node[font=\footnotesize\bfseries, text=fTeal] at (17.37,3.70) {MEASURED};
+\node[lbl] at (17.37,3.38) {FlexRIC, emulated E2 node, \RicLoopTenPnnMax\,ms $p_{99}$};
 
 % legend and reading note
 \node[stOn, minimum width=6mm, minimum height=3mm] at (15.30,2.72) {};
 \node[lbl, anchor=west] at (15.70,2.72)
-     {\raisebox{-0.8mm}{\ficon{f2_watch}{3.2mm}}\ timed off-platform, one host};
-\node[stOff, minimum width=6mm, minimum height=3mm] at (15.30,2.30) {};
-\node[lbl, anchor=west] at (15.70,2.30) {not timed: needs a RIC in the path};
+     {\raisebox{-0.8mm}{\ficon{f2_watch}{3.2mm}}\ timed on one host, 10\,ms reports};
 \node[font=\scriptsize\itshape, text=gHead, align=left, anchor=north west,
       text width=4.8cm] at (14.95,1.95)
      {Each rung is closer to deployment conditions than the one above. The held-out score of rung 01 alone does not show how a detector behaves in deployment.};

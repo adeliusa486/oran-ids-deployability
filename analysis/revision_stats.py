@@ -502,7 +502,10 @@ def predicate(fwd: pd.DataFrame, counts: pd.DataFrame) -> pd.DataFrame:
     alert           some tau with R >= R_MIN, PPV >= RHO and false alerts per
                     hour at lambda_b <= A_MAX (pooled counts on D_B)
     latency         smallest budget whose p99 upper bound the radio decision
-                    path (window aggregation + ONNX Runtime) meets, EXP-043
+                    path (window aggregation + ONNX Runtime) meets, EXP-043;
+                    and the same for the full loop through a live FlexRIC
+                    (indication to CONTROL-ACK, every UE of the indication,
+                    10 ms reporting), EXP-061
     """
     g = counts.groupby(["model", "tau"])[["tp", "fp", "tn", "fn"]].sum().reset_index()
     g["tpr"] = g.tp / (g.tp + g.fn)
@@ -511,6 +514,9 @@ def predicate(fwd: pd.DataFrame, counts: pd.DataFrame) -> pd.DataFrame:
     g["fa_h"] = g.fpr * LAMBDA_B
     lat = RES / "EXP-043/processed/budget_crossings.csv"
     L = pd.read_csv(lat) if lat.exists() else None
+    ric = RES / "EXP-061/processed/ric_latency.csv"
+    RIC = pd.read_csv(ric) if ric.exists() else None
+    budgets = (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
     rows = []
     for m in NONTRIVIAL:
         f = fwd.set_index("model").loc[m]
@@ -526,6 +532,11 @@ def predicate(fwd: pd.DataFrame, counts: pd.DataFrame) -> pd.DataFrame:
             rec["radio_min_budget_ms"] = (float(r.min_budget_ms_upper_ci.iloc[0])
                                           if len(r) and pd.notna(r.min_budget_ms_upper_ci.iloc[0])
                                           else float("nan"))
+        if RIC is not None:
+            r = RIC[(RIC.model == m) & (RIC.period_ms == 10) & (RIC.term == "e2e_all")]
+            hi = float(r.p99_hi.iloc[0]) if len(r) else float("nan")
+            rec["ric_e2e_p99_hi_ms"] = hi
+            rec["ric_min_budget_ms"] = next((float(b) for b in budgets if hi <= b), float("nan"))
         rec["verdict"] = int(rec["gen_pass"] and rec["alert_pass"])
         rows.append(rec)
     return pd.DataFrame(rows)

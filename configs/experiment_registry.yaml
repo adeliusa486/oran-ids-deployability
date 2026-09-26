@@ -871,3 +871,41 @@ campaign_2:
     status: complete
     answers: [finalization audit 2026-09-25, latency CDF]
     result: see make_numbers LatRep* macros; per-call samples in results/EXP-060/raw/latency_samples.npz feed the CDF figure. Table XXI and all in-text latency numbers stay on EXP-043.
+  EXP-061:
+    title: Decision loop of the radio detector as a C xApp in FlexRIC v2.0.0, emulated gNB agent, one host (WSL2)
+    runner: [scripts/ric/run_exp061.py]
+    status: complete
+    answers: [open issue "no live RIC" of the 2026-09-25 audit, Eq. (latency) terms t_ind, t_act, t_q]
+    result: >-
+      Six models, 10 ms KPM reports, 5,000 reports each, and LR/RF at 1 ms, 20,016 each; no report
+      dropped; C scores equal the Python ONNX scores within 3.6e-7 on all 589 test windows.
+      Loop p99 (all UEs of a report, indication to CONTROL-ACK) 4.45-4.95 ms at 10 ms (upper bound
+      <= 5.01 ms), 1.42-1.69 ms at 1 ms. Delivery plus control >= 86% of mean loop time; inference
+      p99 <= 0.23 ms. Faster at 1 ms than at 10 ms in every term (host power states, not controlled).
+      Emulated E2 node with synthetic KPM values, so model input is replayed from held-out windows.
+      Predicate latency column now uses this loop (B_min 5 or 10 ms).
+  EXP-062:
+    title: Addresses of the conflicting 5G-NIDD records (fields-preserved release)
+    runner: [analysis/label_conflict_addresses.py]
+    status: complete
+    answers: [open issue "5G-NIDD label correctness" of the 2026-09-25 audit]
+    result: >-
+      BTS1_BTS2_fields_preserved.csv aligns with Encoded.csv on Offset, Seq and Label for all
+      1,215,890 rows. All 281,525 benign copies are UDP 10.155.15.7 -> 10.41.150.68 in 03:49.0-13:32.4,
+      the host pair, protocol and window of the 281,529 UDPFlood flows of file 15. File 5's labeled
+      attacker is 10.155.15.4 -> the same victim. The copies are the second attacker's flood,
+      recorded at BS1 and labeled benign there. All 10 BS1 per-attack CSVs match capture files 1-10.
+  EXP-063:
+    title: D_B re-extracted with Zeek, the exporter of D_A (exporter control for the transfer gap)
+    runner: [scripts/zeek/01_setup_zeek.sh, scripts/zeek/02_run_zeek.sh, experiments/build_d_b_zeek.py,
+             experiments/run_transfer_v2.py --exp EXP-063 --direction a_to_bz --sweeps --group-counts --seeds 10,
+             analysis/exporter_control.py]
+    status: complete
+    answers: [open issue "exporter confound" of the 2026-09-25 audit]
+    result: >-
+      Zeek 8.0.10 LTS on the 20 GTP-removed captures: 346,882 flows (Argus: 1,215,890), 76% attack;
+      host-pair labels reproduce 100% of the published labels; the flood copies reappear (66,033
+      flows). Same 10 seeds and identical models as EXP-056 (source results equal to 0.0). BA all
+      flows 0.43-0.56 (Argus 0.54-0.62), paired diff -0.15 to -0.06, 6 of 6 below zero; without
+      copies 0.41-0.79 (Argus 0.61-0.78), five models -0.06 to +0.04 (none significant), LR -0.20.
+      FPR higher under Zeek for every model. A common exporter does not close the gap.

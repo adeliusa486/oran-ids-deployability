@@ -29,9 +29,12 @@ against the paper (see [Reproducing](#reproducing)).
 | Does a detector transfer between corpora? | Balanced accuracy on 5G-NIDD is 0.53 to 0.63 on all flows and 0.61 to 0.78 on flows with consistent labels, below what the target itself allows. | VI-D |
 | Is it usable at a realistic base rate? | At attack prevalence 0.002, operational precision on 5G-NIDD reaches at most 0.063 at any threshold keeping recall above 10%, even on flows with consistent labels. No architecture passes the deployability test; the published pipeline passes it only on its own random split. | VI-G, VII-B |
 | Does it hold on a third corpus? | Yes. On a 5G core testbed with consistent labels (NFStream flows), detectors find the SYN flood (recall 1.00 from NetsLab, 0.71 to 1.00 from 5G-NIDD) but flag 16% to 81% of normal flows; balanced accuracy 0.60 to 0.74 from NetsLab, 0.42 to 0.85 from 5G-NIDD, against 0.99 in-target. | VI-F |
+| Is the exporter the cause? | No. Re-extracting 5G-NIDD from its captures with Zeek, the exporter of NetsLab, leaves transfer no better: balanced accuracy 0.43 to 0.56 on all flows (lower for all six models) and 0.41 to 0.79 without the copies. | VI-E |
+| Does it meet the latency budget in a RIC? | Yes. As a C xApp in FlexRIC with an emulated E2 node, a decision and its control message take at most 5.0 ms at the 99th percentile (10 ms reports); the RIC path, not inference, takes most of that time. | VI-I |
 | How should precision be estimated? | Averaging precision over folds inflates the best-to-worst ratio between architectures from 1.45 (pooled counts) to 16.0. | VI-G |
 
-Latency is emulated on one host (no RIC in the path). All claims that earlier
+Latency is measured on one host, off-platform and through FlexRIC with an
+emulated E2 node (no radio, no real E2 node). All claims that earlier
 versions made and later measurements retired are listed in
 [EXPERIMENTS.md](EXPERIMENTS.md#6-claims-withdrawn).
 
@@ -63,7 +66,7 @@ Full instructions for reviewers: **[REPRODUCE.md](REPRODUCE.md)**.
 pip install -r requirements.lock && pip install -e .
 python -m pytest -q                      # 61 tests
 python scripts/reproduce.py paper        # regenerate every number, table and figure
-                                         # from results/, verify 37 of 37 identical,
+                                         # from results/, verify 38 of 38 identical,
                                          # rebuild paper/main.pdf (minutes, no data)
 python scripts/reproduce.py list         # every experiment with its exact command
 python scripts/reproduce.py experiment EXP-055   # re-run one from raw data
@@ -109,11 +112,11 @@ is at the end of `MEMORY.md`.
 
 ## Limitations
 
-No measurement inside a real near-real-time RIC (latency is emulated). Three
+The RIC loop uses FlexRIC's emulated E2 node on one host, not a radio deployment. Three
 corpora, the third a 5G core testbed rather than O-RAN. The radio layer has 30 capture
-sessions, 10 of them benign. 5G-NIDD's label conflicts cannot be resolved from
-the published files; results are reported with and without the conflicting
-records.
+sessions, 10 of them benign. 5G-NIDD's conflicting benign records are, by their
+addresses, the flood of a second attacker; the dataset authors have not confirmed
+this, so results are reported with and without them.
 
 ## Citation
 

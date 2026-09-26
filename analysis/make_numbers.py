@@ -330,6 +330,17 @@ def main() -> int:
     put("PredFAmin", num(PR.min_false_alerts_at_rmin.min()))
     put("PredPass", str(int(PR.verdict.sum())))
 
+    def pi_star(ppv, pi=0.002, rho=0.1):
+        """Prevalence at which the same operating point reaches precision rho.
+        PPV fixes the likelihood ratio TPR/FPR = PPV/(1-PPV) * (1-pi)/pi."""
+        lr = ppv / (1 - ppv) * (1 - pi) / pi
+        odds = rho / (1 - rho) / lr
+        return odds / (1 + odds)
+
+    ps = pi_star(PR.best_ppv_at_rmin.max())
+    put("PredPiStar", ps, "{:.3f}")
+    put("PredPiStarRatio", str(int(ps / 0.002)))
+
     # ---- optional arms (written when present) -------------------------------
     arms = P / "arms_summary.csv"
     if arms.exists():
@@ -380,6 +391,53 @@ def main() -> int:
         put("LcBenignFileConf", 100 * pf_.loc[pr_["benign_file"], "conflicting_native"], "{:.0f}")
         put("LcAttackFileConf", 100 * pf_.loc[pr_["attack_file"], "conflicting_native"], "{:.0f}")
 
+    # ---- addresses of the conflicting records (EXP-062) ----------------------
+    la = RES / "EXP-062/statistics/conflict_addresses.json"
+    if la.exists():
+        A = json.loads(la.read_text(encoding="utf-8"))
+        p0 = max(A["pairs"], key=lambda p: p["benign_copies"])
+        put("LcAddrSharePct", 100 * A["benign_copies_share_top_pair"], "{:.0f}", "EXP-062")
+        put("LcAddrSrc", p0["src"].replace(".", ".\\allowbreak "))
+        put("LcAddrDst", p0["dst"].replace(".", ".\\allowbreak "))
+        put("LcAddrOwnSrc", next(iter(p0["own_file_attack_sources"])).replace(".", ".\\allowbreak "))
+        put("LcAddrAttackFlows", num(p0["attack_flows_same_hosts"]))
+        put("LcAddrAttackFile", str(p0["attack_files_same_hosts"][0]))
+        put("LcAddrSameWindow", "yes" if p0["benign_window"] == p0["attack_window_same_hosts"] else "no")
+        put("LcSiteMatched", str(A.get("bs1_files_matched", 0)))
+        put("LcSiteFiles", str(A.get("bs1_files", 0)))
+
+    # ---- D_B re-extracted with Zeek, paired with EXP-056 (EXP-063) ------------
+    ec = RES / "EXP-063/processed/exporter_control.csv"
+    if ec.exists():
+        E = pd.read_csv(ec)
+        B = json.loads((RES / "EXP-063/statistics/build.json").read_text())
+        ea, el = E[E.subset == "all"], E[E.subset == "clean"]
+        put("ZkFlows", num(B["flows"]), source="EXP-063")
+        put("ZkArgusFlows", num(B["argus_flows"]))
+        put("ZkAttackPct", 100 * B["attack_share"], "{:.0f}")
+        put("ZkCopies", num(B["copies"]))
+        put("ZkRuleAgreePct", 100 * B["label_rule_agreement_on_argus"], "{:.0f}")
+        put("ZkVersion", B["zeek"].split("version")[-1].strip())
+        put("ZkSeeds", str(int(E.seeds.max())))
+        for tag, g in (("", ea), ("Clean", el)):
+            put(f"Zk{tag}BAmin", g.ba_zeek.min())
+            put(f"Zk{tag}BAmax", g.ba_zeek.max())
+            put(f"Zk{tag}ArgBAmin", g.ba_argus.min())
+            put(f"Zk{tag}ArgBAmax", g.ba_argus.max())
+            put(f"Zk{tag}DiffMin", g["diff"].min())
+            put(f"Zk{tag}DiffMax", g["diff"].max())
+            put(f"Zk{tag}SigNeg", str(int((g.diff_hi < 0).sum())))
+            put(f"Zk{tag}SigPos", str(int((g.diff_lo > 0).sum())))
+            put(f"Zk{tag}FPRmin", g.fpr_zeek.min())
+            put(f"Zk{tag}FPRmax", g.fpr_zeek.max())
+            put(f"Zk{tag}ArgFPRmin", g.fpr_argus.min())
+            put(f"Zk{tag}ArgFPRmax", g.fpr_argus.max())
+        put("ZkCleanLRdiff", el.set_index("model").loc["logreg", "diff"])
+        put("ZkCleanLRloss", -el.set_index("model").loc["logreg", "diff"])
+        oth = el[el.model != "logreg"]
+        put("ZkCleanOthDiffMin", oth["diff"].min())
+        put("ZkCleanOthDiffMax", oth["diff"].max())
+
     # ---- D_B without the conflicting benign copies (EXP-056) -----------------
     tc = P / "transfer_target_clean.csv"
     if tc.exists():
@@ -413,6 +471,7 @@ def main() -> int:
         put("PredCleanPass", str(int(PC.verdict.sum())))
         put("PredCleanPPVmax", PC.best_ppv_at_rmin.max(), "{:.4f}")
         put("PredCleanFAmin", num(PC.min_false_alerts_at_rmin.min()))
+        put("PredCleanPiStar", pi_star(PC.best_ppv_at_rmin.max()), "{:.3f}")
         for dom, key in (("target", "NetTgtCb"), ("target_clean", "NetCleanCb"),
                          ("source_heldout", "NetSrcCb")):
             f_ = P / f"pooled_network_{dom}_bootstrap.csv"
@@ -506,6 +565,42 @@ def main() -> int:
         put("LatRepMedRatioMax", float(r50.max()), "{:.1f}")
         put("LatRepEtoEPnnMax", float(e2e.p99_b.max()), "{:.2f}")
         put("LatRepEtoEPnnHiMax", float(e2e.p99_hi_b.max()), "{:.2f}")
+
+    # ---- decision loop through a live FlexRIC, emulated E2 node (EXP-061) ----
+    l61 = RES / "EXP-061/processed/ric_latency.csv"
+    if l61.exists():
+        import json as _json
+        R6 = pd.read_csv(l61)
+        S6 = _json.loads((RES / "EXP-061/statistics/summary.json").read_text())
+        q = lambda term, per: R6[(R6.term == term) & (R6.period_ms == per)]
+        s10 = [v for k, v in S6.items() if k.endswith("_p10")]
+        s1 = [v for k, v in S6.items() if k.endswith("_p1")]
+        put("RicModels", str(len(s10)), source="EXP-061")
+        put("RicNten", num(min(v["indications_recorded"] for v in s10)))
+        put("RicNone", num(min(v["indications_recorded"] for v in s1)))
+        put("RicUEs", float(np.mean([v["ues_mean"] for v in s10])), "{:.1f}")
+        put("RicUEsMax", str(max(v["ues_max"] for v in s10)))
+        put("RicDropped", str(sum(v["dropped"] for v in S6.values())))
+        put("RicQueueMax", str(max(v["queue_max"] for v in s1)))
+        for per, tag in ((10, "Ten"), (1, "One")):
+            put(f"RicInd{tag}Pfifty", float(q("t_ind", per).p50.median()), "{:.2f}")
+            put(f"RicInd{tag}Pnn", float(q("t_ind", per).p99.max()), "{:.2f}")
+            put(f"RicAct{tag}Pfifty", float(q("t_act", per).p50.median()), "{:.2f}")
+            put(f"RicAct{tag}Pnn", float(q("t_act", per).p99.max()), "{:.2f}")
+            put(f"RicQ{tag}Pnn", float(q("t_q", per).p99.max()), "{:.2f}")
+            put(f"RicInf{tag}PnnMin", float(q("t_inf", per).p99.min()), "{:.3f}")
+            put(f"RicInf{tag}PnnMax", float(q("t_inf", per).p99.max()), "{:.3f}")
+            put(f"RicLoop{tag}PfiftyMin", float(q("e2e_all", per).p50.min()), "{:.2f}")
+            put(f"RicLoop{tag}PfiftyMax", float(q("e2e_all", per).p50.max()), "{:.2f}")
+            put(f"RicLoop{tag}PnnMin", float(q("e2e_all", per).p99.min()), "{:.2f}")
+            put(f"RicLoop{tag}PnnMax", float(q("e2e_all", per).p99.max()), "{:.2f}")
+            put(f"RicLoop{tag}PnnHiMax", float(q("e2e_all", per).p99_hi.max()), "{:.2f}")
+            put(f"RicLoop{tag}PnnnMax", float(q("e2e_all", per)["p99_9"].max()), "{:.2f}")
+            put(f"RicLoop{tag}Max", float(q("e2e_all", per)["max"].max()), "{:.1f}")
+        # share of the loop spent in the RIC transport terms, from mean times
+        m10 = R6[R6.period_ms == 10].pivot_table(index="model", columns="term", values="mean")
+        share = (m10.t_ind + m10.t_act) / m10.e2e_all
+        put("RicTransportShareMin", str(int(np.floor(100 * share.min()))))
 
     # ---- in-target references on D_B (EXP-054) -----------------------------
     tr_ = P / "target_reference.csv"

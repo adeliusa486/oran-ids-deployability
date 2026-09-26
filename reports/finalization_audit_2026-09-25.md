@@ -350,3 +350,23 @@ These are the issues left after both passes, most serious first.
    the arXiv version "Nanou" and "Rahman, Muhammad Enayetur". Check IEEE Xplore before submission.
 9. **Ten references without DOIs** (USENIX, ICML, NeurIPS, JMLR). None exists. Their metadata
    matches the proceedings records.
+
+## Third pass, 2026-09-26: the open issues
+
+| Issue | Important? | What was done | State |
+|---|---|---|---|
+| No live RIC | Yes. The latency term of the deployability test rested on off-platform timing. | EXP-061. FlexRIC v2.0.0 built in WSL2 without sudo. A C xApp subscribes to KPM, scores every UE with ONNX Runtime, and sends an RC control per report. 6 models at 10 ms reports, LR and RF at 1 ms. | Solved for the RIC software path. Loop p99 at most 5.01 ms (upper bound), 1.4 to 1.7 ms at 1 ms reports. The E2 node is FlexRIC's emulator, so the paper says so everywhere. |
+| Three exporters | Yes. A reviewer could say the transfer gap is tooling. | EXP-063. The 5G-NIDD captures (3.9 GB) re-extracted with Zeek 8.0.10, the exporter of NetsLab. Labels carried over by host pair, which reproduces every published label. Transfer repeated with identical models on the same 10 seeds. | Solved. With one exporter, balanced accuracy is lower on all flows for all six models and unchanged or lower without the copies. The exporter does not explain the gap. |
+| 5G-NIDD label correctness | Yes. Half the target corpus was in question. | EXP-062. The dataset's fields-preserved release carries addresses. All 281,525 benign copies are the flood of 10.155.15.7, the attacker labeled at the other base station. | Solved with evidence. The authors have not confirmed it, so results stay reported with and without the copies. Email draft for the authors: `reports/5gnidd_label_query_draft.md` (not sent). |
+| pi = 0.002 has no source | Medium. | Break-even prevalence added: precision would reach the bound only at pi 0.076 (0.005 without the copies), and the false-alert bound fails at any pi. | Solved. The verdict does not depend on pi. |
+| ICCCN co-author spellings | Low. | Crossref (IEEE's own record), Semantic Scholar and OpenAlex raw strings all read Nannou and Ur Rahman. | No change needed. |
+| 30 radio sessions | Yes, but inherent to the corpus. | Nothing to run. Stated in Limitations. | Stays a limitation. |
+| Corresponding-author email | Yes for submission. | Authors and affiliations are yours to set. | Open, needs you. |
+| 21 pages, 23 tables | Low. IEEE Access has no page limit. | Unchanged. | Optional. |
+
+Also found while doing this:
+- The algorithm paragraph still said the loop "was not deployed in a RIC". Fixed.
+- The capture-to-station assignment of 5G-NIDD, previously inferred, is confirmed: all ten BS1 files match capture files 1 to 10.
+- final_validation now reads EXP-061: 22 PASS, 0 WARN, 1 BLOCKED (CPU and memory under load), 0 FAIL.
+
+Checks after the pass: build 21 pages, 0 errors, 0 overfull, 0 bibtex warnings. reproduce.py paper 38 of 38 identical. pytest 61 of 61. Withdrawn-claims guard OK. Abstract 250 rendered words. diff.pdf 30 pages, 0 errors. No macro, citation, label, reference or literal number lost against the last commit.

@@ -24,8 +24,11 @@
 %    * The render's arrows ran from the xApp out to E2SM-KPM and to the flow
 %      exporter, and raised the alert from the feature space. Data flows into
 %      the detector; the alert is the detector's output.
-%    * Marker 03 (decision latency) is EMULATED off-platform (EXP-043); it is
-%      drawn hollow and dashed, unlike the two markers measured on corpora.
+%    * Marker 03 (decision latency): first EMULATED off-platform (EXP-043) and
+%      drawn hollow and dashed. EXP-061 then timed the full loop, indication to
+%      CONTROL-ACK, through FlexRIC v2.0.0 with an EMULATED E2 node on one host,
+%      so the marker is filled and the live-RIC box is drawn as measured. The
+%      box names the emulated node; no radio or real E2 node was used.
 %    * Radio windows: 16 consecutive 1 Hz records per UE, mean and s.d. of
 %      16 KPM fields (Section IV-A), stated instead of "window / feature
 %      representation".
@@ -143,13 +146,13 @@
 \draw[plain, line width=0.8pt] (ocu.east) -- (5.78,2.55) -- (5.78,5.40) -- (e2t.west);
 \node[font=\scriptsize, fill=white, inner sep=1pt, anchor=east] at (5.72,3.75) {E2};
 
-% live-RIC arm: designed, not executed
-\draw[draw=fCor, fill=fPink, rounded corners=3pt, line width=0.7pt,
-      dash pattern=on 2.4pt off 1.8pt] (5.80,-1.10) rectangle (9.75,0.52);
-\node[font=\footnotesize] at (7.775,0.28) {LIVE NEAR-RT RIC PATH};
-\node[font=\footnotesize\bfseries, text=fRed] at (7.775,-0.04) {NOT EXECUTED};
+% live-RIC arm: executed in EXP-061 with an emulated E2 node
+\draw[draw=fTeal, fill=fXapp, rounded corners=3pt, line width=0.7pt]
+      (5.80,-1.10) rectangle (9.75,0.52);
+\node[font=\footnotesize] at (7.775,0.28) {NEAR-RT RIC LOOP};
+\node[font=\footnotesize\bfseries, text=fTeal] at (7.775,-0.04) {MEASURED};
 \node[font=\scriptsize, align=center, text=fInk] at (7.775,-0.66)
-     {latency timed off-platform for\\feature construction and\\inference only};
+     {FlexRIC, emulated E2 node,\\one host, indication to\\control acknowledgment};
 
 % ===== 04 telemetry and feature space =======================================
 \fill[fRicI, rounded corners=4pt] (12.95,0.95) rectangle (14.80,8.35);
@@ -223,9 +226,9 @@
      {Generalization\\across corpora};
 \node[mB] at (15.30,8.78) {02};
 \node[font=\footnotesize, anchor=west] at (15.56,8.78) {Alert burden};
-\node[mE] at (12.72,0.50) {03};
+\node[mB] at (12.72,0.50) {03};
 \node[font=\footnotesize, align=left, anchor=west] at (12.98,0.50)
-     {Decision latency\\[-1pt]{\scriptsize emulated, off-platform}};
+     {Decision latency\\[-1pt]{\scriptsize FlexRIC, emulated E2 node}};
 
 % ===== legends ==============================================================
 \draw[benign, -] (0.05,0.62) -- (0.75,0.62);
@@ -240,9 +243,9 @@
   \node[mBs] at (10.10,-0.56) {02};
   \node[anchor=west] at (10.30,-0.56)
        {Alert burden at a declared base rate: operational analysis};
-  \node[mEs] at (10.10,-0.90) {03};
+  \node[mBs] at (10.10,-0.90) {03};
   \node[anchor=west] at (10.30,-0.90)
-       {Decision latency: feature construction + inference, timed off-platform};
+       {Decision latency: full loop through FlexRIC, emulated E2 node};
 \end{scope}
 
 \end{tikzpicture}

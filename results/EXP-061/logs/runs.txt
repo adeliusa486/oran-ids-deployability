@@ -1,0 +1,32 @@
+== tree_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 5200 rows, seen 5200, dropped 0, 52.1 s
+5200
+== logreg_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 3.58e-07
+[IDS] wrote 5200 rows, seen 5200, dropped 0, 52.1 s
+5200
+== xgboost_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 5201 rows, seen 5201, dropped 0, 52.1 s
+5201
+== mlp_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 5202 rows, seen 5202, dropped 0, 52.1 s
+5202
+== hgb_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 5201 rows, seen 5201, dropped 0, 52.1 s
+5201
+== rf_p10 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 5201 rows, seen 5201, dropped 0, 52.1 s
+5201
+== logreg_p1 rc=0
+[IDS] verified 589 windows, max |C - Python| = 3.58e-07
+[IDS] wrote 21016 rows, seen 21033, dropped 0, 21.0 s
+21033
+== rf_p1 rc=0
+[IDS] verified 589 windows, max |C - Python| = 0
+[IDS] wrote 21016 rows, seen 21035, dropped 0, 21.0 s
+21035
