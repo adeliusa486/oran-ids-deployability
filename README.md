@@ -1,8 +1,9 @@
-# What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN
+# What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN
 
-Code, results and manuscript for the paper by **Arshad Ali and Adeel Ahmad**,
-Faculty of Computer and Information Systems, Islamic University of Madinah,
-Madinah, Saudi Arabia. Prepared for *IEEE Access* (not yet submitted).
+Code, results and manuscript for the paper by **Adeel Ahmad, Arshad Ali, Eraj
+Khan, Gahangir Hossain, and Ali Akarma** (Islamic University of Madinah, Higher
+Colleges of Technology, and University of North Texas). Prepared for *IEEE
+Access* (not yet submitted).
 
 Intrusion detectors for 5G and O-RAN traffic are often reported above 99%
 accuracy on a random split of one dataset. This project measures what such a
@@ -124,9 +125,9 @@ If you use this code, please cite the paper (details will be updated on
 publication):
 
 ```bibtex
-@misc{ali2026oranids,
-  author = {Ali, Arshad and Ahmad, Adeel},
-  title  = {What Held-Out Accuracy Predicts About Deploying Intrusion Detection in {O-RAN}},
+@misc{ahmad2026oranids,
+  author = {Ahmad, Adeel and Ali, Arshad and Khan, Eraj and Hossain, Gahangir and Akarma, Ali},
+  title  = {What Held-Out Scores Predict About Deploying Intrusion Detection in {O-RAN}},
   year   = {2026},
   note   = {Manuscript in preparation for IEEE Access},
   url    = {https://github.com/adeliusa486/oran-ids-deployability}

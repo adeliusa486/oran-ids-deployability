@@ -1,6 +1,6 @@
 %=======================================================================
 %  main.tex -- revised manuscript, revision of 2026-09-24
-%  "What Held-Out Accuracy Predicts About Deploying Intrusion Detection
+%  "What Held-Out Scores Predict About Deploying Intrusion Detection
 %   in O-RAN" (round 2, 2026-09-25; title without colon from 2026-09-25)
 %
 %  BUILD: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
@@ -79,6 +79,10 @@
 \input{../tables/generated/numbers}
 \input{figstyle}
 
+% Author photos live in paper/authors/, which is not in the public repository;
+% without them the biographies still build, with an empty photo box.
+\newcommand{\authorphoto}[1]{\IfFileExists{authors/#1}{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/#1}}{\rule{0pt}{1.25in}}}
+
 \begin{document}
 
 % No publication history or DOI exists yet (see the preamble); the template's
@@ -87,15 +91,15 @@
 \history{}
 \doi{}
 
-\title{What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN}
-\author{\uppercase{Adeel Ahmad}\authorrefmark{1}, \uppercase{Arshad Ali}\authorrefmark{1}, \uppercase{Eraj Khan}\authorrefmark{2}, \uppercase{Ali Akarma}\authorrefmark{1}, AND \uppercase{Gahangir Hossain}\authorrefmark{3}}
+\title{What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN}
+\author{\uppercase{Adeel Ahmad}\authorrefmark{1}, \uppercase{Arshad Ali}\authorrefmark{1}, \uppercase{Eraj Khan}\authorrefmark{2}, \uppercase{Gahangir Hossain}\authorrefmark{3}, AND \uppercase{Ali Akarma}\authorrefmark{1}}
 \address[1]{Faculty of Computer and Information Systems, Islamic University of Madinah, Al Madinah Al Munawarah, Saudi Arabia}
 \address[2]{Faculty of Computer Information Science, Higher Colleges of Technology, Abu Dhabi, United Arab Emirates (e-mail: ekhan@hct.ac.ae)}
 \address[3]{Department of Computer Science and Engineering, University of North Texas, Denton, TX, USA}
 
 \markboth
-{A. Ahmad et al.: Held-Out Accuracy and Deployment of O-RAN Intrusion Detection}
-{A. Ahmad et al.: Held-Out Accuracy and Deployment of O-RAN Intrusion Detection}
+{A. Ahmad et al.: Held-Out Scores and Deployment of O-RAN Intrusion Detection}
+{A. Ahmad et al.: Held-Out Scores and Deployment of O-RAN Intrusion Detection}
 
 \corresp{Corresponding author: Eraj Khan (e-mail: ekhan@hct.ac.ae).}
 \begin{abstract}
@@ -265,7 +269,7 @@ Every protocol is run on six supervised architectures, logistic regression (LR),
 
 Three more model families answer narrower questions. Two sequence models, a gated recurrent unit (GRU) network~\cite{cho2014gru} with 32 hidden units and attack-class weight equal to the benign-to-attack ratio, and a one-dimensional convolutional network (1D-CNN) with two convolutions of 32 filters, kernel 3, and average pooling, read the raw 16-step KPM sequences of the same radio windows. Two unsupervised detectors, an isolation forest (IF)~\cite{liu2008isolation} with 200 trees and an autoencoder (AE) with a 12--6--12 layout scored by reconstruction error, learn from benign source flows only, with the alarm threshold at the 99th percentile of benign source scores. A CORAL variant~\cite{sun2016coral}, the one transfer model that sees target data, re-colors the source flows to the covariance of the unlabeled target before training (per-domain z-scores, identity-regularized covariances).
 
-Two further analyses use no detector. A one-nearest-neighbor (1-NN) lookup assigns each radio test window the label of its nearest training window, by Euclidean distance on the standardized window summaries. A domain classifier, histogram gradient boosting with 200 iterations, is trained to tell \DA{} flows from \DB{} flows and scored by balanced accuracy under five-fold stratified cross-validation.
+Two analyses use no detector: a one-nearest-neighbor (1-NN) lookup that gives each radio test window the label of its nearest training window (Euclidean distance on standardized window summaries), and a domain classifier (histogram gradient boosting, 200 iterations) that tells \DA{} from \DB{} flows, scored by balanced accuracy under five-fold stratified cross-validation.
 
 \subsection{Evaluation Protocols}
 
@@ -312,7 +316,7 @@ All measurements ran on one workstation (13th Gen Intel Core i9-13900H, 14 cores
 
 For the latency loop we built FlexRIC~\cite{schmidt2021flexric} v2.0.0 in WSL2 (Ubuntu, Linux kernel 6.18) on the same machine and connected its near-real-time RIC over SCTP to FlexRIC's emulated gNB agent. Our C xApp subscribes to E2SM-KPM reports with 16 measurement items per UE (one radio record), scores every UE of a report with ONNX Runtime 1.30.0 through its C API, answers each report with one E2SM-RC control message (radio bearer control, QoS flow mapping, the only control the emulated node implements), and waits for the acknowledgment. The emulated node reports synthetic values for 0 to \RicUEsMax{} UEs, so the xApp scores held-out test windows in their place; before timing, the C code reproduced the Python scores on all 589 test windows to within $4\times10^{-7}$. Delivery time comes from the timestamp the node writes into the KPM header, since all processes share one clock. No radio, real E2 node, or container platform took part, and all other latency figures were measured without a RIC.
 
-The radio protocol comparison uses 20 splits with two model seeds each, and the other experiments 20 splits with one. For the flow-level bootstrap intervals and every result on \DB{} without the benign copies, we re-ran the first 10 splits deterministically with confusion counts per capture file (runtime limited the re-run to 10). Calibration uses 10 splits of a three-way source split into training, calibration, and test groups. We declare an attack prevalence of $\pi = 0.002$ and a benign arrival rate of $\lambda_{b} = 240{,}000$ flows per hour. Neither comes from an operator, and we found no measured source for $\pi$; Section~\ref{sec:disc:predicate} gives the prevalence at which the precision conclusion would change. On the radio layer, false alerts are counted per benign UE-hour. Our rate of about 67 flows per second is below the several hundred per second that Jin et al. expect at a heavily loaded base station of a large LTE network~\cite{jin2013softcell}, so our alert volumes probably understate those of an edge site serving several cells.
+The radio protocol comparison uses 20 splits with two model seeds each, and the other experiments 20 splits with one. For the flow-level bootstrap intervals and every result on \DB{} without the benign copies, we re-ran the first 10 splits deterministically with confusion counts per capture file (runtime limited the re-run to 10). Calibration uses 10 splits of a three-way source split into training, calibration, and test groups. We declare an attack prevalence of $\pi = 0.002$ and a benign arrival rate of $\lambda_{b} = 240{,}000$ flows per hour. Neither comes from an operator, and we found no measured source for $\pi$; Section~\ref{sec:disc:predicate} gives the prevalence at which the precision conclusion would change. On the radio layer, false alerts are counted per benign UE-hour. Our rate of about 67 flows per second is below the several hundred per second that Jin et al. extrapolate from measured radio-bearer arrivals at a heavily loaded base station of a large LTE network~\cite{jin2013softcell}, so our alert volumes probably understate those of an edge site serving several cells.
 
 Latency outside the RIC is measured per call with a monotonic clock and garbage collection enabled, over 20,000 calls after 1,000 warm-up calls, with one thread per library unless stated otherwise, and every quantile has a distribution-free confidence interval. To time flow-level feature construction, we use two Python flow exporters of our own with the same flow semantics, a per-packet reference implementation and a vectorized version that extracts header fields in bulk, on the three DDoS captures of \DA{}.
 
@@ -428,7 +432,7 @@ The detectors stay above chance on the target, but not by much: average target b
 
 At $\tau = 0.5$, no architecture both keeps the benign traffic of \DB{} clear and catches most of its attacks. LR keeps a benign specificity of \FwdLRspec{} but catches only \FwdLRdos{} of the DoS traffic, while the tree models and the MLP catch more attacks and flag \FwdEnsFlagMin{} to \FwdEnsFlagMax{} of the benign-labeled traffic, which includes the flood copies; without them, their false positive rate is \FwdEnsCleanFPRmin{} to \FwdEnsCleanFPRmax{}.
 
-The reverse direction looks different (per-model values are in the repository). Balanced accuracy on \DA{} reaches \TrRevTgtBAmin{} to \TrRevTgtBAmax{}, and the loss against the source reference (source minus target, optimistic because it comes from a random split) ranges from \TrRevBAdropMin{} to \TrRevBAdropMax{}: LR gains \TrRevLRgain{}, XGB, HGB, and the MLP change little, and DT and RF lose \TrRevTreeLossMin{} to \TrRevTreeLossMax{}, the changes of LR, DT, and RF being significant after Holm correction. Macro-$F_1$ still falls sharply, because \DA{} is \PrevDa\% attack traffic and a few false negatives swamp its small benign class. Why a model trained on the narrower \DB{} separates \DA{} better than the reverse we have not tested; one possibility is that the larger benign class of \DB{}, although \LcBenignTwinPct\% of it are flood copies, teaches a better model of benign behavior. Categories that \DB{} lacks are detected unevenly: the ensembles and the MLP recall at most \RevWebEnsMax{} of the web attacks but \RevBFmin{} to \RevBFmax{} of the brute-force attacks.
+The reverse direction looks different (per-model values are in the repository). Balanced accuracy on \DA{} reaches \TrRevTgtBAmin{} to \TrRevTgtBAmax{}, and the loss against the source reference (source minus target, optimistic because it comes from a random split) ranges from \TrRevBAdropMin{} to \TrRevBAdropMax{}: LR gains \TrRevLRgain{}, XGB, HGB, and the MLP change little, and DT and RF lose \TrRevTreeLossMin{} to \TrRevTreeLossMax{}, the changes of LR, DT, and RF being significant after Holm correction. Macro-$F_1$ still falls sharply, because false negatives swamp the small benign class of \DA{} (\PrevDa\% attacks). Why a model trained on the narrower \DB{} separates \DA{} better than the reverse we have not tested; one possibility is that the larger benign class of \DB{}, although \LcBenignTwinPct\% of it are flood copies, teaches a better model of benign behavior. Categories that \DB{} lacks are detected unevenly: the ensembles and the MLP recall at most \RevWebEnsMax{} of the web attacks but \RevBFmin{} to \RevBFmax{} of the brute-force attacks.
 
 \subsection{Composition of the Transfer Gap}
 \label{sec:res:anatomy}
@@ -507,7 +511,7 @@ The usual remedy for prior shift is to rescale the scores to the target prior~\c
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{../figures/generated/fig_rev_reliability.pdf}
-\caption{Reliability diagrams for LR and XGB on held-out \DA{} and all \DB{} flows, fifteen equal-mass bins pooled over the 20 transfer splits (Table~\ref{tab:calibration} uses 10 splits of its own three-way split).}
+\caption{Reliability diagrams for LR and XGB on held-out \DA{} and all \DB{} flows, fifteen equal-mass bins pooled over the 20 transfer splits (Table~\ref{tab:calibration} uses 10 splits of its own three-way split). Points above the diagonal mean that scores understate the attack frequency; on \DB{} the XGB curve stays near 0.4 to 0.7 at every score.}
 \label{fig:reliability}
 \end{figure}
 
@@ -536,7 +540,7 @@ The usual remedy for prior shift is to rescale the scores to the target prior~\c
 
 \emph{Acting on alerts.} An E2SM-RC action such as isolating or steering a UE hits a falsely accused UE as hard as a guilty one. At the rates in Table~\ref{tab:pooled}, automatic mitigation on the radio layer would act against an average benign UE \RadFAmin{} to \RadFAmax{} times an hour, far more often in some benign sessions than in others (Fig.~\ref{fig:benign}). Alerts of this quality can inform an operator, or a policy set through the A1 interface of the non-real-time RIC, but should not drive automatic control, and for such detectors the 10\,ms budget matters less than detection quality: latency binds only for a detector whose alerts are good enough to act on automatically.
 
-\emph{Admission and monitoring.} The deployability test could serve as an admission check before an xApp is switched on at a new site, given labeled traffic from that site. Afterwards, unsupervised shift detection~\cite{rabanser2019failing} can flag when incoming traffic departs from the training distribution; since a classifier trained on labeled samples tells our corpora apart with a balanced accuracy of \DomShared{}, such a monitor would likely detect this shift, although we did not test one.
+\emph{Admission and monitoring.} The deployability test could serve as an admission check at a new site, given labeled traffic from it. Afterwards, unsupervised shift detection~\cite{rabanser2019failing} can flag traffic that departs from the training distribution; as a supervised classifier separates our corpora with a balanced accuracy of \DomShared{}, such a monitor would likely detect this shift, though we did not test one.
 
 \subsection{Applying the Deployability Test}
 \label{sec:disc:predicate}
@@ -545,12 +549,12 @@ The usual remedy for prior shift is to rescale the scores to the target prior~\c
 
 \subsection{Relation to Reported Results}
 
-The published results we cite for 5G-NIDD~\cite{samarakoon2022niddarxiv,ilias2024moe5g} are in-distribution scores, and under the same kind of split ours are as high: \PubRzAccMin\% to \PubRzAccMax\% accuracy for the reproduced pipeline and \ThRefShRandBAmin{} to \ThRefShRandBAmax{} balanced accuracy inside \DC{}. Setting such numbers beside transfer results would compare protocols, not detectors. Our results say which commonly reported quantities predict performance on another corpus in our transfer tests. A held-out score under a random split did not: on the radio layer it rose with session recognition, on 5G-NIDD it rested on record-position fields, and the best source model was among the worst after transfer. The reporting requirements of Section~\ref{sec:conclusion} list the quantities that changed our conclusions.
+The 5G-NIDD results we cite~\cite{samarakoon2022niddarxiv,ilias2024moe5g} are in-distribution scores, and under the same split ours are as high: \PubRzAccMin\% to \PubRzAccMax\% accuracy for the reproduced pipeline and \ThRefShRandBAmin{} to \ThRefShRandBAmax{} balanced accuracy inside \DC{}. Setting such numbers beside transfer results would compare protocols, not detectors. In our transfer tests, a held-out score under a random split did not predict performance on another corpus: on the radio layer it rose with session recognition, on 5G-NIDD it rested on record-position fields, and the best source model was among the worst after transfer. The reporting requirements of Section~\ref{sec:conclusion} list the quantities that changed our conclusions.
 
 \section{Reproducibility and Ethics}
 \label{sec:repro}
 
-Code, configuration, seeded splits, per-split results, and the generators for every table, figure, and in-text number are at \textcolor{blue}{\url{https://github.com/adeliusa486/oran-ids-deployability}}, where one script regenerates and checks every number or re-runs each experiment from the SHA-256-verified raw corpora (\texttt{REPRODUCE.md}); it builds FlexRIC, the xApp, and Zeek without administrator rights on Linux or WSL2. \DA{}~\cite{abedzadeh2025netslab} and \DB{}~\cite{samarakoon2022nidd}, including the full-field release and the GTP-removed captures, are distributed by their authors under CC-BY-4.0. \DC{} is available from its authors' repository~\cite{nugraha2025fivegdatasets}, which states no license, so we do not redistribute it. All traffic comes from testbed devices and test networks, and no personal data was processed. Showing when detectors fail carries a modest dual-use risk, which we judge smaller than the benefit to operators of knowing that reported accuracy need not carry over to their networks.
+Code, configuration, seeded splits, per-split results, and the generators for every table, figure, and in-text number are at \textcolor{blue}{\url{https://github.com/adeliusa486/oran-ids-deployability}}, where one script regenerates and checks every number or re-runs each experiment from the SHA-256-verified raw corpora (\texttt{REPRODUCE.md}); it builds FlexRIC, the xApp, and Zeek without administrator rights on Linux or WSL2. \DA{}~\cite{abedzadeh2025netslab} and \DB{}~\cite{samarakoon2022nidd}, including the full-field release and the GTP-removed captures, are distributed by their authors under CC-BY-4.0. \DC{} is available from its authors' repository~\cite{nugraha2025fivegdatasets}, which states no license, so we do not redistribute it. All traffic comes from testbed devices and test networks, and no personal data was processed. The repository includes the scripts behind the 5G-NIDD label audit, so the dataset's authors and users can check it. Showing when detectors fail carries a modest dual-use risk, which we judge smaller than the benefit to operators of knowing that reported accuracy need not carry over to their networks.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -587,24 +591,24 @@ A held-out score on one corpus says little about how a detection xApp will behav
 \bibliographystyle{IEEEtran_doi}
 \bibliography{references}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/adeel_ahmad.jpg}}]{Adeel Ahmad}
+\begin{IEEEbiography}[{\authorphoto{adeel_ahmad.jpg}}]{Adeel Ahmad}
 (Student Member, IEEE) is currently pursuing the B.S. degree in information technology at the Islamic University of Madinah, Saudi Arabia, where he is a recipient of a Saudi Government-funded scholarship for academic excellence. His research interests include cybersecurity, software-defined networking, machine learning, and cloud computing. He is actively involved in applied machine learning research, including explainable AI for attack detection and privacy-preserving federated learning. He has authored research accepted at the IEEE Vehicular Technology Conference (VTC2026-Fall).
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/arshad_ali.jpg}}]{Arshad Ali}
+\begin{IEEEbiography}[{\authorphoto{arshad_ali.jpg}}]{Arshad Ali}
 (Senior Member, IEEE) joined the Islamic University of Madinah in December 2014, where he is a full Professor of Data Communication and Networking in the Faculty of Computer and Information Systems. He received the M.Sc. degree in telecommunication technology from Aston University, Birmingham, UK, in 2007, and the Ph.D. degree from Lancaster University, UK, in 2012, after research appointments including the University of Cambridge (2007--2009). With over 18 years of teaching experience, he has taught more than 13 computing courses and mentored over 15 graduate students. His research interests include cybersecurity, wireless sensor networking, and artificial intelligence, and he has published over 90 peer-reviewed articles. He is an ABET Information Technology Program Evaluator.
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/eraj_khan.jpg}}]{Eraj Khan}
+\begin{IEEEbiography}[{\authorphoto{eraj_khan.jpg}}]{Eraj Khan}
 (Member, IEEE) received the Ph.D. degree in communication security from Lancaster University, UK. He is currently involved in teaching and applied research with the Higher Colleges of Technology, UAE. His current research focuses on the design and evaluation of practical, resource-efficient security solutions for constrained and critical infrastructure environments, and on network security, with emphasis on lightweight security mechanisms for the Internet of Things (IoT) and cyber-physical systems.
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/ali_akarma.jpg}}]{Ali Akarma}
-is currently pursuing the B.S. degree in information technology at the Islamic University of Madinah, Saudi Arabia. He previously completed an Associate Degree Program (ADP) in Computer Science at The Islamia University of Bahawalpur, Pakistan. His research focuses on agentic AI systems, trustworthy machine learning, and AI safety, with interests in multi-agent systems, reinforcement learning, retrieval-augmented generation, and AI governance. His work explores the development of reliable, secure, and transparent autonomous AI systems.
+\begin{IEEEbiography}[{\authorphoto{gahangir_hossain.jpg}}]{Gahangir Hossain}
+(Senior Member, IEEE) received the Ph.D. degree in computer engineering from the University of Memphis, TN, USA, in 2014, with a focus on computer science, cognitive science, and information systems. With over 20 years of teaching experience, he has taught more than 18 computing courses and mentored over 20 graduate students, including three Ph.D. candidates. His research interests include cybersecurity, data science, cognitive neuroscience, AI, and recommender systems. He has published over 150 peer-reviewed articles and directs the SCORE Laboratory at the University of North Texas. He serves as an Associate Editor for several journals and is an ABET Computing Program Evaluator.
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{authors/gahangir_hossain.jpg}}]{Gahangir Hossain}
-(Senior Member, IEEE) received the Ph.D. degree in computer engineering from the University of Memphis, with a focus on computer science, cognitive science, and information systems. With over 20 years of teaching experience, he has taught more than 18 computing courses and mentored over 20 graduate students, including three Ph.D. candidates. His research interests include cybersecurity, data science, cognitive neuroscience, AI, and recommender systems. He has published over 150 peer-reviewed articles and directs the SCORE Laboratory at the University of North Texas. He serves as an Associate Editor for several journals and is an ABET Computing Program Evaluator.
+\begin{IEEEbiography}[{\authorphoto{ali_akarma.jpg}}]{Ali Akarma}
+is currently pursuing the B.S. degree in information technology at the Islamic University of Madinah, Saudi Arabia. He previously completed an Associate Degree Program (ADP) in Computer Science at The Islamia University of Bahawalpur, Pakistan. His research focuses on agentic AI systems, trustworthy machine learning, and AI safety, with interests in multi-agent systems, reinforcement learning, retrieval-augmented generation, and AI governance. His work explores the development of reliable, secure, and transparent autonomous AI systems.
 \end{IEEEbiography}
 
 \EOD

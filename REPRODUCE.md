@@ -1,4 +1,4 @@
-# Reproducing the results of "What Held-Out Accuracy Predicts About Deploying Intrusion Detection in O-RAN"
+# Reproducing the results of "What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN"
 
 This guide is written for reviewers. It has three levels. Level 1 needs no data
 and takes minutes; it regenerates every number, table and figure in the paper

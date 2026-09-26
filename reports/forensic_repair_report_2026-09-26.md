@@ -11,12 +11,11 @@ The manuscript was revised against the forensic audit, issue by issue, followed 
 | | Count |
 |---|---|
 | Audit issues identified | 151 (4 Critical, 41 High, 55 Medium, 51 Low) |
-| Fixed | 143, of which 4 leave a residual item for the authors (H-12, H-37, M-21, L-48) |
+| Fixed | 147 (143 in the first pass, 4 in the follow-up: L-01, L-16, L-35, L-43); 3 leave a residual item (H-12, M-21, L-48) |
 | Merged into another fix | 4 (L-04, L-09, L-22, L-40) |
-| Not fixed: requires author input | 3 (L-01, L-16, L-43) |
-| Partly fixed: rest needs evidence not in hand | 1 (L-35: a reading of the reliability diagram was not added) |
+| Not fixed: requires author input | 0 |
 
-Completion is not 100%. Section F lists what remains.
+Every issue is now resolved in the text. Section F lists the residual author confirmations.
 
 Three repairs change what the paper claims, because the audit showed the earlier claim did not follow from the paper's own data:
 
@@ -130,7 +129,7 @@ Locations refer to sections of the revised paper. "Gen." marks a generator chang
 | M-53 | FIXED | VI-I, VII-B, X | Latency worded as a measurement on an emulated loop, not conformance |
 | M-54 | FIXED | III-C, Table 10 | Operational and corpus precision defined; "Recall", "Corpus prec." (Gen.) |
 | M-55 | FIXED | IV-B, VI-D | Shared-space cost moved to IV-B, macro-F1 point to VI-D |
-| L-01 | NOT FIXED — REQUIRES AUTHOR INPUT | Title | Title change is the authors' decision (F) |
+| L-01 | FIXED (follow-up) | Title, running head, README, REPRODUCE | "What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN" |
 | L-02 | FIXED | Abstract | "Several" |
 | L-03 | FIXED | I | Referents named; "obvious" removed |
 | L-04 | MERGED | I | Merged into M-11/II-D repair: Axelsson/Sommer–Paxson/Arp/Pendlebury stated once in II-D |
@@ -145,7 +144,7 @@ Locations refer to sections of the revised paper. "Gen." marks a generator chang
 | L-13 | FIXED | IV-B | "Robust" stated as design intent |
 | L-14 | FIXED | IV-C | DT depth once; n−/n+ in words; reason next to decision |
 | L-15 | FIXED | IV-F | Softened; check must precede the send |
-| L-16 | NOT FIXED — REQUIRES AUTHOR INPUT | V | "Expect" kept: whether [61] measured or estimated could not be checked (F) |
+| L-16 | FIXED (follow-up) | V | Checked in SoftCell: 34 radio-bearer arrivals/s (99.999th percentile) measured, "several hundred" flows/s extrapolated; text now says "extrapolate from measured radio-bearer arrivals" |
 | L-17 | FIXED | VI-A | Purpose of the uncorrected p stated |
 | L-18 | FIXED | Fig. 2 caption | "Gain" |
 | L-19 | FIXED | VI-C | Counts named; "almost every record" |
@@ -164,7 +163,7 @@ Locations refer to sections of the revised paper. "Gen." marks a generator chang
 | L-32 | FIXED | VI-G | Split; ratio direction stated |
 | L-33 | FIXED | VI-G | Run-in heading starts a new paragraph |
 | L-34 | FIXED | VI-H | "Reachable"; 2×10^−5 (Gen.); Platt sentence reordered |
-| L-35 | PARTLY FIXED | VI-H, Fig. 8 | FPR change given; seed difference explained; a reading of the diagram not added (needs inspection of the plotted curves) |
+| L-35 | FIXED (follow-up) | VI-H, Fig. 8 | FPR change; seed difference; caption reading added after inspecting the curves (above the diagonal; XGB flat at 0.4 to 0.7 on D_B) |
 | L-36 | FIXED | VI-I, Table 12 | "All 12 exports reproduce ... exactly"; dash note removed |
 | L-37 | FIXED | VI-I | "For latency" |
 | L-38 | FIXED | VI-I | Caveat kept in III-D, V, IX; "Keep in mind" removed |
@@ -172,12 +171,12 @@ Locations refer to sections of the revised paper. "Gen." marks a generator chang
 | L-40 | MERGED | III-A | Merged into M-13: III-A statement removed, kept in II-A and VII-A |
 | L-41 | FIXED | VII-A | "Would likely detect ... we did not test one" |
 | L-42 | FIXED | VII-B | Rhetorical question removed; label set stated |
-| L-43 | NOT FIXED — REQUIRES AUTHOR INPUT | VIII | Whether the 5G-NIDD authors were contacted (draft exists, unsent) (F) |
+| L-43 | FIXED (follow-up) | VIII | Sentence added: the repository includes the label-audit scripts so the dataset's authors and users can check it; no claim about contact made |
 | L-44 | FIXED | IX | "Content copies"; "all 10 files of station 1" |
 | L-45 | FIXED | IX | Clause attachment fixed |
 | L-46 | FIXED | X | Requirement 1 asks for a group-disjoint reference; old requirement 5 merged into 2 |
 | L-47 | FIXED | Gen. `make_numbers.py` | Counts 0–9 printed as words |
-| L-48 | FIXED (residual) | Biographies | Degree forms (B.S., M.Sc., Ph.D.), repeated "lightweight"; missing years and one affiliation need author input |
+| L-48 | FIXED (residual) | Biographies | Degree forms, repeated "lightweight", Hossain Ph.D. 2014 (from his UNT résumé); Khan's year not verifiable from a primary source |
 | L-49 | FIXED | references.bib | [12] note moved to a BibTeX comment, arXiv v2 cited; [14] title dash → colon |
 | L-50 | FIXED | VII-A | "A1 interface of the non-real-time RIC" |
 | L-51 | FIXED | VI-B | "Captured in blocks by category" |
@@ -219,11 +218,12 @@ Checked explicitly: equations (1)–(6), Algorithm 1, assumptions (declared π a
 
 ## F. Remaining Issues
 
-1. **L-01 / H-37 title.** "What Held-Out Accuracy Predicts About Deploying..." promises more than the six-point correlation shows. Needs: author decision on a title such as "...Held-Out Scores..." or one naming transfer.
-2. **L-16 Jin et al. [61].** Needs a check of SoftCell for whether "several hundred flows per second" was measured ("report") or projected ("expect", kept).
-3. **L-43 ethics.** Needs a decision on whether and when the 5G-NIDD authors are told about the label conflict (`reports/5gnidd_label_query_draft.md` is unsent), and a sentence saying so.
-4. **H-12 π = 0.002.** Now stated as a declared value with no measured source. Needs a citation if the authors have one; the break-even analysis keeps the conclusion independent of it.
-5. **M-21 300,000-flow sample.** The code records it as declared before the first run, with no rationale. Needs the reason (probably compute cost) if the authors want to state one.
-6. **L-48 biographies.** Degree years for Eraj Khan and Gahangir Hossain, and confirmation of Ali Akarma's affiliation.
-7. **L-35 Fig. 8.** A one-line reading of the reliability diagram needs someone to inspect the plotted curves.
-8. **C-03 new finding.** The attainability paragraph now says the test is passable within one corpus once the label conflict is removed. The authors should confirm they accept this reading.
+Follow-up of 2026-09-26 (after the author asked to finish the open items): title changed (L-01), SoftCell checked (L-16), ethics sentence added (L-43), Fig. 8 reading added (L-35), Hossain's degree year added (L-48), Ali Akarma moved to the end of the author list and biographies, README author list brought up to date. The paper is still 19 pages.
+
+Still open:
+
+1. **Eraj Khan's Ph.D. year (L-48).** A secondary summary gives 2012 (thesis "Rank codes and their applications to communication security"), but no primary record could be reached (Lancaster EPrints has no entry, EThOS is offline). Needs confirmation from the author.
+2. **π = 0.002 (H-12).** Stated as declared, with no measured source; the break-even analysis keeps the conclusion independent of it. A citation only if the authors have one.
+3. **300,000-flow sample (M-21).** No rationale is recorded anywhere in the repository; the paper states only that the size was fixed before the first run.
+4. **Ali Akarma's affiliation.** Taken from his biography (B.S. student at the Islamic University of Madinah); consistent, but not confirmed by him.
+5. **Contacting the 5G-NIDD authors.** `reports/5gnidd_label_query_draft.md` is still unsent; that is the authors' call, and the paper makes no claim either way.
