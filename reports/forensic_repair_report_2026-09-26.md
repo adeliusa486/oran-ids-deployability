@@ -171,7 +171,7 @@ Locations refer to sections of the revised paper. "Gen." marks a generator chang
 | L-40 | MERGED | III-A | Merged into M-13: III-A statement removed, kept in II-A and VII-A |
 | L-41 | FIXED | VII-A | "Would likely detect ... we did not test one" |
 | L-42 | FIXED | VII-B | Rhetorical question removed; label set stated |
-| L-43 | FIXED (follow-up) | VIII | Sentence added: the repository includes the label-audit scripts so the dataset's authors and users can check it; no claim about contact made |
+| L-43 | FIXED (follow-up) | VI-C, IX | Resolved as the authors decided: no contact with the 5G-NIDD authors and no mention of them in the paper; the address evidence is stated as an inference from the addresses alone |
 | L-44 | FIXED | IX | "Content copies"; "all 10 files of station 1" |
 | L-45 | FIXED | IX | Clause attachment fixed |
 | L-46 | FIXED | X | Requirement 1 asks for a group-disjoint reference; old requirement 5 merged into 2 |
@@ -218,7 +218,7 @@ Checked explicitly: equations (1)–(6), Algorithm 1, assumptions (declared π a
 
 ## F. Remaining Issues
 
-Follow-up of 2026-09-26 (after the author asked to finish the open items): title changed (L-01), SoftCell checked (L-16), ethics sentence added (L-43), Fig. 8 reading added (L-35), Hossain's degree year added (L-48), Ali Akarma moved to the end of the author list and biographies, README author list brought up to date. The paper is still 19 pages.
+Follow-up of 2026-09-26 (after the author asked to finish the open items): title changed (L-01), SoftCell checked (L-16), L-43 closed without contact or mention, Fig. 8 reading added (L-35), Hossain's degree year added (L-48), Ali Akarma moved to the end of the author list and biographies, README author list brought up to date. The paper is still 19 pages.
 
 Still open:
 
@@ -226,4 +226,3 @@ Still open:
 2. **π = 0.002 (H-12).** Stated as declared, with no measured source; the break-even analysis keeps the conclusion independent of it. A citation only if the authors have one.
 3. **300,000-flow sample (M-21).** No rationale is recorded anywhere in the repository; the paper states only that the size was fixed before the first run.
 4. **Ali Akarma's affiliation.** Taken from his biography (B.S. student at the Islamic University of Madinah); consistent, but not confirmed by him.
-5. **Contacting the 5G-NIDD authors.** `reports/5gnidd_label_query_draft.md` is still unsent; that is the authors' call, and the paper makes no claim either way.
