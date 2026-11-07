@@ -1,0 +1,32 @@
+BS1 Goldeneye: 703,714 packets (66.4 s)
+BS2 Goldeneye: 658,034 packets (71.3 s)
+{"capture": "Goldeneye", "bs1_keys": 693691, "bs2_keys": 646930, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661768601.4695344, "first_bs2": 1661768601.582885, "last_bs1": 1661770408.206891, "last_bs2": 1661770407.7907927}
+BS1 ICMPflood: 293,994 packets (31.9 s)
+BS2 ICMPflood: 313,667 packets (37.2 s)
+{"capture": "ICMPflood", "bs1_keys": 293352, "bs2_keys": 313497, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661514820.7181685, "first_bs2": 1661514820.459396, "last_bs1": 1661516604.3907852, "last_bs2": 1661516603.9336433}
+BS1 Slowloris: 336,388 packets (46.8 s)
+BS2 Slowloris: 203,101 packets (7.3 s)
+{"capture": "Slowloris", "bs1_keys": 335667, "bs2_keys": 202712, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661771961.9272902, "first_bs2": 1661771961.5073895, "last_bs1": 1661773706.9282887, "last_bs2": 1661773706.9496162}
+BS1 SSH: 12,027 packets (0.2 s)
+BS2 SSH: 8,059 packets (0.1 s)
+{"capture": "SSH", "bs1_keys": 11932, "bs2_keys": 7936, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1662550766.9243398, "first_bs2": 1662550766.485404, "last_bs1": 1662554113.080391, "last_bs2": 1662554113.1212883}
+BS1 SYNflood: 352,692 packets (50.4 s)
+BS2 SYNflood: 93,312 packets (9.9 s)
+{"capture": "SYNflood", "bs1_keys": 347733, "bs2_keys": 93170, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661776592.5302863, "first_bs2": 1661776592.5372336, "last_bs1": 1661778497.64761, "last_bs2": 1661778497.6406162}
+BS1 SYNScan: 73,623 packets (11.8 s)
+BS2 SYNscan: 72,958 packets (10.0 s)
+{"capture": "SYNScan", "bs1_keys": 73530, "bs2_keys": 72876, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661506202.60773, "first_bs2": 1661506203.2517805, "last_bs1": 1661506724.856102, "last_bs2": 1661506725.496336}
+BS1 TCPConnect: 96,725 packets (15.8 s)
+BS2 TCPConnect: 96,628 packets (17.7 s)
+{"capture": "TCPConnect", "bs1_keys": 96636, "bs2_keys": 96576, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661507652.6164267, "first_bs2": 1661507652.2323637, "last_bs1": 1661508238.353764, "last_bs2": 1661508237.9739625}
+BS1 Torshammer: 544,259 packets (98.1 s)
+BS2 Torshammer: 391,053 packets (46.2 s)
+{"capture": "Torshammer", "bs1_keys": 543739, "bs2_keys": 390703, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661774000.7162664, "first_bs2": 1661774000.6323926, "last_bs1": 1661775752.737391, "last_bs2": 1661775752.7364395}
+BS1 UDPflood: 1,214,969 packets (167.1 s)
+BS2 UDPflood: 656,389 packets (109.4 s)
+{"capture": "UDPflood", "bs1_keys": 1214240, "bs2_keys": 656180, "shared": 656180, "share_of_bs1": 0.5404038740281987, "share_of_bs2": 1.0, "same_first_ts": true, "first_bs1": 1661518178.787086, "first_bs2": 1661518178.787086, "last_bs1": 1661519905.4378142, "last_bs2": 1661519905.2740445}
+BS1 UDPScan: 84,830 packets (18.3 s)
+BS2 UDPScan: 92,204 packets (23.0 s)
+{"capture": "UDPScan", "bs1_keys": 84745, "bs2_keys": 92139, "shared": 0, "share_of_bs1": 0.0, "share_of_bs2": 0.0, "same_first_ts": false, "first_bs1": 1661513311.0862591, "first_bs2": 1661513310.4640992, "last_bs1": 1661513894.8941286, "last_bs2": 1661513894.771597}
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-072
+EXIT 0

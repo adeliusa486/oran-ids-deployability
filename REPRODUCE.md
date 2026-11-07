@@ -1,4 +1,8 @@
-# Reproducing the results of "What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN"
+# Reproducing the results of "Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden"
+
+(Revision 1 of IEEE Access manuscript Access-2026-49092; first submitted as "What Held-Out
+Scores Predict About Deploying Intrusion Detection in O-RAN". Section R below covers the
+revision; sections 0 to 3 describe the first submission's pipeline, which revision 1 reuses.)
 
 This guide is written for reviewers. It has three levels. Level 1 needs no data
 and takes minutes; it regenerates every number, table and figure in the paper
@@ -135,3 +139,58 @@ Details of every experiment, including the withdrawn ones, are in `EXPERIMENTS.m
 - The paper uses reduced seed counts in three round-2 experiments (EXP-054: 3
   draws; EXP-055: 2 repeats, KNN at the first rung only; EXP-056 flows: 10 of
   20 seeds). The manuscript states this.
+
+
+## R. Revision 1 (resubmission of 2026-11)
+
+Revision 1 corrected the 5G-NIDD byte accounting (decision D-035) and added the
+experiments the reviewers asked for (EXP-064 to EXP-075; see `EXPERIMENTS.md`).
+
+**Level 1, from the shipped results (minutes).**
+
+```
+python analysis/revision_stats_r1.py        # EXP-075: every statistic
+python analysis/make_assets_r1.py           # paper/r1/numbers_r1.tex, tables/, figs/
+cd paper/r1 && pdflatex main && pdflatex main && pdflatex main
+python scripts/flatten_r1.py OUTDIR         # the flat source uploaded to IEEE Access
+```
+
+The consolidated per-split outputs are committed (`results/EXP-0xx/consolidated__*`);
+the per-flow score arrays they were built from (`scores/`, about 0.9 GB) are not. To
+rebuild them, re-run the experiments (Level 2) and then
+`python analysis/consolidate_transfer.py EXP tag` for each transfer experiment.
+
+**Level 2, re-running the experiments (hours; about 20 single-process hours).**
+
+```
+python experiments/run_transfer_r1.py --exp EXP-064 --source a --targets b bz c --sweeps --reliability --scores
+python experiments/run_transfer_r1.py --exp EXP-065 --source a --targets b bz c --features robust --sweeps --scores
+python experiments/run_transfer_r1.py --exp EXP-066 --source a --targets b --adapt coral --sweeps --scores
+python experiments/run_transfer_r1.py --exp EXP-067 --source b --targets a c --sweeps --scores
+python experiments/run_transfer_r1.py --exp EXP-069 --source a --targets b --adapt iw --sweeps --scores
+python experiments/run_transfer_r1.py --exp EXP-069 --source a --targets b --adapt dann --sweeps --scores
+python experiments/run_target_reference_r1.py --design random  --labels clean --seeds 20
+python experiments/run_target_reference_r1.py --design lofo    --labels clean --scores
+python experiments/run_target_reference_r1.py --design lofo    --labels relab --scores
+python experiments/run_target_reference_r1.py --design station --labels clean --seeds 10 --scores
+python experiments/run_target_reference_r1.py --design station --labels relab --seeds 5 --scores
+python experiments/run_label_efficient.py --draws 4
+python experiments/run_leakage_r1.py
+python experiments/run_transfer_r1.py --exp EXP-071 --source a --targets b --n-sub 150000 --seeds 5 --models logreg tree rf xgboost hgb --scores
+python analysis/flow_split_coverage.py
+python experiments/run_exporter_sensitivity.py --out results/EXP-074/argus_corrected --target b
+python experiments/run_exporter_sensitivity.py --out results/EXP-074/zeek --target bz
+python analysis/byte_accounting.py
+python analysis/label_conflict_pcap.py          # reads the raw 5G-NIDD captures
+python analysis/label_conflict_pcap_pairs.py
+python analysis/make_corrected_labels.py
+```
+
+Every transfer runner accepts `--seed-list` and `--shard i/n` to split work over
+processes; each process writes its own folder, and consolidation merges them.
+`ORAN_IDS_N_JOBS` limits the threads of the forest and XGBoost per process.
+
+**Corrected 5G-NIDD labels.** `results/EXP-072/corrected_labels/` holds the 281,529
+rows of Combined.csv whose label we correct (row position, Seq, Offset, addresses,
+published and corrected labels) with SHA-256 checksums and a one-line recipe. No
+published file is changed.

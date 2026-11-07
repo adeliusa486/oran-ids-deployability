@@ -1,0 +1,78 @@
+%=======================================================================
+%  main.tex -- revised manuscript, revision of 2026-09-24
+%  "What Held-Out Scores Predict About Deploying Intrusion Detection
+%   in O-RAN" (round 2, 2026-09-25; title without colon from 2026-09-25)
+%
+%  BUILD: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+%
+%  Every number in this document is measured. Tables arrive by \input from
+%  tables/generated/ (analysis/make_tables_v2.py) and every number in prose
+%  is a macro from tables/generated/numbers.tex (analysis/make_numbers.py).
+%  Nothing numeric is typed by hand. Regenerate with:
+%     python analysis/revision_stats.py
+%     python analysis/make_numbers.py
+%     python analysis/make_tables_v2.py
+%     python analysis/make_figures_v2.py
+%
+%  Layout: official IEEE Access class (paper/access/), author biographies
+%  included. Prose revised against reports/forensic_writing_audit_2026-09-26.md.
+%=======================================================================
+
+% ieeeaccess.cls (official template of 2026-05-13, in paper/access/) redefines
+% the TeX primitive \year as a one-argument macro, which breaks pgf/TikZ at load
+% time. Keep the primitive and restore it after the class; \year{...} is only for
+% the publisher's production staff.
+\let\TeXyear\year
+\documentclass{ieeeaccess}
+\let\year\TeXyear
+% The class also defines \textbf#1 as {\bf #1} (and \textit likewise), which
+% fails on math inside the argument ("Extra }, or forgotten $"). Restore the
+% LaTeX kernel definitions; plain text renders identically.
+\DeclareTextFontCommand{\textbf}{\bfseries}
+\DeclareTextFontCommand{\textit}{\itshape}
+% The class paints its header in a Pantone spot colour registered through the
+% page resources, which TikZ's PDF driver overwrites. Use the same colour in
+% process CMYK (the values the class gives the spot colour).
+\definecolor{accessblue}{cmyk}{1,0.3,0,0.2}
+% Submission copy: the class prints a template footer ("VOLUME 11, 2023") and a
+% "Digital Object Identifier" line in the title block. This manuscript has no
+% volume, year of publication or DOI until IEEE assigns them, so both are
+% removed rather than left as values that look real. Production restores them.
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ps@titlepage}{VOLUME\ \thevol, \theyear}{}{}{}
+\patchcmd{\ps@titlepage}{VOLUME\ \thevol, \theyear}{}{}{}
+\patchcmd{\ps@headings}{VOLUME\ \thevol, \theyear}{}{}{}
+\patchcmd{\ps@headings}{VOLUME\ \thevol, \theyear}{}{}{}
+\patchcmd{\@maketitle}{Digital Object Identifier\space\@doi}{}{}{}
+\pagestyle{headings}
+\makeatother
+% Caption math uses the class's "medium" math version, whose operator font
+% (Formata) has no upright Greek: \Delta printed as an accent in Table and
+% Figure captions. Take \Delta from Computer Modern in every math version.
+\DeclareSymbolFont{cmupgreek}{OT1}{cmr}{m}{n}
+\DeclareMathSymbol{\Delta}{\mathalpha}{cmupgreek}{"01}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{siunitx}
+% Clickable citations, cross-references, URLs and DOIs. The IEEE Access class
+% loads hyperref only in its JTEHM mode; hidelinks keeps the printed page
+% identical to the class's own look.
+\usepackage[hidelinks,bookmarks=false]{hyperref}
+
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,shapes.symbols,patterns,decorations.pathreplacing}
+
+\newcommand{\DA}{\ensuremath{\mathcal{D}_{A}}}
+\newcommand{\DB}{\ensuremath{\mathcal{D}_{B}}}
+\newcommand{\DC}{\ensuremath{\mathcal{D}_{C}}}
+\newcommand{\ind}{\ensuremath{\mathbf{1}}}
+

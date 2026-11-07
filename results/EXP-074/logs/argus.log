@@ -1,0 +1,24 @@
+domain classifier on shared (18): balanced accuracy 0.9968 (sd 0.0002)
+domain classifier on robust (9): balanced accuracy 0.9346 (sd 0.0009)
+          feature  robust  univariate_domain_auc  w1_source_quantile  median_d_a  median_d_b
+        proto_tcp    True                 0.8020              0.6041      1.0000      0.0000
+        proto_udp    True                 0.7893              0.5786      0.0000      1.0000
+        tot_bytes   False                 0.8819              0.3822      5.7714      4.0431
+         tot_pkts   False                 0.8778              0.3797      2.1972      1.0986
+         dst_pkts   False                 0.8160              0.3683      1.0986      0.0000
+   src_byte_ratio    True                 0.8001              0.3563      0.5000      1.0000
+        dst_bytes   False                 0.8012              0.3534      4.3944      0.0000
+    src_pkt_ratio    True                 0.7886              0.3471      0.5000      1.0000
+        src_bytes   False                 0.8218              0.3217      5.1059      4.0431
+dst_mean_pkt_size    True                 0.7664              0.3201      3.7136      0.0000
+         src_pkts   False                 0.7748              0.2748      1.6094      0.6931
+    mean_pkt_size    True                 0.7049              0.2286      3.7612      3.3673
+src_mean_pkt_size    True                 0.7202              0.2203      3.7136      3.3673
+      bytes_per_s   False                 0.6931              0.1938     11.2898     10.2400
+         duration   False                 0.6352              0.1803      0.0023      0.0000
+       pkts_per_s   False                 0.6673              0.1735      7.2584      6.9088
+       proto_icmp    True                 0.5109              0.0218      0.0000      0.0000
+      proto_other    True                 0.5018              0.0036      0.0000      0.0000
+{'w1_mean_shared': 0.2948927924440849, 'w1_mean_robust': 0.2978312627602937, 'w1_mean_nonrobust': 0.2919543221278761}
+
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-045  (1304s)

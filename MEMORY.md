@@ -1289,3 +1289,34 @@ Adeel asked (17:20) to fix every problem in the round-2 review phase by phase, l
 - 2026-09-26 (Adeel): affiliations corrected. [2] Faculty of Computer Information Science, Higher Colleges Of Technology, Al Mizn- Baniyas North- Abu Dhabi, United Arab Emirates (e-mail kept); [3] Anuradha and Vikas Sinha Department of Data Science, University of North Texas, Denton, TX, USA, 76203-5017. Wording exactly as Adeel gave it. Build 19 pages, 0 errors.
 - 2026-09-26 (Adeel: make an IEEE Access submission folder). Checked IEEE Access guidelines: LaTeX/Word source AND matching PDF required (<=40 MB), bios for all authors, submitting-author ORCID, 3-10 keywords, AI-generated content must be disclosed in the Acknowledgments. Added \section*{Acknowledgment} with an AI-use disclosure (Claude: analysis/plotting code, drafting and editing text, redrawing Figs. 1 and 4) for the authors to confirm; small trims keep 19 pages. New scripts/make_submission.py builds ../IEEE_Access_Submission/ (outside the repo, holds photos): manuscript PDF; flat LaTeX source + zip that compiles standalone with the official class and matches the PDF text exactly (checked); cover letter .tex/.pdf/.docx (one page, signed by Adeel as submitting author, ORCID 0009-0007-5868-394X from his earlier IEEE Access submission b57487b2, which was a different paper); all 10 figures as PDF + 600-dpi PNG; photos + biographies; submission-form details (title, abstract, keywords, authors, declarations, IEEE-thesaurus keyword suggestions, subject categories); reproducibility zip; checklist.
 - 2026-09-26 (Adeel: better cover-letter template; remove files from the LaTeX zip that break review-PDF generation; Eraj Khan signs the cover letter). make_submission.py: LaTeX source is now ONE main.tex with all \input files, tables, number macros and the bibliography (main.bbl) inlined, in a flat directory (79 files: main.tex, figure PDFs, icon PNGs, author photos, IEEE Access class/logos/fonts); no sub-folders, no .bib/.bst/.bbl, pdflatex only. Verified from the zip itself: 0 errors, 19 pages, no undefined references, same words as paper/main.pdf (word multiset check; pdftotext reads Table 2 columns in a different order after a sub-pixel shift). Inlining keeps the end-of-line space \input adds (dropping it changed the Fig. 1 box and the page breaks). Cover letter redesigned: letterhead of Dr. Eraj Khan (corresponding author) with blue rule, manuscript-details block, findings and declarations, signed by him; one page; .tex/.pdf/.docx. Package builds in a staging folder and syncs into ../IEEE_Access_Submission (an open Explorer window had locked the old folder).
+
+## 2026-11-07 (revision 1: IEEE Access decision of 4 November 2026, reject and resubmit)
+
+- Two reviews (R1: 15 items, R2: 8). Plan, verbatim comments and all deliverables in
+  `../IEEE_Access_Submission/Revision_1/`. Decisions D-035 to D-038.
+- **R1.9 found a real error (D-035).** Argus counts the 14-byte Ethernet header of every
+  5G-NIDD packet; D-015's "40 vs 42 bytes" compared a TCP minimum (Zeek) with a UDP
+  minimum (Argus). Fixed in `from_d_b`; every 5G-NIDD shared-space result re-run
+  (EXP-064 ... EXP-071, EXP-074). Effect: tree-based transfer on clean 5G-NIDD 0.78-0.86
+  (was 0.74-0.78) with no significant loss against held-out source data; robust-subset
+  domain classifier 0.935 (was 0.997).
+- **The 5G-NIDD label finding is now packet-level (EXP-072).** Station 1's UDP-flood
+  pcap contains all 656,180 packets of station 2's, identical timestamps; the other nine
+  session pairs share none. 281,529 corrected rows released. Email to the dataset authors
+  drafted in `Revision_1/07_Author_Actions/` — NOT SENT by us; the paper says "[DATE]".
+- **Statistics (D-037).** Cluster bootstrap over capture files tried and dropped (38%
+  single-class replicates; point estimate at the 0.1th percentile in one case). Primary:
+  NB intervals with ratio of total held-out / total training groups (0.65 flows, 0.42
+  radio). Test: two terms, three-valued, alert threshold fixed on source data.
+- **Results that changed the story.** Transfer falls 0.12-0.35 below a leave-one-capture-
+  file-out reference on matched flows (Holm 3/6); no detector passes the test (verdicts
+  fail or inconclusive); HGB meets all alert conditions in 12/20 splits but not on
+  average; a target-tuned threshold would pass HGB and XGB; IW/CORAL/DANN do not help;
+  one labelled target file raises BA to 0.87-0.93; radio gain n.s. (sessions or runs).
+- **Host traps found.** Windows 11 EcoQoS throttled background Python to ~40% CPU on
+  efficiency cores; `SetProcessInformation(ProcessPowerThrottling)` per PID fixed it
+  (CPU 95%). Runs split with `--seed-list`/`--shard`; never two writers on one path.
+- New code: `run_transfer_r1.py`, `run_target_reference_r1.py`, `run_label_efficient.py`,
+  `run_leakage_r1.py`, `models/dann.py`, `consolidate_transfer.py`, `r1_stats_core.py`,
+  `revision_stats_r1.py`, `make_assets_r1.py`, `flatten_r1.py`, `highlight_changes.py`,
+  `response_to_docx.py`, pcap/coverage/byte analyses. Paper source: `paper/r1/`.

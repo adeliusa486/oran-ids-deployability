@@ -18,10 +18,17 @@ variance, live in ``splits/`` (plan A5).
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
 import numpy as np
+
+# Thread count for the forest and XGBoost. -1 (all cores) unless the
+# environment sets ORAN_IDS_N_JOBS, which lets several experiment processes
+# share the host without oversubscription (revision 1). A random forest's
+# predictions do not depend on n_jobs for a fixed random_state.
+N_JOBS = int(os.environ.get("ORAN_IDS_N_JOBS", "-1"))
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -56,7 +63,7 @@ def _tree(seed: int):
 def _rf(seed: int):
     return RandomForestClassifier(n_estimators=200, max_depth=None,
                                   min_samples_leaf=2, class_weight="balanced_subsample",
-                                  random_state=seed, n_jobs=-1)
+                                  random_state=seed, n_jobs=N_JOBS)
 
 
 def _xgb(seed: int):
@@ -64,7 +71,7 @@ def _xgb(seed: int):
     return XGBClassifier(
         n_estimators=300, max_depth=6, learning_rate=0.1,
         subsample=0.8, colsample_bytree=0.8, tree_method="hist",
-        eval_metric="logloss", random_state=seed, n_jobs=-1,
+        eval_metric="logloss", random_state=seed, n_jobs=N_JOBS,
         # scale_pos_weight is set per-fit from the training prior; see fit_model
     )
 

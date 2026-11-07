@@ -1,0 +1,21 @@
+\emph{Feature subset and adaptation without target labels.} Table~\ref{tab:arms} tests whether other inputs or adaptation methods close the gap. Restricting the models to the nine exporter-robust columns raises held-out source balanced accuracy for five architectures but lowers it for LR (\RArmRobLRSrc{} against \RArmPlainLRSrc). On the clean target flows, XGB and HGB keep their level (\RArmRobXGBClean{} and \RArmRobHGBClean), whereas DT and RF fall to \RArmRobDTClean{} and \RArmRobRFClean: the columns that an exporter moves least are not enough. None of the three adaptation methods that read unlabeled target flows beats the plain tree-based models. Importance weighting changes little (\RArmIwTreeCleanMin{} to \RArmIwTreeCleanMax{} for the tree-based models), because its domain classifier separates the corpora so well that the weights concentrate on \RIwESSmin\% to \RIwESSmax\% of the source flows in effective sample size. CORAL raises the MLP from \RArmPlainMLPClean{} to \RArmCoralMLPClean{} but pushes the target false positive rate of the tree-based models to \RArmCoralTreeFPRmin{} to \RArmCoralTreeFPRmax, as in our first analysis. Domain-adversarial training reaches \RArmDannDANNClean.
+
+\begin{table}[t]
+\caption{Transfer from \DA{} to \DB{} under other feature sets and with adaptation, mean over 20 splits, at $\tau = 0.5$. Importance weighting, CORAL, and DANN read unlabeled target flows. Clean: the benign-labeled copies removed; relab.: the copies labeled as attack.}
+\label{tab:arms}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.6pt}
+\input{tables/arms}
+\end{table}
+
+\emph{A few labeled target captures.} Labeled data from the target helps far more (Fig.~\ref{fig:labeleff}). Added to the \DA{} training data, a single labeled capture file of \DB{} raises the balanced accuracy of the five nonlinear architectures on the capture files not drawn to \RLeSrcOneNlMin{} to \RLeSrcOneNlMax{} (the MLP from \RLeZeroMLP{} to \RLeSrcOneMLP), close to the leave-one-capture-file-out reference, and eight files to \RLeSrcEightNlMin{} to \RLeSrcEightNlMax. The same capture files alone give only \RLeTgtOneNlMin{} to \RLeTgtOneNlMax{} for one file, so the source data still carries most of what the detectors know. The alert bound takes more data. With the threshold fixed on source data, the six architectures met all three alert conditions in \RLeSrcOneMeet{} of \RLeSrcOneCells{} draws with one labeled file and in \RLeSrcEightMeet{} of \RLeSrcEightCells{} with eight; with eight files, XGB and the MLP met them in every draw, at \RLeSrcEightXGBAlerts{} and \RLeSrcEightMLPAlerts{} false alerts per hour on average and a recall of about \RLeSrcEightXGBRecall.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figs/fig_label_efficient}
+\caption{Label-efficient arm: $k$ labeled capture files of \DB{} added to the \DA{} training data (four random draws per $k$; $k = 0$ is the plain transfer of the 20 splits), evaluated on the capture files not drawn, with the copies relabeled as attack. (a) Balanced accuracy; (b) false alerts per hour at the threshold fixed on source data, mean over draws, with the bound $A_{\max}$.}
+\label{fig:labeleff}
+\end{figure*}
+
+\emph{Size of the source sample.} Repeating the transfer with \RSzNlist{} source flows (\RSzSplits{} splits, five architectures) changed clean target balanced accuracy by at most \RSzMaxChangeClean{} against \NSub{} flows, in no consistent direction, which is within the variation between splits.

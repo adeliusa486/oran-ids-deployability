@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-069 label-efficient",
+  "ks": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "draws": 4,
+  "variants": [
+    "source+k",
+    "target-only"
+  ],
+  "models": [
+    "logreg",
+    "tree",
+    "rf",
+    "xgboost",
+    "hgb",
+    "mlp"
+  ],
+  "n_target_with_source": 60000,
+  "n_target_only": 240000,
+  "copies_in_training": "relabelled as attack",
+  "model_seed": 11,
+  "d_b_byte_accounting": "Ethernet header removed, 14 B per packet (D-035)",
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "runtime_s": 2188.3
+}

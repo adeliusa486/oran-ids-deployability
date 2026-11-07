@@ -1,9 +1,18 @@
-# What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN
+# Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden
 
 Code, results and manuscript for the paper by **Adeel Ahmad, Arshad Ali, Eraj
 Khan, Gahangir Hossain, and Ali Akarma** (Islamic University of Madinah, Higher
-Colleges of Technology, and University of North Texas). Prepared for *IEEE
-Access* (not yet submitted).
+Colleges of Technology, and University of North Texas), revision 1 of *IEEE
+Access* manuscript Access-2026-49092 (first submitted as "What Held-Out Scores
+Predict About Deploying Intrusion Detection in O-RAN").
+
+> **Revision 1 (November 2026).** The 5G-NIDD byte accounting was corrected
+> (Argus counts the 14-byte Ethernet header of every packet; decision D-035), every
+> 5G-NIDD result in the shared feature space was re-run, and new experiments answer
+> the reviewers (EXP-064 to EXP-075; see `EXPERIMENTS.md` and `REPRODUCE.md`,
+> section R). The revised manuscript is `paper/r1/main.tex`. Corrected 5G-NIDD labels
+> (281,529 rows of Combined.csv) are in `results/EXP-072/corrected_labels/`.
+> Sections below that describe the first submission are kept for the record.
 
 Intrusion detectors for 5G and O-RAN traffic are often reported above 99%
 accuracy on a random split of one dataset. This project measures what such a

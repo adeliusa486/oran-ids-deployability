@@ -1,0 +1,103 @@
+{
+  "captures": {
+    "file5_bs1": {
+      "capture": "file5_bs1",
+      "member": "BS1_GTP_removed/UDPflood_BS1_nogtp.pcapng",
+      "packets_total": 1214969,
+      "window_start": 1661518178.787086,
+      "window_end": 1661519905.4378142,
+      "window_s": 1726.650728225708,
+      "packets_to_target": 733760,
+      "ethernet": [
+        {
+          "src": "10.155.15.7",
+          "eth_src": "a8:6b:ad:fd:04:f0",
+          "eth_dst": "cc:48:3a:f9:0f:21",
+          "packets": 421471
+        },
+        {
+          "src": "10.155.15.4",
+          "eth_src": "a8:6b:ad:fd:04:b4",
+          "eth_dst": "cc:48:3a:f9:0f:21",
+          "packets": 312289
+        }
+      ],
+      "read_s": 115.6
+    },
+    "file15_bs2": {
+      "capture": "file15_bs2",
+      "member": "BS2 GTP removed/UDPflood_BS2_nogtp.pcapng",
+      "packets_total": 656389,
+      "window_start": 1661518178.787086,
+      "window_end": 1661519905.2740445,
+      "window_s": 1726.4869585037231,
+      "packets_to_target": 421471,
+      "ethernet": [
+        {
+          "src": "10.155.15.7",
+          "eth_src": "a8:6b:ad:fd:04:f0",
+          "eth_dst": "cc:48:3a:f9:0f:21",
+          "packets": 421471
+        }
+      ],
+      "read_s": 67.7
+    }
+  },
+  "attackers": {
+    "10.155.15.7": "station-2 attacker",
+    "10.155.15.4": "station-1 attacker"
+  },
+  "target": "10.41.150.68",
+  "match_window_s": 2.0,
+  "per_attacker": {
+    "10.155.15.7": {
+      "role": "station-2 attacker",
+      "file5_bs1": {
+        "packets": 421471,
+        "first": 1661519028.9972706,
+        "last": 1661519612.445958,
+        "ttl_values": [
+          63
+        ],
+        "ip_len_mode": 28
+      },
+      "file15_bs2": {
+        "packets": 421471,
+        "first": 1661519028.9972706,
+        "last": 1661519612.445958,
+        "ttl_values": [
+          63
+        ],
+        "ip_len_mode": 28
+      },
+      "bs1_packets_found_in_bs2": {
+        "n": 421471,
+        "matched": 421471,
+        "share": 1.0,
+        "offset_median_s": 0.0,
+        "offset_iqr_s": 0.0,
+        "offset_p01_s": 0.0,
+        "offset_p99_s": 0.0
+      }
+    },
+    "10.155.15.4": {
+      "role": "station-1 attacker",
+      "file5_bs1": {
+        "packets": 312289,
+        "first": 1661518698.7315218,
+        "last": 1661519323.1326911,
+        "ttl_values": [
+          63
+        ],
+        "ip_len_mode": 28
+      },
+      "file15_bs2": {
+        "packets": 0,
+        "first": null,
+        "last": null,
+        "ttl_values": [],
+        "ip_len_mode": null
+      }
+    }
+  }
+}

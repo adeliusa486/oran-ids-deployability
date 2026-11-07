@@ -1,0 +1,50 @@
+\subsection{Transfer Across Corpora}
+\label{sec:res:transfer}
+
+Table~\ref{tab:transfer} and Fig.~\ref{fig:transfer} give the transfer from \DA{} to \DB{}, with the byte correction, over 20 splits. On all flows, with the published labels, balanced accuracy falls from \RSrcBAmin{} to \RSrcBAmax{} on held-out source data to \RTrAllBAmin{} to \RTrAllBAmax{} on \DB{}, a loss that is significant after Holm correction for \RTrAllSigNbN{} of the six architectures. Much of this loss is the label conflict: a detector that has learned to recognize a UDP flood on \DA{} also flags the benign-labeled copies in file~\LcBenignFile{}.
+
+On the clean flows, target balanced accuracy is \RTrCleanBAmin{} to \RTrCleanBAmax. The four tree-based architectures score as well on \DB{} as on held-out \DA{}: their target balanced accuracy is \RTrTreeCleanBAmin{} to \RTrTreeCleanBAmax{}, and their loss against held-out source data is \RTrTreeCleanDmin{} to \RTrTreeCleanDmax{}, none of it significant. LR and the MLP transfer worst (\RTrLRCleanBA{} and \RTrMLPCleanBA), and only the loss of LR is significant after Holm correction. Relabeling the copies as attack, which keeps every flow of \DB{}, gives the same picture (\RTrRelabBAmin{} to \RTrRelabBAmax). The label conflict reverses the ranking of the architectures: LR, which flags almost none of the copies, looks best on all flows and is worst on consistent labels. Without the byte correction, our first analysis of the same flows had found \RPrevCleanOthMin{} to \RPrevCleanOthMax{} for the five nonlinear architectures; with it, the tree-based models reach \RTrTreeCleanBAmin{} to \RTrTreeCleanBAmax{}, while the MLP falls to \RTrMLPCleanBA.
+
+The source score is not the right yardstick, however, because \DB{} is easier than held-out \DA{}. Trained on \DB{} itself, the same architectures reach \RRefRandCleanmin{} to \RRefRandCleanmax{} on a random split and \RRefLofoCleanmin{} to \RRefLofoCleanmax{} when every capture file is held out once. On the same flows, transfer falls \RGapCleanMin{} to \RGapCleanMax{} short of this leave-one-capture-file-out reference (Table~\ref{tab:transfer}). The shortfall is significant after Holm correction for \RGapCleanSigN{} of the six architectures; for the others the intervals are wide, because target balanced accuracy varies much between splits, which train on different source addresses. Trained on one base station and tested on the other, the reference still reaches \RRefSoneCleanmin{} to \RRefSoneCleanmax{} from station~1 to station~2 and \RRefStwoCleanmin{} to \RRefStwoCleanmax{} in the other direction, so a model trained on 5G-NIDD traffic carries over to the other base station far better than one trained on \DA{} carries over to 5G-NIDD.
+
+\begin{table*}[t]
+\caption{Transfer from \DA{} to \DB{} (5G-NIDD) in the shared space with the byte correction, mean over 20 splits. All flows: published labels. Clean: the benign-labeled flood copies removed. Relabeled: the copies labeled as attack. $\Delta_{\mathrm{BA}}$: held-out source minus target balanced accuracy. Reference: models trained on \DB{} with each capture file held out once (LOFO), evaluated on the same clean flows; Ref.$-$transfer is the shortfall of transfer. Brackets: Nadeau--Bengio corrected 95\% intervals over the 20 splits (group-count ratio), unadjusted; $^{\ast}$: significant after Holm correction across the six architectures. Italic rows: input-blind baselines.}
+\label{tab:transfer}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\input{tables/transfer}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figs/fig_transfer}
+\caption{Balanced accuracy of detectors trained on \DA{}, on held-out \DA{} (open circles) and on \DB{} (filled, with corrected 95\% interval over 20 splits) for all flows, clean flows, and with the copies relabeled. Vertical bar: the reference trained on \DB{} with each capture file held out, on the clean flows. On consistent labels the tree-based models score as well on \DB{} as on held-out \DA{}, but well below what \DB{} itself allows.}
+\label{fig:transfer}
+\end{figure}
+
+\emph{A third corpus.} From \DA{} to \DC{} (Table~\ref{tab:third}, 20 splits), balanced accuracy is \RTrCAllBAmin{} to \RTrCAllBAmax{} and ROC-AUC \RTrCAllAUCmin{} to \RTrCAllAUCmax{}; the loss against held-out source data is not significant for any architecture. Inside \DC{}, the same architectures reach \ThRefShRandBAmin{} to \ThRefShRandBAmax{} on a random split and \ThRefShLofoBAmin{} to \ThRefShLofoBAmax{} when the capture file of one attack type is held out. Every architecture detects the SYN flood, which training contained (recall \RCSynMax{} for all six), whereas recall on the ICMP flood is \RCIcmpMin{} to \RCIcmpMax{} and on the PFCP attack, an attack type absent from \DA{}, \RCPfcpMin{} to \RCPfcpMax. Most errors come from the benign traffic of the new site: the false positive rate is \RCFPRmin{} to \RCFPRmax{}, and up to \RCBkgMax{} of the core network's own signaling is flagged. In the reverse direction, models trained on \DB{} reach \RRevABAmin{} to \RRevABAmax{} on \DA{} and \RRevCBAmin{} to \RRevCBAmax{} on \DC{}.
+
+\begin{table*}[t]
+\caption{Transfer to the third corpus \DC{} (5G core testbed, NFStream flows with Ethernet and GTP-U bytes removed~\cite{nugraha2025fivegdatasets}): balanced accuracy on held-out source data and on \DC{}, target ROC-AUC, recall per attack type, and the share of the core's own signaling flagged (Bkg.), at $\tau = 0.5$. Mean over 20 splits from \DA{} and 20 from \DB{} (split by capture file).}
+\label{tab:third}
+\centering
+\footnotesize
+\input{tables/third}
+\end{table*}
+
+\subsection{What the Gap Consists Of, and Adaptation}
+\label{sec:res:gap}
+
+\emph{Byte accounting and separability.} Removing the Ethernet header changed what the shift diagnostics say. A domain classifier (histogram gradient boosting, five-fold cross-validation) tells \DA{} from \DB{} flows with a balanced accuracy of \RDomArgShared{} on the 18 shared columns, but \RDomArgRobust{} on the nine exporter-robust columns, against \RDomOldRobust{} before the correction: the uncorrected header had made the mean packet sizes of the two corpora almost perfectly separable. The robust columns still shift as much as the others ($\bar{W}_1$ of \RWoneArgRobust{} against \RWoneArgNonrobust{} after a quantile map fitted on source data; Fig.~\ref{fig:shift}). The correction did not shrink this shift: most \DB{} flows are UDP and most \DA{} flows TCP, and a 28-byte UDP packet now lies where \DA{} has few packets, whereas the uncorrected 42 bytes had placed it among the 40- to 44-byte TCP packets of \DA{}. The remaining shift is a difference in traffic composition, which no byte accounting removes.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figs/fig_shift}
+\caption{Covariate shift between \DA{} and \DB{} per shared column: first-order Wasserstein distance after a quantile map fitted on \DA{} training data. Bars: Argus flows before the byte correction; circles: after it (filled: exporter-robust subset); crosses: our Zeek re-extraction of the 5G-NIDD captures. The correction moves the packet-size columns but does not remove the shift.}
+\label{fig:shift}
+\end{figure}
+
+\emph{A common exporter.} The raw captures of \DB{} are public, so we re-extracted them with Zeek~(version \ZkVersion{}), the exporter family of \DA{}, and labeled each flow by the attack host pairs of its capture file, a rule that reproduces \ZkRuleAgreePct\% of the published labels on the Argus flows. Scored by the same trained models, the clean Zeek flows reach \RZkTreeCleanBAmin{} to \RZkTreeCleanBAmax{} for the tree-based architectures, \RZkTreeCleanDiffMin{} to \RZkTreeCleanDiffMax{} relative to the corrected Argus flows, and the domain classifier separates \DA{} from the Zeek flows as well as from the Argus flows (\RDomZkShared{} on all columns, \RDomZkRobust{} on the robust ones). Our Zeek configuration may differ from the undocumented one behind \DA{} in timeouts or single-packet handling, so this comparison cannot separate traffic composition from exporter configuration.
+
+\input{results_adaptation}

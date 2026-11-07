@@ -8,11 +8,12 @@ evaluation therefore needs a space defined by meaning. That mapping lives in
 Three things this module is careful about, each of which is a way a transfer
 result becomes wrong rather than merely disappointing:
 
-1. **Byte semantics (D-015).** Zeek's ``src_bytes`` is application payload;
-   Argus's ``SrcBytes`` is the whole frame. Their medians are 0 and 84. Mapping
-   one onto the other manufactures a distribution shift with no deployment
-   meaning and inflates every transfer gap. ``src_ip_bytes`` is the counterpart
-   that actually matches, at 40 vs 42 bytes per packet.
+1. **Byte semantics (D-015, D-035).** Zeek's ``src_bytes`` is application
+   payload; Argus's ``SrcBytes`` is the whole Ethernet frame. Mapping one onto
+   the other manufactures a distribution shift with no deployment meaning.
+   ``src_ip_bytes`` is the counterpart, once the 14-byte Ethernet header is
+   removed from every Argus packet (D-035; the first submission left it in and
+   called the residual "40 vs 42 bytes", a TCP minimum against a UDP minimum).
 
 2. **Fixed one-hot levels.** ``proto`` is expanded against a level list fixed in
    the config, not learned per corpus. A level list learned from each corpus
@@ -127,8 +128,25 @@ def from_d_a(df: pd.DataFrame) -> pd.DataFrame:
     return _finish(out)
 
 
-def from_d_b(df: pd.DataFrame) -> pd.DataFrame:
-    """Argus flow records -> shared space."""
+ETH_BYTES = 14          # Ethernet header, counted by Argus and by NFStream
+# D-035 (revision 1, reviewer R1.9). Argus counts every packet of 5G-NIDD from
+# the Ethernet header on: the GTP-removed captures are Ethernet frames (frame
+# length - IP total length = 14 bytes for 99.8% of packets), and the smallest
+# bytes per packet in Combined.csv are 54 (TCP), 42 (UDP) and 42 (ICMP), where
+# Zeek, on D_A and on the same 5G-NIDD captures, counts 40, 28 and 28. Until
+# D-035 this module left the offset in place and described it as "40 against 42
+# bytes", which compared Zeek's TCP minimum with Argus's UDP minimum.
+ARGUS_LINK_BYTES = ETH_BYTES
+
+
+def from_d_b(df: pd.DataFrame, *, link_bytes: int = ARGUS_LINK_BYTES) -> pd.DataFrame:
+    """Argus flow records -> shared space.
+
+    ``link_bytes`` per packet are removed in each direction, so the byte columns
+    hold IP-layer bytes, as Zeek's ``*_ip_bytes`` do for D_A and as ``from_d_c``
+    does for D_C. ``link_bytes=0`` reproduces the first submission, which left
+    the Ethernet header in (D-035).
+    """
     missing = {"Dur", "SrcBytes", "DstBytes", "SrcPkts", "DstPkts", "TotPkts",
                "TotBytes", "Proto"} - set(df.columns)
     if missing:
@@ -136,17 +154,21 @@ def from_d_b(df: pd.DataFrame) -> pd.DataFrame:
 
     out = pd.DataFrame(index=df.index)
     out["duration"] = _num(df["Dur"])
-    out["src_bytes"] = _num(df["SrcBytes"])
-    out["dst_bytes"] = _num(df["DstBytes"])
     out["src_pkts"] = _num(df["SrcPkts"])
     out["dst_pkts"] = _num(df["DstPkts"])
+    out["src_bytes"] = (_num(df["SrcBytes"]) - link_bytes * out["src_pkts"]).clip(lower=0)
+    out["dst_bytes"] = (_num(df["DstBytes"]) - link_bytes * out["dst_pkts"]).clip(lower=0)
     out["tot_pkts"] = _num(df["TotPkts"])
-    out["tot_bytes"] = _num(df["TotBytes"])
+    if link_bytes:
+        # TotBytes == SrcBytes + DstBytes in 5G-NIDD (verified), so the sum of
+        # the corrected directions is the corrected total
+        out["tot_bytes"] = out["src_bytes"] + out["dst_bytes"]
+    else:
+        out["tot_bytes"] = _num(df["TotBytes"])
     out["proto"] = _normalise_proto(df["Proto"])
     return _finish(out)
 
 
-ETH_BYTES = 14          # Ethernet header, counted by NFStream's default accounting
 GTPU_OVERHEAD = 44      # outer IPv4 (20) + UDP (8) + GTP-U with extension header (16)
 _PROTO_NUMBERS = {1: "icmp", 6: "tcp", 17: "udp"}
 
@@ -196,4 +218,4 @@ def assert_compatible(a: pd.DataFrame, b: pd.DataFrame) -> None:
 
 __all__ = ["COLUMNS", "BASE_NUMERIC", "DERIVED", "PROTO_LEVELS", "PROTO_COLS",
            "from_d_a", "from_d_b", "from_d_c", "assert_compatible", "load_spec",
-           "DURATION_FLOOR_S"]
+           "DURATION_FLOOR_S", "ARGUS_LINK_BYTES", "ETH_BYTES"]

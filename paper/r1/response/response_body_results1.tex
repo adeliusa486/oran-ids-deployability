@@ -1,0 +1,43 @@
+\begin{concern}{R1.4 The in-target references have no uncertainty}
+The in-target references have no uncertainty. Table~5 uses one to three samples per protocol with no intervals, and the station references have $n = 1$. Yet the abstract compares transfer (0.61 to 0.78) against these references (0.842 to 0.982). Run them with the same 20 splits and corrected intervals as the transfer.
+\end{concern}
+\response We re-ran all references (EXP-068) on the corrected bytes, with training that never sees the flood copies as benign, in three designs, all on 240,000 training flows, the size of the transfer training sets:
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+\item a random split with the same 20 split seeds as the transfer and corrected intervals: \RRefRandCleanmin{} to \RRefRandCleanmax{};
+\item leave-one-capture-file-out, which holds out each of the 20 capture files once and therefore predicts every flow of 5G-NIDD exactly once, on the same flows as the transfer: \RRefLofoCleanmin{} to \RRefLofoCleanmax{};
+\item base station to base station, with ten training samples per direction and intervals over them: \RRefSoneCleanmin{} to \RRefSoneCleanmax{} from station~1 to station~2 and \RRefStwoCleanmin{} to \RRefStwoCleanmax{} in the other direction.
+\end{itemize}
+The abstract now compares transfer with the leave-one-capture-file-out reference on the same flows, and gives the shortfall of the tree-based models (\RGapTreeCleanMin{} to \RGapTreeCleanMax). The shortfall of every architecture has its own corrected interval.
+
+\action \Sec{sec:protocols} (design), \Sec{sec:res:transfer} and \Tab{tab:transfer} (results), abstract.
+
+\begin{concern}{R1.5 The capture-file reference is not comparable}
+Section VI-C says no held-out set contained a UDP flood file, while the transfer is evaluated on all files including both flood files. The 0.982 upper end was never tested on the hardest traffic. Force each flood file into a held-out set.
+\end{concern}
+\response Agreed. Leave-one-capture-file-out holds out every file once, so both UDP-flood files are held out. Trained without the copies labeled as benign, the reference reaches \RLofoFloodMin{} to \RLofoFloodMax{} on each held-out UDP-flood file: the flood traffic was hard because of the conflicting labels, not because of its content.
+
+\action \Sec{sec:protocols}, \Sec{sec:res:transfer}, \Tab{tab:transfer}.
+
+\begin{concern}{R1.6 On clean labels the transfer gap is mostly not significant}
+Without the copies, the loss against held-out source data is significant for one of six architectures. The claim that transfer falls short then rests on the references criticized above, which have no intervals. Weaken the claim or strengthen the evidence.
+\end{concern}
+\response We weakened one claim and strengthened the evidence for the other, and the manuscript now keeps the two apart.
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+\item \emph{Against held-out source data}, the loss on consistent labels is significant only for LR after Holm correction (\RTrCleanSigNbN{} of six). With the byte correction, the four tree-based models score as well on 5G-NIDD as on held-out NetsLab data (loss \RTrTreeCleanDmin{} to \RTrTreeCleanDmax). We no longer claim that they fall short of their source performance.
+\item \emph{Against what the target itself allows}, transfer falls short of the leave-one-capture-file-out reference on the same flows by \RGapCleanMin{} to \RGapCleanMax{} (\RGapTreeCleanMin{} to \RGapTreeCleanMax{} for the tree-based models), significantly after Holm correction for \RGapCleanSigN{} of six architectures. The source score is a poor yardstick here, because 5G-NIDD is easier than held-out NetsLab data.
+\end{itemize}
+
+\action \Sec{sec:res:transfer}, \Tab{tab:transfer}, \Fig{fig:transfer}, abstract, and conclusion.
+
+\begin{concern}{R1.7 The test treats uncertainty inconsistently}
+The generalization term uses the upper 95\% bound with $\delta = 0.10$, so a detector with zero true loss fails whenever the interval is wide. Section VII-B concedes this on clean flows. The alert term instead takes a threshold searched on the target, which is optimistic. Treat uncertainty the same way for both terms, or report inconclusive terms as inconclusive rather than failed.
+\end{concern}
+\response We did both, in a redesigned test (\Sec{sec:crit:test}):
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+\item Both terms use the same corrected 95\% intervals over the 20 splits: the generalization term on $\Delta_{\mathrm{BA}}$, the alert term on recall and false positive rate at the threshold, from which operational precision and false alerts follow.
+\item Each term has three outcomes, pass, fail, and inconclusive. A wide interval now gives ``inconclusive'', not ``fail''.
+\item The alert term no longer searches the threshold on the target. Each split uses the highest threshold that keeps recall on its own held-out source data at $r_{\min}$ or more, a choice made without target labels. The best threshold searched on the target is reported only as an optimistic bound.
+\end{enumerate}
+With these rules no detector passes. On all flows, \RTestAllFailN{} of six fail and \RTestAllInconclusiveN{} is inconclusive. On the clean flows, the generalization term fails for LR and is inconclusive for the other five, and the alert term fails for \RTestCleanAlertFailN{} and is inconclusive for \RTestCleanAlertInconclusiveN. Because marginal intervals can hide a joint failure, we also count the splits in which a detector meets all three alert conditions at once: HGB in \RJointHGBClean{} of 20, the MLP in \RJointMLPClean{}, and XGB in \RJointXGBClean{}. The optimistic bound shows that HGB and XGB would meet our bounds with a threshold tuned on the target (HGB: operational precision \ROracleHGBCleanPPV{} at \ROracleHGBCleanAlerts{} false alerts per hour).
+
+\action \Sec{sec:crit:test}, \Sec{sec:stats}, \Sec{sec:res:alerts}, \Tab{tab:test}, \Fig{fig:test}.

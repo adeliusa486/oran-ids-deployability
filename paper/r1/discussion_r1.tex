@@ -1,0 +1,50 @@
+%=======================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Implications for Detection in O-RAN}
+\label{sec:disc:practice}
+
+\emph{Data path.} E2SM-KPM delivers aggregated measurements once per reporting period, not packets. A window-level detector can therefore live inside the RIC, whereas a flow-level detector needs an exporter near the user plane (in the central unit or at the user-plane function) and a way to move its records to the xApp, such as a custom E2 service model or the non-real-time data collection path. This transport adds to $t_{\mathrm{ind}}$ in Eq.~\eqref{eq:latency}, and nobody has measured it for these detectors, ourselves included.
+
+\emph{Detection delay.} Computation is a small part of detection time. A window-level decision waits for its 16\,s window to end, and a flow-level one for the flow record, which for a long connection means an idle or active timeout. Computational latency should be reported with the KPM reporting period and the flow timeouts.
+
+\emph{Acting on alerts.} An E2SM-RC action such as isolating or steering a UE hits a falsely accused UE as hard as a guilty one. Without labeled target data, the averaged operating points of our flow detectors met the alert bounds only at thresholds tuned on the target (Section~\ref{sec:res:alerts}). With thresholds fixed on source data they either missed most attacks, as XGB and RF did with \RTestXGBCleanAlerts{} and \RTestRFCleanAlerts{} false alerts per hour at a recall of \RTestXGBCleanRecall{} and \RTestRFCleanRecall{}, or raised hundreds to tens of thousands of false alerts per hour at our declared rate. Alerts of this quality can inform an operator, or a policy set through the A1 interface of the non-real-time RIC, but should not drive automatic control. For such detectors the 10\,ms budget matters less than detection quality: latency binds only for a detector whose alerts are good enough to act on automatically.
+
+\emph{Admission and calibration on site.} The two-term test could serve as an admission check at a new site, given labeled traffic from it. Our label-efficient arm (Section~\ref{sec:res:gap}) suggests that a few labeled captures from the site are worth more than adaptation without labels, and the comparison of fixed and tuned thresholds (Section~\ref{sec:res:alerts}) that the operating threshold, not only the model, has to be checked on site data.
+
+\subsection{Relation to Reported Results}
+
+The 5G-NIDD results we cite~\cite{samarakoon2022niddarxiv,ilias2024moe5g} are in-distribution scores, and under the same split ours are as high: \PubRzAccMin\% to \PubRzAccMax\% accuracy for the reproduced pipeline, and \ThRefShRandBAmin{} to \ThRefShRandBAmax{} balanced accuracy inside \DC{}. Setting such numbers beside transfer results compares protocols, not detectors. In our experiments a held-out score under a random split did not predict performance on another corpus: on 5G-NIDD it rested on record-position fields, the published labels hid the attack traffic of the other base station, and a byte-accounting difference between exporters entered every byte column of the shared space.
+
+%=======================================================================
+\section{Limitations}
+\label{sec:limitations}
+
+\emph{Scope of the corpora.} Only NetsLab-5GORAN-IDD is an O-RAN corpus. 5G-NIDD comes from a 5G test network and the third corpus from a 5G core in Docker, with three capture files, only flood attacks and one control-plane attack, too few for cluster resampling. Three corpora show that the transfer gap recurs, not how it varies across sites. We found no other O-RAN corpus with paired radio telemetry, so the radio detectors have no transfer target, and no detector is evaluated on all criteria.
+
+\emph{Detectors.} The six architectures are untuned shallow models with hyperparameters fixed in advance, and we tested three adaptation methods, one per family. Tuned or larger models, other adaptation methods, or detectors built for a specific deployment may transfer differently; our conclusions concern the detectors we tested.
+
+\emph{Flow exporters.} Zeek, Argus, and NFStream produced the three corpora. We removed the link-layer and tunnel bytes that two of them count, but other exporter differences remain: where a flow ends, and the handling of single-packet flows. Re-extracting 5G-NIDD with Zeek did not reduce the gap (Section~\ref{sec:res:gap}), but the Zeek version and configuration behind NetsLab-5GORAN-IDD are undocumented and our Zeek flows take their labels through the host pairs of each capture, so this comparison cannot separate traffic composition from exporter configuration.
+
+\emph{Target labels.} The packet-level evidence shows that station~1's UDP-flood file contains station~2's flood, but how the file was produced is not documented, and the relabeled view rests on our reading that these flows are attacks. We therefore report every 5G-NIDD result on the published labels, without the copies, and relabeled.
+
+\emph{Radio layer.} The radio layer has 30 sessions, each benign or from one attack category, so session and category are confounded, and nine of the ten benign sessions were recorded six weeks before the attacks, mostly with one UE. The protocol comparison detects only large effects, and the radio false positive rate depends so much on the benign session that we report no radio operating figure.
+
+\emph{Latency.} All latency figures come from one workstation without CPU isolation, and the RIC loop used an emulated E2 node with synthetic measurements over loopback SCTP. It measures the processing cost of the RIC software path for window-level detectors, not the delay of a deployment, and no flow detector was timed in the loop.
+
+\emph{Operational parameters and the test.} The prevalence $\pi = 0.002$, the rate $\lambda_b$, and every bound of the test are our own declarations, not operator requirements. Only $\pi$ enters operational precision, and alert counts scale linearly with $\lambda_b$. An operator may weigh recall, precision, and alert volume differently, and the test ignores detection delay and the cost of a missed attack.
+
+\emph{Statistics.} The transfer statistics vary the training set over 20 splits and keep the target fixed, so they miss the variability across capture files and other target corpora; a bootstrap over the capture files, reported in the repository, suggests that it is large. The source splits differ much in which addresses they hold out, so the corrected intervals are wide, which is why many terms of the test are inconclusive rather than decided.
+
+%=======================================================================
+\section{Reproducibility and Ethics}
+\label{sec:repro}
+
+Code, configuration, seeded splits, per-split results, the corrected 5G-NIDD labels, and the generators for every table, figure, and in-text number are at \textcolor{blue}{\url{https://github.com/adeliusa486/oran-ids-deployability}}, where one script regenerates every number from the results or re-runs each experiment from the SHA-256-verified raw corpora (\texttt{REPRODUCE.md}). \DA{}~\cite{abedzadeh2025netslab} and \DB{}~\cite{samarakoon2022nidd}, including the release with all fields and the raw captures, are distributed by their authors under CC-BY-4.0. \DC{} is available from its authors' repository~\cite{nugraha2025fivegdatasets}, which states no license, so we do not redistribute it. All traffic comes from testbed devices and test networks, and no personal data was processed. Showing where detectors fail carries a modest dual-use risk, which we judge smaller than the benefit to operators of knowing that reported accuracy need not carry over to their networks.
+
+%=======================================================================
+\section{Conclusion and Reporting Recommendations}
+\label{sec:conclusion}
+
+\input{conclusion_r1}

@@ -6,7 +6,8 @@ result. Details live in the files this page points to.
 
 | If you want | Read |
 |---|---|
-| The paper | `paper/main.tex` (build with `python scripts/build_paper.py`) |
+| The paper (revision 1, resubmitted) | `paper/r1/main.tex` (assets: `python analysis/make_assets_r1.py`; flat submission copy: `python scripts/flatten_r1.py OUT`) |
+| The paper (first submission) | `paper/main.tex` (build with `python scripts/build_paper.py`) |
 | Why a decision was made | `configs/decisions.md` (D-001 to D-033) |
 | Which claims stand or were withdrawn | `docs/claims.yaml`, `scripts/check_withdrawn_claims.py` |
 | Every change, in order | `MEMORY.md`, section "Change log" |
@@ -158,6 +159,31 @@ Review: `reports/peer_review_round2_2026-09-24.md`; decisions D-030 to D-033.
 | EXP-063 | How much of the D_A -> D_B gap is the exporter? | `scripts/zeek/*.sh`, `build_d_b_zeek.py`, `run_transfer_v2.py --exp EXP-063 --direction a_to_bz --sweeps --group-counts --seeds 10`, `analysis/exporter_control.py` | see registry | 5G-NIDD pcaps re-extracted with Zeek 8.0.10; labels by host pair reproduce all published labels. 346,882 flows. Paired with EXP-056 on the same 10 seeds |
 | diag. | Platt inversion | `analysis/platt_diagnosis.py` | complete | Calibration fold AUC 0.48 vs test 0.97; slope -0.55 |
 
+### Revision 1 (2026-11-07): answering the IEEE Access decision of 4 November 2026
+
+Decision letter and reviews: `../IEEE_Access_Submission/Revision_1/00_Reviewer_Comments.md`;
+plan: `../IEEE_Access_Submission/Revision_1/00_REVISION_PLAN.md`; decisions D-035 to D-038.
+All runs below use the corrected 5G-NIDD byte accounting (D-035). Long runs were split
+over processes with `--seed-list` / `--shard`, each with its own output folder (D-014),
+and `analysis/consolidate_transfer.py EXP tag` rebuilds every per-split output from
+the stored per-flow scores. Statistics: `analysis/revision_stats_r1.py` (EXP-075);
+macros, tables, figures: `analysis/make_assets_r1.py`.
+
+| ID | Question | Runner | Status | Result |
+|---|---|---|---|---|
+| EXP-064 | Transfer D_A -> 5G-NIDD (Argus, corrected), 5G-NIDD (Zeek), D_C, one trained model per split | `run_transfer_r1.py --source a --targets b bz c --sweeps --reliability --scores` | complete, 20 splits | All flows BA 0.52-0.63 (loss significant 5/6); clean 0.61-0.86, trees 0.78-0.86 with loss -0.01 to 0.04 (n.s.); relabelled 0.57-0.89; D_C 0.60-0.74 |
+| EXP-065 | Same, exporter-robust subset | `... --features robust` | complete, 20 | Source BA up for 5/6 (LR down 0.837 -> 0.804); clean target: XGB/HGB 0.84, DT/RF 0.60-0.62 |
+| EXP-066 | CORAL | `... --targets b --adapt coral` | complete, 20 | Helps only the MLP (0.69 -> 0.81); tree FPR 0.77-0.99 |
+| EXP-067 | 5G-NIDD as source (split by capture file) -> D_A, D_C | `... --source b --targets a c` | complete, 20 | BA 0.61-0.75 on D_A, 0.55-0.81 on D_C, n.s. |
+| EXP-068 | In-target references with intervals (R1.4/R1.5/R2.3) | `run_target_reference_r1.py --design random/lofo/station --labels clean/relab` | complete | Random 0.98-0.99 (20 seeds); LOFO 0.96-0.98 (every file once, floods 0.986-0.999); station 0.97-0.99 both ways (10 samples); transfer 0.12-0.35 below LOFO, significant after Holm 3/6 |
+| EXP-069 | Importance weighting, DANN, label-efficient arm (R1.12/R2.6) | `run_transfer_r1.py --adapt iw/dann`; `run_label_efficient.py` | complete | IW: no gain (ESS 2.0-6.6%); DANN 0.66; one labelled file -> 0.87-0.93; alert bound met in 2/24 draws (k=1), 14/24 (k=8) |
+| EXP-070 | Radio protocol comparison, 30 sessions vs 42 runs (R1.2) | `run_leakage_r1.py` | complete | Sessions 0.131 [-0.035, 0.296] p=0.11; runs 0.153 [-0.020, 0.325] p=0.08; Holm 0/6 both |
+| EXP-071 | Source sample size (R2.8) | `run_transfer_r1.py --n-sub 150000/600000/1640182 --seeds 5` | complete | Clean target BA moves <= 0.08 vs 300k, no consistent direction |
+| EXP-072 | 5G-NIDD copies in the raw captures (R2.2) | `analysis/label_conflict_pcap.py`, `label_conflict_pcap_pairs.py`, `make_corrected_labels.py` | complete | All 656,180 packets of station 2's UDP-flood file occur in station 1's file, same timestamps; other 9 sessions share 0 packets; 281,529 corrected rows released |
+| EXP-073 | D_A flow-split category coverage (R1.11/R2.4) | `analysis/flow_split_coverage.py` | complete | 259 of 318 addresses attack; 3-5 addresses carry 90% of each category; all categories in training in all splits (>= 29%); test 2-149 addresses, 29-52% of flows |
+| EXP-074 | Shift diagnostics and byte accounting after D-035 | `run_exporter_sensitivity.py --out ...`; `analysis/byte_accounting.py` | complete | Domain BA 0.997 shared / 0.935 robust (0.997 before); Zeek 0.997 / 0.937 |
+| EXP-075 | Statistics layer of revision 1 | `analysis/revision_stats_r1.py` | complete | NB intervals with group ratio 0.65; test: 0 pass; HGB meets all alert conditions in 12/20 splits (clean) |
+
 ## 6. Claims withdrawn
 
 | Claim | Retired by | Why |
@@ -171,6 +197,8 @@ Review: `reports/peer_review_round2_2026-09-24.md`; decisions D-030 to D-033.
 | Title scope "IoT traffic in O-RAN edge data centers" | round 2 | Not supported by the corpora |
 
 ## 7. Known limitations
+
+- Revision 1 corrected the 5G-NIDD byte accounting (D-035); results of the first submission that used 5G-NIDD in the shared space are superseded by EXP-064 to EXP-075.
 
 - No real near-RT RIC; latency emulated on one Windows host.
 - Three corpora, three exporters; the third is a 5G core testbed, not O-RAN, with three capture files.

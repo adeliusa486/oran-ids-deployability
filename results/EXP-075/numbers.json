@@ -1,0 +1,365 @@
+{
+  "shared_nb_ratio_flows": 0.5841529075845491,
+  "EXP-072__summary": {
+    "captures": {
+      "file5_bs1": {
+        "capture": "file5_bs1",
+        "member": "BS1_GTP_removed/UDPflood_BS1_nogtp.pcapng",
+        "packets_total": 1214969,
+        "window_start": 1661518178.787086,
+        "window_end": 1661519905.4378142,
+        "window_s": 1726.650728225708,
+        "packets_to_target": 733760,
+        "ethernet": [
+          {
+            "src": "10.155.15.7",
+            "eth_src": "a8:6b:ad:fd:04:f0",
+            "eth_dst": "cc:48:3a:f9:0f:21",
+            "packets": 421471
+          },
+          {
+            "src": "10.155.15.4",
+            "eth_src": "a8:6b:ad:fd:04:b4",
+            "eth_dst": "cc:48:3a:f9:0f:21",
+            "packets": 312289
+          }
+        ],
+        "read_s": 115.6
+      },
+      "file15_bs2": {
+        "capture": "file15_bs2",
+        "member": "BS2 GTP removed/UDPflood_BS2_nogtp.pcapng",
+        "packets_total": 656389,
+        "window_start": 1661518178.787086,
+        "window_end": 1661519905.2740445,
+        "window_s": 1726.4869585037231,
+        "packets_to_target": 421471,
+        "ethernet": [
+          {
+            "src": "10.155.15.7",
+            "eth_src": "a8:6b:ad:fd:04:f0",
+            "eth_dst": "cc:48:3a:f9:0f:21",
+            "packets": 421471
+          }
+        ],
+        "read_s": 67.7
+      }
+    },
+    "attackers": {
+      "10.155.15.7": "station-2 attacker",
+      "10.155.15.4": "station-1 attacker"
+    },
+    "target": "10.41.150.68",
+    "match_window_s": 2.0,
+    "per_attacker": {
+      "10.155.15.7": {
+        "role": "station-2 attacker",
+        "file5_bs1": {
+          "packets": 421471,
+          "first": 1661519028.9972706,
+          "last": 1661519612.445958,
+          "ttl_values": [
+            63
+          ],
+          "ip_len_mode": 28
+        },
+        "file15_bs2": {
+          "packets": 421471,
+          "first": 1661519028.9972706,
+          "last": 1661519612.445958,
+          "ttl_values": [
+            63
+          ],
+          "ip_len_mode": 28
+        },
+        "bs1_packets_found_in_bs2": {
+          "n": 421471,
+          "matched": 421471,
+          "share": 1.0,
+          "offset_median_s": 0.0,
+          "offset_iqr_s": 0.0,
+          "offset_p01_s": 0.0,
+          "offset_p99_s": 0.0
+        }
+      },
+      "10.155.15.4": {
+        "role": "station-1 attacker",
+        "file5_bs1": {
+          "packets": 312289,
+          "first": 1661518698.7315218,
+          "last": 1661519323.1326911,
+          "ttl_values": [
+            63
+          ],
+          "ip_len_mode": 28
+        },
+        "file15_bs2": {
+          "packets": 0,
+          "first": null,
+          "last": null,
+          "ttl_values": [],
+          "ip_len_mode": null
+        }
+      }
+    }
+  },
+  "EXP-072__pairs": [
+    {
+      "capture": "Goldeneye",
+      "bs1_keys": 693691,
+      "bs2_keys": 646930,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661768601.4695344,
+      "first_bs2": 1661768601.582885,
+      "last_bs1": 1661770408.206891,
+      "last_bs2": 1661770407.7907927
+    },
+    {
+      "capture": "ICMPflood",
+      "bs1_keys": 293352,
+      "bs2_keys": 313497,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661514820.7181685,
+      "first_bs2": 1661514820.459396,
+      "last_bs1": 1661516604.3907852,
+      "last_bs2": 1661516603.9336433
+    },
+    {
+      "capture": "Slowloris",
+      "bs1_keys": 335667,
+      "bs2_keys": 202712,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661771961.9272902,
+      "first_bs2": 1661771961.5073895,
+      "last_bs1": 1661773706.9282887,
+      "last_bs2": 1661773706.9496162
+    },
+    {
+      "capture": "SSH",
+      "bs1_keys": 11932,
+      "bs2_keys": 7936,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1662550766.9243398,
+      "first_bs2": 1662550766.485404,
+      "last_bs1": 1662554113.080391,
+      "last_bs2": 1662554113.1212883
+    },
+    {
+      "capture": "SYNflood",
+      "bs1_keys": 347733,
+      "bs2_keys": 93170,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661776592.5302863,
+      "first_bs2": 1661776592.5372336,
+      "last_bs1": 1661778497.64761,
+      "last_bs2": 1661778497.6406162
+    },
+    {
+      "capture": "SYNScan",
+      "bs1_keys": 73530,
+      "bs2_keys": 72876,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661506202.60773,
+      "first_bs2": 1661506203.2517805,
+      "last_bs1": 1661506724.856102,
+      "last_bs2": 1661506725.496336
+    },
+    {
+      "capture": "TCPConnect",
+      "bs1_keys": 96636,
+      "bs2_keys": 96576,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661507652.6164267,
+      "first_bs2": 1661507652.2323637,
+      "last_bs1": 1661508238.353764,
+      "last_bs2": 1661508237.9739625
+    },
+    {
+      "capture": "Torshammer",
+      "bs1_keys": 543739,
+      "bs2_keys": 390703,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661774000.7162664,
+      "first_bs2": 1661774000.6323926,
+      "last_bs1": 1661775752.737391,
+      "last_bs2": 1661775752.7364395
+    },
+    {
+      "capture": "UDPflood",
+      "bs1_keys": 1214240,
+      "bs2_keys": 656180,
+      "shared": 656180,
+      "share_of_bs1": 0.5404038740281987,
+      "share_of_bs2": 1.0,
+      "same_first_ts": true,
+      "first_bs1": 1661518178.787086,
+      "first_bs2": 1661518178.787086,
+      "last_bs1": 1661519905.4378142,
+      "last_bs2": 1661519905.2740445
+    },
+    {
+      "capture": "UDPScan",
+      "bs1_keys": 84745,
+      "bs2_keys": 92139,
+      "shared": 0,
+      "share_of_bs1": 0.0,
+      "share_of_bs2": 0.0,
+      "same_first_ts": false,
+      "first_bs1": 1661513311.0862591,
+      "first_bs2": 1661513310.4640992,
+      "last_bs1": 1661513894.8941286,
+      "last_bs2": 1661513894.771597
+    }
+  ],
+  "EXP-072__corrected_labels__README": {
+    "rows_corrected": 281529,
+    "attack_flows_in_file_15": 281529,
+    "benign_total": 477737,
+    "share_of_benign_class": 0.5892970400031816,
+    "corrected_to": {
+      "Label": "Malicious",
+      "AttackType": "UDPFlood",
+      "AttackTool": "Hping3"
+    },
+    "combined_csv_sha256": "fa36f80859585f474504ca69eb951a079b35145537976c86b00aae3aab46ee59",
+    "output": "results\\EXP-072\\corrected_labels\\5G-NIDD_Combined_corrected_labels.csv.gz",
+    "output_sha256": "71e704d0fbcb99048912a366efb963199f04be8a2e4c46001f4c8fc320a9e7ba",
+    "how_to_apply": "df = pd.read_csv('Combined.csv'); c = pd.read_csv(this_file); df.loc[c.row_position, ['Label','Attack Type','Attack Tool']] = c[['Label_corrected','AttackType_corrected','AttackTool_corrected']].values"
+  },
+  "EXP-073__summary": {
+    "hosts": {
+      "addresses": 318,
+      "attacker_addresses": 259,
+      "attack_only": 202,
+      "mixed": 57,
+      "benign_only": 59,
+      "largest_address_flow_share": 0.3399738565598208
+    },
+    "categories": [
+      {
+        "category": "bruteforce",
+        "flows": 28566,
+        "attacker_addresses": 76,
+        "top1_share": 0.23794020863964152,
+        "top3_share": 0.6567947910102919,
+        "addresses_for_90pct": 5
+      },
+      {
+        "category": "ddos",
+        "flows": 420282,
+        "attacker_addresses": 95,
+        "top1_share": 0.33168444044712836,
+        "top3_share": 0.8363122855606474,
+        "addresses_for_90pct": 4
+      },
+      {
+        "category": "dos",
+        "flows": 632507,
+        "attacker_addresses": 188,
+        "top1_share": 0.36527184679379043,
+        "top3_share": 0.8454720659218,
+        "addresses_for_90pct": 4
+      },
+      {
+        "category": "probe",
+        "flows": 183293,
+        "attacker_addresses": 55,
+        "top1_share": 0.34900405361906894,
+        "top3_share": 0.9808612440191388,
+        "addresses_for_90pct": 3
+      },
+      {
+        "category": "web",
+        "flows": 287488,
+        "attacker_addresses": 59,
+        "top1_share": 0.33122078138913624,
+        "top3_share": 0.9908935329474622,
+        "addresses_for_90pct": 3
+      }
+    ],
+    "splits": {
+      "n_splits": 20,
+      "every_category_in_training_every_split": true,
+      "every_category_in_test_every_split": true,
+      "splits_missing_a_category_in_test": 0,
+      "min_train_share_by_category": {
+        "bruteforce": 0.338,
+        "ddos": 0.431,
+        "dos": 0.431,
+        "probe": 0.291,
+        "web": 0.332
+      },
+      "min_train_addresses_by_category": {
+        "bruteforce": 2,
+        "ddos": 4,
+        "dos": 3,
+        "probe": 2,
+        "web": 2
+      },
+      "test_groups_range": [
+        2,
+        149
+      ],
+      "train_groups_range": [
+        5,
+        152
+      ],
+      "test_flow_frac_range": [
+        0.29265,
+        0.52392
+      ],
+      "group_ratio_mean": 4.813029118099257
+    }
+  },
+  "dom_argus_corrected": {
+    "shared (18)": 0.9968,
+    "robust (9)": 0.934585
+  },
+  "w1_argus_corrected": {
+    "robust": 0.2978312627602937,
+    "nonrobust": 0.29195432212787603,
+    "all": 0.2948927924440849
+  },
+  "dom_zeek": {
+    "shared (18)": 0.99672,
+    "robust (9)": 0.93691
+  },
+  "w1_zeek": {
+    "robust": 0.2536551675216728,
+    "nonrobust": 0.2219160405178205,
+    "all": 0.23778560401974666
+  },
+  "shared_nb_ratio_groups": 0.6515716568993074,
+  "robust_nb_ratio_flows": 0.5841529075845491,
+  "robust_nb_ratio_groups": 0.6515716568993074,
+  "reverse_nb_ratio_flows": 0.4049188779777503,
+  "reverse_nb_ratio_groups": 1.5,
+  "radio_ratio_groups_runs": 0.41652613827993257,
+  "radio_ratio_windows_runs": 0.26549633517328747,
+  "radio_ratio_groups_sessions": 0.4218009478672986,
+  "radio_ratio_windows_sessions": 0.273440511553026
+}

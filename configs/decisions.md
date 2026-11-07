@@ -1336,3 +1336,67 @@ Either way the result is a sensitivity analysis, never a substitute for A3.
 - Result: labels consistent (ceiling 0.992); in-target BA 0.99; transfer BA
   0.60-0.74 from D_A and 0.42-0.85 from D_B; SYN flood recall 1.00 from D_A and
   0.71-1.00 from D_B, false positive rate 0.16-0.81; deployability test 0 of 6 in both directions.
+
+## D-035 — 5G-NIDD byte accounting corrected: Argus counts the Ethernet header (revision 1, 2026-11-07)
+
+- Reviewer 1 (R1.9) asked where the "2-byte gap" between Argus and Zeek came
+  from. There is none. The smallest bytes per packet in Combined.csv are 54
+  (TCP) and 42 (UDP, ICMP); Zeek counts 40 and 28 on D_A and on our own Zeek
+  re-extraction of the same 5G-NIDD captures. The captures are Ethernet frames
+  (link type 1) and frame length minus IP length is 14 B for 94.5% of frames in
+  four captures (99.6-99.8% in two; most of the rest are 802.1Q-tagged).
+  D-015's "40 against 42" compared Zeek's TCP minimum with Argus's UDP minimum.
+- Fix: `features/shared.py::from_d_b` subtracts 14 B per packet and direction
+  (`ARGUS_LINK_BYTES`), as `from_d_c` does for NFStream. `link_bytes=0`
+  reproduces the first submission. Tests: `tests/unit/test_shared_space.py`.
+- Consequence: every experiment that puts 5G-NIDD in the shared space was re-run
+  (EXP-064 ... EXP-069, EXP-071, EXP-074). Tree-based transfer to clean 5G-NIDD
+  rose from 0.74-0.78 to 0.78-0.86; the robust-subset domain classifier fell
+  from 0.997 to 0.935. Evidence: `results/EXP-074/byte_accounting.json`.
+
+## D-036 — Adaptation methods and the label-efficient arm (revision 1, 2026-11-07)
+
+- R1.12 / R2.6: one method per family, all fixed before any result:
+  importance weighting (logistic-regression domain classifier, density ratio
+  clipped at its 1st/99th percentiles, normalised to mean 1); CORAL (as
+  EXP-049); DANN in NumPy (`models/dann.py`: d-64-32 features, 32-1 label head,
+  32-32-1 domain head, Adam 1e-3, batch 256+256, 5 epochs, Ganin lambda
+  schedule, balanced class weights; gradients checked against finite
+  differences in `tests/unit/test_dann.py`). NumPy because the CPU-torch venv of
+  EXP-050 no longer loads (DLL initialisation failure).
+- Label-efficient arm: k in {1,2,4,8} labelled 5G-NIDD capture files, four draws
+  per k, up to 60,000 target flows next to the D_A training set of split 101+r,
+  or up to 240,000 target flows alone; evaluated on the files not drawn; copies
+  relabelled as attack when file 5 is drawn.
+
+## D-037 — Statistics convention of revision 1 (2026-11-07)
+
+- R2.4. Primary intervals: Nadeau-Bengio corrected t-intervals over the 20
+  splits, with the ratio from GROUP counts as the total of held-out over the
+  total of training groups (flows 0.65, radio sessions and runs 0.42). The
+  per-split group ratio varies from 0.01 to 25 on the flow layer, so the ratio of
+  totals is used. Target fixed.
+- A cluster bootstrap (splits x source addresses x target capture files) was
+  implemented first and DROPPED as primary after diagnosis: resampling addresses
+  inside splits that hold out 2-9 addresses left 38% of replicates with one
+  class; with 20 heterogeneous capture files, one holding most benign errors,
+  bootstrap distributions of BA and FPR were strongly shifted (point estimate at
+  the 0.1th percentile for Zeek / all flows / XGB). Kept as `sens_boot_*`
+  columns for the record.
+- Revised deployability test: two terms (generalization, alert burden), each
+  pass / fail / inconclusive from the same corrected intervals; alert threshold
+  per split = largest grid threshold with source-fold recall >= r_min (no target
+  labels); target-searched threshold reported only as an optimistic bound;
+  latency no longer a term. Bounds unchanged and declared as ours (FPR <= 8.3e-4).
+
+## D-038 — Scope reframed (revision 1, 2026-11-07)
+
+- R1.1 / R2.1: no detector can be evaluated on all three criteria with public
+  data (no second radio corpus; E2 carries no flow records). The paper is now a
+  cross-corpus study of 5G flow detectors with a separate latency measurement
+  for window-level detectors. New title: "Cross-Corpus Evaluation of 5G Flow
+  Intrusion Detectors: Label Faults, Transfer, and Alert Burden".
+- Removed for focus (R1.15a): calibration and prior shift (EXP-044), sequence
+  models (EXP-050), novelty detectors (EXP-048), per-call latency table and CDF
+  (EXP-043/060), reliability and radio-protocol figures. Results stay in the
+  repository; none was re-run with the D-035 correction.

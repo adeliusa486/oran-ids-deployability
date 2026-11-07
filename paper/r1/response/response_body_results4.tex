@@ -1,0 +1,10 @@
+\begin{concern}{R2.6 Adaptation}
+CORAL is the only adaptation method tested. A label-efficient arm would address the practical question of how much labelled target data is needed to pass the test: retrain or fine-tune with k labelled target capture files and plot the result against the bounds. One additional representation-learning method would also help. A negative result here would still strengthen the paper.
+\end{concern}
+\response We added both, and report a negative and a positive result.
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+\item \emph{Label-efficient arm (EXP-069).} $k \in \{1, 2, 4, 8\}$ labeled 5G-NIDD capture files, four random draws per $k$, are added to the NetsLab training data (and, for comparison, used alone); models are evaluated on the capture files not drawn and plotted against the bounds (\Fig{fig:labeleff}). One file raises the balanced accuracy of the nonlinear models to \RLeSrcOneNlMin{} to \RLeSrcOneNlMax{} (the MLP from \RLeZeroMLP{} to \RLeSrcOneMLP), close to the in-target reference, whereas the same files alone give \RLeTgtOneNlMin{} to \RLeTgtOneNlMax. Meeting the alert bound takes more data: with the threshold fixed on source data, \RLeSrcOneMeet{} of \RLeSrcOneCells{} model draws meet all three alert conditions with one file and \RLeSrcEightMeet{} of \RLeSrcEightCells{} with eight, XGB and the MLP in every draw.
+\item \emph{Representation learning.} Domain-adversarial training (DANN) reaches \RArmDannDANNClean{} on the clean flows, below the plain tree-based models, and importance weighting, a second method built for shift, does not help either (R1.12).
+\end{itemize}
+
+\action \Sec{sec:detectors}, \Sec{sec:res:gap}, \Tab{tab:arms}, \Fig{fig:labeleff}, \Sec{sec:disc:practice}.
