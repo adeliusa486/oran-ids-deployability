@@ -1,0 +1,30 @@
+[a_to_b__shared__n1640182] target b: d_b_5gnidd_shared (1215889, 18) attack 0.6071
+[a_to_b__shared__n1640182] source a: d_a_network_shared (1640182, 18) attack 0.9463
+  seed 101 [1/5] logreg     BA source_heldout=0.782 b=0.635  9.1s
+  seed 101 [1/5] tree       BA source_heldout=0.923 b=0.557  8.7s
+  seed 101 [1/5] rf         BA source_heldout=0.910 b=0.621  119.1s
+  seed 101 [1/5] xgboost    BA source_heldout=0.928 b=0.602  20.6s
+  seed 101 [1/5] hgb        BA source_heldout=0.912 b=0.603  58.4s
+  seed 102 [2/5] logreg     BA source_heldout=0.865 b=0.636  16.7s
+  seed 102 [2/5] tree       BA source_heldout=0.943 b=0.564  13.5s
+  seed 102 [2/5] rf         BA source_heldout=0.948 b=0.488  249.2s
+  seed 102 [2/5] xgboost    BA source_heldout=0.950 b=0.586  33.4s
+  seed 102 [2/5] hgb        BA source_heldout=0.948 b=0.592  63.9s
+  seed 103 [3/5] logreg     BA source_heldout=0.887 b=0.636  15.4s
+  seed 103 [3/5] tree       BA source_heldout=0.938 b=0.591  10.8s
+  seed 103 [3/5] rf         BA source_heldout=0.952 b=0.599  164.3s
+  seed 103 [3/5] xgboost    BA source_heldout=0.935 b=0.582  23.7s
+  seed 103 [3/5] hgb        BA source_heldout=0.934 b=0.583  47.0s
+  seed 104 [4/5] logreg     BA source_heldout=0.819 b=0.637  11.2s
+  seed 104 [4/5] tree       BA source_heldout=0.851 b=0.599  8.8s
+  seed 104 [4/5] rf         BA source_heldout=0.852 b=0.585  165.1s
+  seed 104 [4/5] xgboost    BA source_heldout=0.861 b=0.554  31.6s
+  seed 104 [4/5] hgb        BA source_heldout=0.848 b=0.596  53.3s
+  seed 105 [5/5] logreg     BA source_heldout=0.847 b=0.636  8.2s
+  seed 105 [5/5] tree       BA source_heldout=0.682 b=0.583  8.6s
+  seed 105 [5/5] rf         BA source_heldout=0.535 b=0.616  131.3s
+  seed 105 [5/5] xgboost    BA source_heldout=0.688 b=0.591  22.2s
+  seed 105 [5/5] hgb        BA source_heldout=0.674 b=0.580  39.2s
+
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-071\a_to_b__shared__n1640182  (1462s)
+EXIT 0

@@ -22,8 +22,11 @@ def d_a_row(**kw) -> pd.DataFrame:
 
 
 def d_b_row(**kw) -> pd.DataFrame:
-    base = dict(Dur=1.0, SrcBytes=1000, DstBytes=500, SrcPkts=10, DstPkts=5,
-                TotPkts=15, TotBytes=1500, Proto="tcp")
+    # the same flow as d_a_row: Argus adds the 14-byte Ethernet header to each
+    # of the 10 + 5 packets (D-035)
+    base = dict(Dur=1.0, SrcBytes=1000 + 14 * 10, DstBytes=500 + 14 * 5,
+                SrcPkts=10, DstPkts=5, TotPkts=15, TotBytes=1500 + 14 * 15,
+                Proto="tcp")
     base.update(kw)
     return pd.DataFrame([base])
 
@@ -59,6 +62,30 @@ def test_identical_flows_map_to_identical_vectors():
     b = sh.from_d_b(d_b_row())
     sh.assert_compatible(a, b)
     np.testing.assert_allclose(a.to_numpy(), b.to_numpy(), rtol=1e-6)
+
+
+@pytest.mark.parametrize("proto,ip_len", [("tcp", 40), ("udp", 28), ("icmp", 28)])
+def test_argus_minimum_packet_equals_zeek_minimum_packet(proto, ip_len):
+    """D-035 (reviewer R1.9). One minimum-size packet, as each exporter counts it.
+
+    Argus counts the Ethernet frame (54 B for a bare TCP segment, 42 B for an
+    empty UDP datagram or a minimal ICMP message); Zeek's ip_bytes counts the IP
+    packet (40 and 28 B). After the correction both give the same vector.
+    """
+    a = sh.from_d_a(d_a_row(src_ip_bytes=ip_len, dst_ip_bytes=0, src_pkts=1,
+                            dst_pkts=0, proto=proto, duration=0.0))
+    b = sh.from_d_b(d_b_row(SrcBytes=ip_len + 14, DstBytes=0, TotBytes=ip_len + 14,
+                            SrcPkts=1, DstPkts=0, TotPkts=1, Proto=proto, Dur=0.0))
+    np.testing.assert_allclose(a.to_numpy(), b.to_numpy(), rtol=1e-6)
+    assert b["src_mean_pkt_size"].iloc[0] == pytest.approx(np.log1p(ip_len), rel=1e-6)
+
+
+def test_link_bytes_zero_reproduces_the_first_submission():
+    """The uncorrected mapping stays available, so old numbers can be rebuilt."""
+    raw = d_b_row()
+    out = sh.from_d_b(raw, link_bytes=0)
+    assert out["src_bytes"].iloc[0] == pytest.approx(np.log1p(1140), rel=1e-6)
+    assert out["tot_bytes"].iloc[0] == pytest.approx(np.log1p(1710), rel=1e-6)
 
 
 # --------------------------------------------------------------------------

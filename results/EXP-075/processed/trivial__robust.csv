@@ -1,0 +1,9 @@
+model,domain,balanced_accuracy
+majority,b,0.5
+majority,bz,0.5
+majority,c,0.5
+majority,source_heldout,0.5
+stratified,b,0.500045850454158
+stratified,bz,0.4998972658404309
+stratified,c,0.4989502134976793
+stratified,source_heldout,0.501542218787688

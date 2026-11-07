@@ -1,0 +1,47 @@
+[a_to_b_bz_c__shared__seeds111-115] target b: d_b_5gnidd_shared (1215889, 18) attack 0.6071
+[a_to_b_bz_c__shared__seeds111-115] target bz: d_b_5gnidd_zeek_shared (346882, 18) attack 0.7609
+[a_to_b_bz_c__shared__seeds111-115] target c: d_c_5gdatasets_shared (39425, 18) attack 0.0213
+[a_to_b_bz_c__shared__seeds111-115] source a: d_a_network_shared (1640182, 18) attack 0.9463
+  seed 111 [1/5] majority   BA source_heldout=0.500 b=0.500 bz=0.500 c=0.500  12.1s
+  seed 111 [1/5] stratified BA source_heldout=0.502 b=0.500 bz=0.500 c=0.499  12.8s
+  seed 111 [1/5] logreg     BA source_heldout=0.873 b=0.636 bz=0.553 c=0.764  23.6s
+  seed 111 [1/5] tree       BA source_heldout=0.956 b=0.600 bz=0.448 c=0.642  17.1s
+  seed 111 [1/5] rf         BA source_heldout=0.939 b=0.624 bz=0.450 c=0.585  174.1s
+  seed 111 [1/5] xgboost    BA source_heldout=0.963 b=0.592 bz=0.459 c=0.616  75.4s
+  seed 111 [1/5] hgb        BA source_heldout=0.961 b=0.590 bz=0.459 c=0.613  209.4s
+  seed 111 [1/5] mlp        BA source_heldout=0.959 b=0.491 bz=0.445 c=0.515  967.4s
+  seed 112 [2/5] majority   BA source_heldout=0.500 b=0.500 bz=0.500 c=0.500  8.6s
+  seed 112 [2/5] stratified BA source_heldout=0.503 b=0.500 bz=0.500 c=0.499  9.6s
+  seed 112 [2/5] logreg     BA source_heldout=0.756 b=0.627 bz=0.563 c=0.461  16.8s
+  seed 112 [2/5] tree       BA source_heldout=0.868 b=0.592 bz=0.559 c=0.518  13.2s
+  seed 112 [2/5] rf         BA source_heldout=0.826 b=0.595 bz=0.443 c=0.513  115.8s
+  seed 112 [2/5] xgboost    BA source_heldout=0.852 b=0.606 bz=0.422 c=0.620  82.7s
+  seed 112 [2/5] hgb        BA source_heldout=0.860 b=0.612 bz=0.455 c=0.567  123.4s
+  seed 112 [2/5] mlp        BA source_heldout=0.901 b=0.488 bz=0.424 c=0.979  169.8s
+  seed 113 [3/5] majority   BA source_heldout=0.500 b=0.500 bz=0.500 c=0.500  1.6s
+  seed 113 [3/5] stratified BA source_heldout=0.498 b=0.500 bz=0.500 c=0.499  1.7s
+  seed 113 [3/5] logreg     BA source_heldout=0.656 b=0.636 bz=0.571 c=0.764  3.9s
+  seed 113 [3/5] tree       BA source_heldout=0.577 b=0.485 bz=0.440 c=0.599  3.0s
+  seed 113 [3/5] rf         BA source_heldout=0.553 b=0.478 bz=0.422 c=0.588  35.0s
+  seed 113 [3/5] xgboost    BA source_heldout=0.603 b=0.582 bz=0.442 c=0.615  14.8s
+  seed 113 [3/5] hgb        BA source_heldout=0.640 b=0.546 bz=0.453 c=0.918  48.0s
+  seed 113 [3/5] mlp        BA source_heldout=0.969 b=0.570 bz=0.406 c=0.892  287.2s
+  seed 114 [4/5] majority   BA source_heldout=0.500 b=0.500 bz=0.500 c=0.500  2.9s
+  seed 114 [4/5] stratified BA source_heldout=0.500 b=0.500 bz=0.500 c=0.498  2.8s
+  seed 114 [4/5] logreg     BA source_heldout=0.873 b=0.635 bz=0.564 c=0.764  6.6s
+  seed 114 [4/5] tree       BA source_heldout=0.956 b=0.564 bz=0.441 c=0.541  4.3s
+  seed 114 [4/5] rf         BA source_heldout=0.942 b=0.598 bz=0.455 c=0.578  47.9s
+  seed 114 [4/5] xgboost    BA source_heldout=0.964 b=0.605 bz=0.463 c=0.557  18.8s
+  seed 114 [4/5] hgb        BA source_heldout=0.962 b=0.598 bz=0.459 c=0.832  26.2s
+  seed 114 [4/5] mlp        BA source_heldout=0.956 b=0.497 bz=0.458 c=0.465  160.4s
+  seed 115 [5/5] majority   BA source_heldout=0.500 b=0.500 bz=0.500 c=0.500  2.1s
+  seed 115 [5/5] stratified BA source_heldout=0.501 b=0.500 bz=0.500 c=0.499  2.2s
+  seed 115 [5/5] logreg     BA source_heldout=0.877 b=0.636 bz=0.554 c=0.764  4.9s
+  seed 115 [5/5] tree       BA source_heldout=0.955 b=0.594 bz=0.451 c=0.589  3.5s
+  seed 115 [5/5] rf         BA source_heldout=0.938 b=0.626 bz=0.453 c=0.532  34.6s
+  seed 115 [5/5] xgboost    BA source_heldout=0.962 b=0.624 bz=0.462 c=0.574  11.9s
+  seed 115 [5/5] hgb        BA source_heldout=0.961 b=0.618 bz=0.459 c=0.585  20.3s
+  seed 115 [5/5] mlp        BA source_heldout=0.955 b=0.499 bz=0.458 c=0.552  73.4s
+
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-064\a_to_b_bz_c__shared__seeds111-115  (3016s)
+EXIT 0

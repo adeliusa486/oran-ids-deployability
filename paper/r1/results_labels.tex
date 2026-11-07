@@ -1,0 +1,38 @@
+%=======================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{The 5G-NIDD Labels and a Published Result}
+\label{sec:res:labels}
+
+\emph{Label conflicts.} For half of \DB{} the labels do not follow from the flow records: \LcShareAll\% of its flows match a flow with the opposite label in every field except the row index, \texttt{Seq}, and \texttt{Offset} (Table~\ref{tab:conflict}). All of them sit in the two UDP-flood files, file~\LcBenignFile{} of station~1 and file~\LcAttackFile{} of station~2. Each of the \RCopies{} flows labeled UDP flood in file~\LcAttackFile{} has a copy labeled benign in file~\LcBenignFile{} that agrees in every content field. In the release that keeps every field, these benign copies are all UDP flows from \LcAddrSrc{} to \LcAddrDst{}, the host pair of station~2's flood, whereas the attack labeled in file~\LcBenignFile{} comes from another host, \LcAddrOwnSrc{}. The copies make up \RCopiesPct\% of the benign class.\footnote{The authors' encoded release counts \LcTwinBenign{} copies, because it fills missing values of four of them differently.}
+
+\emph{The raw captures.} The two UDP-flood captures show where the copies come from (Fig.~\ref{fig:conflict}). Every one of the \RPcapBSTwoPkts{} IPv4 packets of station~2's capture also occurs in station~1's capture, with the same timestamp to the microsecond and the same addresses, IP identification, and length; they make up \RPcapShareBSOne\% of station~1's file, and both captures start at the same microsecond. In the other nine sessions, the two stations' captures share no packet and start \RPcapStartMin{} to \RPcapStartMax{}\,s apart, as two separate recordings would. The dataset description makes such an overlap possible: both base stations connect over S1-U to one switch, which also connects the attackers to the target server~\cite{samarakoon2022niddarxiv}, and in this session both attackers flooded the same server, overlapping for about five minutes, as the published schedule describes. Station~2's capture contains no packet of station~1's attacker, which explains the asymmetry: file~\LcAttackFile{} holds no copies of station~1's flood because station~2's file never contained that traffic. How station~1's file came to contain station~2's traffic is not documented; the observations fit a recording on a link that carries both stations' traffic, in this one session. Since the copies are station~2's flood packets, we treat them as attack traffic with a wrong label. We change no published label. We report results on all flows, without the copies (clean), and with the copies relabeled as attack, and we release the \RCopies{} corrected rows with our code. We reported the finding and the evidence to the dataset authors on [DATE].
+
+\begin{table}[t]
+\caption{Label conflicts in 5G-NIDD. Content: all fields of the published encoding except row index, \texttt{Seq}, \texttt{Offset}, and the labels. Ceiling: balanced accuracy of the best lookup on distinct records, in sample.}
+\label{tab:conflict}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/conflict}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{\input{fig_conflict_r1}}
+\caption{The label conflict in 5G-NIDD. Top: identical flow records occur in two capture files, labeled benign in station~1's file and UDP flood in station~2's (schematic tiles). They differ only in the row index and the record-position fields \texttt{Seq} and \texttt{Offset}, which make almost every record unique, account for the published 99.9\%, and are never seen by a deployed detector. Bottom: in the raw captures of this session, station~1's file contains every packet of station~2's file with the same timestamp; in the other nine sessions the two files share no packet.}
+\label{fig:conflict}
+\end{figure}
+
+\emph{What the copies do to a classifier.} Identical records under opposite labels cap any classifier that reads only record content: even on the flows it was built from, the best function of the \LcNFeat{} content fields reaches a balanced accuracy of \LcCeilNative{}, and of the 18 shared columns \LcCeilShared{}. With \texttt{Seq} and \texttt{Offset}, almost every record becomes unique and the ceiling rises to \LcCeilPos{}.
+
+\emph{A published result under the same protocols.} The dataset authors report binary accuracies of 99.85\% to 99.95\% on a random 70/30 split~\cite{samarakoon2022niddarxiv}. We rebuilt their pipeline (the published one-hot encoding, the ten features with the highest ANOVA $F$-scores, $z$-score normalization, and their five classifiers with scikit-learn defaults, as tuned values are not reported) and obtain \PubRzAccMin\% to \PubRzAccMax\% for DT, RF, KNN, and the MLP (Table~\ref{tab:ladder}). Their two top features are \texttt{Seq} and \texttt{Offset}, which no deployed detector observes and which are exactly what separates the conflicting records. Replacing only these two fields with the next two in the ranking brings the accuracy of DT, RF, and the MLP down to \PubOneNoposAccMin\% to \PubOneNoposAccMax\% (balanced accuracy \PubOneNoposBAmin{} to \PubOneNoposBAmax), yet RF still reaches \PubOneRFclean{} on the flows without the copies. With capture files held out, the published features give balanced accuracies of \PubTwoPubBAmin{} to \PubTwoPubBAmax{} and, without the two fields, \PubTwoNoposBAmin{} to \PubTwoNoposBAmax{}; accuracy falls to \PubTwoNoposFoldAccMin\% on the split that trains on one UDP-flood file and tests on the other. Across base stations the published features give \PubThreePubBAmin{} to \PubThreePubBAmax{}. A 99.9\% accuracy on this corpus says little about a new capture file or base station, and nothing about a deployment, where record positions do not exist.
+
+\begin{table*}[t]
+\caption{The 5G-NIDD authors' pipeline~\cite{samarakoon2022niddarxiv} reproduced and moved one protocol at a time (R0: their protocol). Balanced accuracy on all flows, and for RF also balanced accuracy and false positive rate without the benign-labeled copies. Mean over two repetitions per rung. KNN runs at R0 only, as its prediction dominated the runtime on later rungs.}
+\label{tab:ladder}
+\centering
+\footnotesize
+\input{tables/ladder}
+\end{table*}

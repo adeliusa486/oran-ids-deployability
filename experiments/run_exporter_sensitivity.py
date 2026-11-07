@@ -41,7 +41,8 @@ from sklearn.metrics import roc_auc_score  # noqa: E402
 from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 from sklearn.preprocessing import QuantileTransformer  # noqa: E402
 
-from oran_ids.data import load_network_shared, load_target_d_b  # noqa: E402
+from oran_ids.data import (load_network_shared, load_target_d_b,  # noqa: E402
+                           load_target_d_b_zeek)
 from oran_ids.features.shared import COLUMNS  # noqa: E402
 from experiments.run_transfer_v2 import ROBUST_COLUMNS  # noqa: E402
 
@@ -53,12 +54,20 @@ SEED = 7
 
 
 def main() -> int:
+    # revision 1 (EXP-074): --out and --target; 5G-NIDD is byte-corrected by the
+    # loader (D-035); 'bz' compares D_A with our Zeek re-extraction of 5G-NIDD
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", default=str(OUT))
+    ap.add_argument("--target", choices=["b", "bz"], default="b")
+    args = ap.parse_args()
+    out = Path(args.out)
     t0 = time.time()
     for d in ("processed", "statistics"):
-        (OUT / d).mkdir(parents=True, exist_ok=True)
+        (out / d).mkdir(parents=True, exist_ok=True)
     src = load_network_shared()
-    tgt = load_target_d_b(reason="EXP-045 domain classifier and W1, unlabelled "
-                                 "features only, no detector trained")
+    why = "EXP-045/074 domain classifier and W1, unlabelled features only, no detector trained"
+    tgt = load_target_d_b(reason=why) if args.target == "b" else load_target_d_b_zeek(reason=why)
     rng = np.random.default_rng(SEED)
     ia = rng.choice(len(src.y), N_PER_DOMAIN, replace=False)
     ib = rng.choice(len(tgt.y), N_PER_DOMAIN, replace=False)
@@ -98,16 +107,16 @@ def main() -> int:
                          median_d_a=float(A[c].median()),
                          median_d_b=float(B[c].median())))
     F = pd.DataFrame(feat).sort_values("w1_source_quantile", ascending=False)
-    F.to_csv(OUT / "processed/feature_shift.csv", index=False)
-    pd.DataFrame(dom).to_csv(OUT / "processed/domain_classifier.csv", index=False)
+    F.to_csv(out / "processed/feature_shift.csv", index=False)
+    pd.DataFrame(dom).to_csv(out / "processed/domain_classifier.csv", index=False)
     summary = dict(
         w1_mean_shared=float(F.w1_source_quantile.mean()),
         w1_mean_robust=float(F[F.robust].w1_source_quantile.mean()),
         w1_mean_nonrobust=float(F[~F.robust].w1_source_quantile.mean()))
     print(F.round(4).to_string(index=False))
     print(summary)
-    (OUT / "statistics/provenance_sensitivity.json").write_text(json.dumps(dict(
-        experiment="EXP-045 part B", n_per_domain=N_PER_DOMAIN, seed=SEED,
+    (out / "statistics/provenance_sensitivity.json").write_text(json.dumps(dict(
+        experiment="EXP-045 part B", target=args.target, n_per_domain=N_PER_DOMAIN, seed=SEED,
         classifier="HistGradientBoosting(max_iter=200), 5-fold stratified CV",
         w1="scipy wasserstein_distance on a QuantileTransformer fitted on "
            "D_A rows only and applied to both corpora (Eq. 2 corrected)",

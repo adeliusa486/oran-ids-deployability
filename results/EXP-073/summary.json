@@ -1,0 +1,85 @@
+{
+  "hosts": {
+    "addresses": 318,
+    "attacker_addresses": 259,
+    "attack_only": 202,
+    "mixed": 57,
+    "benign_only": 59,
+    "largest_address_flow_share": 0.3399738565598208
+  },
+  "categories": [
+    {
+      "category": "bruteforce",
+      "flows": 28566,
+      "attacker_addresses": 76,
+      "top1_share": 0.23794020863964152,
+      "top3_share": 0.6567947910102919,
+      "addresses_for_90pct": 5
+    },
+    {
+      "category": "ddos",
+      "flows": 420282,
+      "attacker_addresses": 95,
+      "top1_share": 0.33168444044712836,
+      "top3_share": 0.8363122855606474,
+      "addresses_for_90pct": 4
+    },
+    {
+      "category": "dos",
+      "flows": 632507,
+      "attacker_addresses": 188,
+      "top1_share": 0.36527184679379043,
+      "top3_share": 0.8454720659218,
+      "addresses_for_90pct": 4
+    },
+    {
+      "category": "probe",
+      "flows": 183293,
+      "attacker_addresses": 55,
+      "top1_share": 0.34900405361906894,
+      "top3_share": 0.9808612440191388,
+      "addresses_for_90pct": 3
+    },
+    {
+      "category": "web",
+      "flows": 287488,
+      "attacker_addresses": 59,
+      "top1_share": 0.33122078138913624,
+      "top3_share": 0.9908935329474622,
+      "addresses_for_90pct": 3
+    }
+  ],
+  "splits": {
+    "n_splits": 20,
+    "every_category_in_training_every_split": true,
+    "every_category_in_test_every_split": true,
+    "splits_missing_a_category_in_test": 0,
+    "min_train_share_by_category": {
+      "bruteforce": 0.338,
+      "ddos": 0.431,
+      "dos": 0.431,
+      "probe": 0.291,
+      "web": 0.332
+    },
+    "min_train_addresses_by_category": {
+      "bruteforce": 2,
+      "ddos": 4,
+      "dos": 3,
+      "probe": 2,
+      "web": 2
+    },
+    "test_groups_range": [
+      2,
+      149
+    ],
+    "train_groups_range": [
+      5,
+      152
+    ],
+    "test_flow_frac_range": [
+      0.29265,
+      0.52392
+    ],
+    "group_ratio_mean": 4.813029118099257
+  }
+}

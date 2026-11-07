@@ -1,0 +1,75 @@
+% ---------------------------------------------------------------------------
+%  FIGURE 2 (revision 1) -- the label conflict in 5G-NIDD, with the raw-capture
+%  evidence (reviewer R2.2c) added as a second panel. Every number is a macro
+%  (EXP-055, EXP-057, EXP-072). The record tiles are schematic: the content
+%  tiles are identical in the two rows because the records are identical in all
+%  90 content fields; the position tiles differ because Seq and Offset differ.
+% ---------------------------------------------------------------------------
+\fontfamily{phv}\selectfont
+\begin{tikzpicture}[figbase, font=\scriptsize, x=1cm, y=1cm,
+  tileC/.style={draw=fInk!70, line width=0.35pt, minimum size=2.4mm, inner sep=0pt},
+  chipB/.style={draw=fBlue, fill=fBlue!12, rounded corners=2pt, line width=0.7pt,
+                minimum width=14mm, minimum height=4.6mm, font=\scriptsize\bfseries},
+  chipA/.style={draw=fCor, fill=fCor!15, rounded corners=2pt, line width=0.7pt,
+                minimum width=14mm, minimum height=4.6mm, font=\scriptsize\bfseries},
+  arr/.style  ={-{Latex[length=1.5mm]}, draw=fInk!75, line width=0.6pt},
+]
+\def\shades{25,55,10,40,70,20,50,35}
+\newcommand{\fcRecord}[3]{% y, first position shade, second position shade
+  \foreach \s [count=\i] in \shades
+    {\node[tileC, fill=fTeal!\s] at ({1.42+0.29*(\i-1)},#1) {};}
+  \node[tileC, fill=fCor!#2] at (4.02,#1) {};
+  \node[tileC, fill=fCor!#3] at (4.31,#1) {};}
+
+% ---- panel a: records ------------------------------------------------------
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,5.42) {(a) flow records (Combined.csv)};
+\node[text=fInk!75] at (2.44,4.86) {content fields (90)};
+\node[text=fInk!75, align=center] at (4.17,5.00) {Seq,\\Offset};
+
+\node[anchor=west, align=left] at (-0.05,4.42) {\textbf{file \LcBenignFile}\\station 1};
+\fcRecord{4.42}{20}{45}
+\node[chipB] (lb) at (5.55,4.42) {benign};
+\draw[arr] (4.52,4.42) -- (lb.west);
+\node[anchor=west, align=left, text=fInk!80] at (6.35,4.42) {\RCopies{}\\flows};
+
+\node[anchor=west, align=left] at (-0.05,3.34) {\textbf{file \LcAttackFile}\\station 2};
+\fcRecord{3.34}{70}{90}
+\node[chipA] (la) at (5.55,3.34) {UDP flood};
+\draw[arr] (4.52,3.34) -- (la.west);
+\node[anchor=west, align=left, text=fInk!80] at (6.35,3.34) {\RCopies{}\\flows};
+
+\node[fill=white, inner sep=1pt] at (2.44,3.88) {$=$ identical records};
+\node[fill=white, inner sep=1pt] at (4.17,3.88) {$\neq$};
+
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,2.78) {content only};
+\draw[arr] (1.72,2.78) -- (2.12,2.78);
+\node[anchor=west, align=left] at (2.16,2.78)
+     {copies cannot be separated: balanced-accuracy ceiling \LcCeilNative{}};
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,2.36) {+ Seq, Offset};
+\draw[arr] (1.72,2.36) -- (2.12,2.36);
+\node[anchor=west, align=left] at (2.16,2.36)
+     {every record unique: published 99.9\% accuracy};
+\draw[draw=fgRule, line width=0.5pt] (-0.05,2.02) -- (8.20,2.02);
+
+% ---- panel b: raw captures, TO SCALE --------------------------------------------
+% x = 1.75 + 6.2 * (t - capture start) / capture length, from
+% results/EXP-072/summary.json: the station-1 attacker 10.155.15.4 floods from
+% x = 3.617 to 5.859, the station-2 attacker 10.155.15.7 from 4.803 to 6.898.
+\node[anchor=west, font=\scriptsize\bfseries] at (-0.05,1.72) {(b) raw captures, UDP-flood session (to scale, 29 min)};
+% station 1 file: both attackers' packets
+\node[anchor=west] at (-0.05,1.22) {station 1 file};
+\fill[fBlue!20] (1.75,1.08) rectangle (7.95,1.36);
+\fill[fCor!55] (3.617,1.08) rectangle (5.859,1.36);
+\fill[fCor!85!black, opacity=0.75] (4.803,1.08) rectangle (6.898,1.36);
+% station 2 file: station 2's packets only
+\node[anchor=west] at (-0.05,0.70) {station 2 file};
+\fill[fBlue!20] (1.75,0.56) rectangle (7.95,0.84);
+\fill[fCor!85!black, opacity=0.75] (4.803,0.56) rectangle (6.898,0.84);
+\draw[densely dotted, fInk!70, line width=0.5pt] (1.75,0.48) -- (1.75,1.44);
+\node[font=\tiny, text=fInk!75, anchor=south] at (1.75,1.44) {same start};
+\node[font=\tiny, anchor=south] at (4.738,1.36) {station 1 attacker};
+\node[font=\tiny, anchor=north] at (5.850,0.56) {station 2 attacker};
+\node[anchor=west, align=left, text=fInk!85] at (-0.05,0.08)
+     {all \RPcapBSTwoPkts{} packets of the station 2 file occur in the station 1 file,
+      same timestamps;\\in the other nine sessions the two files share no packet};
+\end{tikzpicture}

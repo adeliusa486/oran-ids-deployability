@@ -164,7 +164,8 @@ def load_network(path: Path | None = None, *, dedup: bool = True,
                   category.to_numpy(), groups, "src_ip", prov)
 
 
-def load_radio(path: Path | None = None, *, window: bool = True) -> Corpus:
+def load_radio(path: Path | None = None, *, window: bool = True,
+               session_gap_s: float | None = None) -> Corpus:
     """Load the DU radio telemetry, grouped into runs recovered from the clock.
 
     With ``window=True`` the 1 Hz records are aggregated into the 16-record
@@ -173,7 +174,13 @@ def load_radio(path: Path | None = None, *, window: bool = True) -> Corpus:
     aggregation, for the reason given in ``features/crosslayer.py``: a
     monotonically rising counter aggregated as a mean encodes absolute capture
     time, which is a run fingerprint.
+
+    ``session_gap_s`` (default ``SESSION_GAP_S`` = 300 s, 30 sessions) sets the
+    clock gap that starts a new group. A gap of 100 s recovers the 42 documented
+    experiment runs (EXP-059); revision 1 groups by them as well (R1.2, EXP-070).
+    Windows never straddle a group boundary.
     """
+    gap_s = SESSION_GAP_S if session_gap_s is None else float(session_gap_s)
     path = path or (RAW_DA / "Lower_Layer_Data.db")
     con = sqlite3.connect(path)
     df = pd.read_sql("SELECT * FROM lower_layer_data", con)
@@ -184,12 +191,12 @@ def load_radio(path: Path | None = None, *, window: bool = True) -> Corpus:
     df["ts"] = pd.to_datetime(df["timestamp"], unit="ms")
     df = df.sort_values("ts").reset_index(drop=True)
     gaps = df["ts"].diff().dt.total_seconds()
-    df["session"] = (gaps > SESSION_GAP_S).cumsum()
+    df["session"] = (gaps > gap_s).cumsum()
 
     purity = df.groupby("session")["attack_category"].nunique()
     prov.update(n_sessions=int(df["session"].nunique()),
                 sessions_label_pure=int((purity == 1).sum()),
-                session_gap_s=SESSION_GAP_S)
+                session_gap_s=gap_s)
 
     # Per-UE differencing of cumulative counters.
     df = df.sort_values(["ue_id", "ts"])
@@ -391,7 +398,8 @@ def d_b_capture_files(offset) -> np.ndarray:
 
 def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
                     reason: str = "unspecified",
-                    groups: str = "none") -> Corpus:
+                    groups: str = "none",
+                    link_bytes: int | None = None) -> Corpus:
     """D_B = 5G-NIDD, the independent target corpus. TRANSFER-ONLY.
 
     Never split, never trained on, never used to fit a scaler or pick a
@@ -445,7 +453,12 @@ def load_target_d_b(path: Path | None = None, *, nrows: int | None = None,
                          "D_B binary").to_numpy(dtype=np.int8)
     category = _apply_canonical(df[lm["category_column"]], lm["map"],
                                 "D_B category").to_numpy()
-    X = _sh.from_d_b(df)
+    # D-035: Argus counts the 14-byte Ethernet header of every packet; it is
+    # removed so the byte columns are IP-layer bytes, as for D_A and D_C.
+    # link_bytes=0 reproduces the first submission.
+    lb = _sh.ARGUS_LINK_BYTES if link_bytes is None else int(link_bytes)
+    X = _sh.from_d_b(df, link_bytes=lb)
+    prov["argus_link_bytes_removed_per_packet"] = lb
 
     if groups == "capture_file":
         g = df["_capture_file"].to_numpy()

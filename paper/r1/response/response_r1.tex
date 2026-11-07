@@ -1,0 +1,71 @@
+%=======================================================================
+%  Response to the reviewers -- Access-2026-49092, resubmission
+%  Numbers are the manuscript's own macros (../numbers_r1.tex) and section,
+%  table and figure numbers come from the manuscript's .aux (xr-hyper), so
+%  the letter cannot disagree with the manuscript.
+%  BUILD (after the manuscript): pdflatex response_r1 (x2)
+%=======================================================================
+\documentclass[10pt]{article}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xr-hyper}
+\externaldocument[M-]{../main}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\newcommand{\DA}{\ensuremath{\mathcal{D}_{A}}}
+\newcommand{\DB}{\ensuremath{\mathcal{D}_{B}}}
+\newcommand{\DC}{\ensuremath{\mathcal{D}_{C}}}
+\input{../numbers_r1}
+\newcommand{\Sec}[1]{Section~\ref{M-#1}}
+\newcommand{\Tab}[1]{Table~\ref{M-#1}}
+\newcommand{\Fig}[1]{Fig.~\ref{M-#1}}
+\newcommand{\Pg}[1]{p.~\pageref{M-#1}}
+
+\definecolor{rvbg}{HTML}{F2F4F7}
+\definecolor{rvfr}{HTML}{8A9095}
+\newtcolorbox{concern}[1]{colback=rvbg, colframe=rvfr, boxrule=0.4pt, arc=1.5pt,
+  left=5pt, right=5pt, top=3pt, bottom=3pt, fonttitle=\bfseries\small,
+  title={#1}, coltitle=black, colbacktitle=rvbg!70!rvfr!30, before skip=8pt, after skip=4pt}
+\newcommand{\response}{\textbf{Response.}~}
+\newcommand{\action}{\textbf{Action.}~}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Response to the Reviewers}\\[4pt]
+Manuscript Access-2026-49092, resubmission\\[2pt]
+\emph{Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden}\\
+(first submission: \emph{What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN})\\[2pt]
+A.~Ahmad, A.~Ali, E.~Khan, G.~Hossain, A.~Akarma
+\end{center}
+
+Dear Dr.~Masini, dear Reviewers,
+
+thank you for two careful and specific reports. They found one error that changed our results, showed that our title and test promised more than the corpora support, and asked for evidence we had not collected. We have treated every point as a request for evidence where evidence could be obtained, and we ran \emph{new experiments} for most of them. Below, each comment is quoted in a box and followed by our response and the action taken, with its location in the revised manuscript. Section, table, figure, and page numbers refer to the revised manuscript; all changes are highlighted in yellow in the highlighted PDF.
+
+\section*{Summary of the main changes}
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item \textbf{Reframing (R1.1, R2.1).} The paper is now a cross-corpus study of 5G flow detectors, with a separate latency measurement for window-level detectors. The new title, the abstract, the introduction (scope paragraph), Fig.~\ref{M-fig:arch}, and \Sec{sec:criteria} state that only one corpus is O-RAN and that no detector is evaluated on all criteria. Latency is no longer a term of the test.
+\item \textbf{An error in byte accounting, corrected (R1.9).} The reviewer was right that a 2-byte gap is not a link-layer header. The gap is 14 bytes: Argus counts the Ethernet header of every packet. Our ``40 against 42 bytes'' compared a TCP minimum with a UDP minimum. We now remove the header for 5G-NIDD as for the third corpus and re-ran \emph{every} experiment that puts 5G-NIDD in the shared space (\Sec{sec:shared}).
+\item \textbf{The 5G-NIDD finding, confirmed in the raw captures (R2.2, R1.14).} In the UDP-flood session, station~1's capture file contains every one of the \RPcapBSTwoPkts{} packets of station~2's file, with identical timestamps; in the other nine sessions the two files share no packet (\Sec{sec:res:labels}, \Fig{fig:conflict}). This explains the asymmetry, and the network description explains how it is possible. We release corrected labels, added a relabeled arm, and reported the finding to the dataset authors.
+\item \textbf{References with intervals on matched flows (R1.4--R1.6, R2.3).} New in-target references: 20 random splits, leave-one-capture-file-out (every file held out once, both UDP-flood files included, every flow predicted once), and base-station references with repeated training samples, all with intervals, compared with transfer on the same flows (\Tab{tab:transfer}).
+\item \textbf{Statistics for clustered data (R2.4, R1.11).} Corrected intervals with the variance ratio computed from group counts for every comparison and for both terms of the test; a cluster bootstrap was tried and is documented as unreliable on these data; the split composition and category coverage are reported; unadjusted intervals and Holm-adjusted marks are labeled in every table (\Sec{sec:stats}, \Sec{sec:protocols}).
+\item \textbf{A redesigned test (R1.7, R1.8, R2.5).} Both terms use the same intervals and have three outcomes (pass, fail, inconclusive); the alert threshold is fixed on source data, and a threshold searched on the target appears only as an optimistic bound. The bounds are stated as ours, with the false positive rate they imply (\Sec{sec:crit:test}, \Sec{sec:res:alerts}).
+\item \textbf{Adaptation (R1.12, R2.6).} Importance weighting and domain-adversarial training (DANN) join CORAL, and a label-efficient arm adds $k \in \{1,2,4,8\}$ labeled 5G-NIDD capture files (\Sec{sec:res:gap}). Claims are narrowed to the detectors tested.
+\item \textbf{Radio layer (R1.2, R1.3).} The abstract and conclusion say that the radio effect is not significant; a new experiment groups by the 42 documented runs (\Tab{tab:radio}). Radio operating figures were removed.
+\item \textbf{Latency (R1.13)} is one condensed subsection; the flow-level estimate and the sentence implying that flow detectors failed the latency term were removed.
+\item \textbf{Presentation (R1.15, R2.7, R2.8).} Three contributions instead of seven; a shorter abstract with four results; 10 tables instead of 14 and 7 figures instead of 10; a redrawn Fig.~\ref{M-fig:arch}; every sentence revised; split counts in every caption.
+\end{enumerate}
+To keep the paper focused, we removed the calibration and prior-shift analysis, the sequence models, the benign-only novelty detectors, the per-call latency table, and three figures (reliability, radio protocol plot, latency distribution). They remain in the repository.
+
+\input{response_body}
+
+\end{document}

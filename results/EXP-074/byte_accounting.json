@@ -1,0 +1,101 @@
+{
+  "argus_5gnidd": {
+    "icmp": {
+      "n": 29636,
+      "min": 42.0,
+      "median": 98.0
+    },
+    "lldp": {
+      "n": 115,
+      "min": 64.0,
+      "median": 64.0
+    },
+    "sctp": {
+      "n": 4319,
+      "min": 66.0,
+      "median": 100.0
+    },
+    "tcp": {
+      "n": 242420,
+      "min": 54.0,
+      "median": 68.42857142857143
+    },
+    "udp": {
+      "n": 902975,
+      "min": 42.0,
+      "median": 42.0
+    }
+  },
+  "zeek_netslab": {
+    "icmp": {
+      "n": 4116,
+      "min": 28.0,
+      "median": 31.0
+    },
+    "tcp": {
+      "n": 1438535,
+      "min": 40.0,
+      "median": 44.0
+    },
+    "udp": {
+      "n": 279199,
+      "min": 28.0,
+      "median": 28.0
+    },
+    "unknown_transport": {
+      "n": 258,
+      "min": 28.0,
+      "median": 92.0
+    }
+  },
+  "zeek_5gnidd": {
+    "icmp": {
+      "n": 122,
+      "min": 28.0,
+      "median": 81.0
+    },
+    "tcp": {
+      "n": 124922,
+      "min": 40.0,
+      "median": 67.28571428571429
+    },
+    "udp": {
+      "n": 221138,
+      "min": 28.0,
+      "median": 28.0
+    }
+  },
+  "pcap": {
+    "link_types": {
+      "1": 4
+    },
+    "files": [
+      {
+        "file": "BS1_GTP_removed/SYNScan_BS1_nogtp.pcapng",
+        "ipv4_frames": 73621,
+        "header_14": 73492,
+        "share": 0.9982477825620407
+      },
+      {
+        "file": "BS1_GTP_removed/UDPflood_BS1_nogtp.pcapng",
+        "ipv4_frames": 300000,
+        "header_14": 298694,
+        "share": 0.9956466666666667
+      },
+      {
+        "file": "BS2 GTP removed/SYNflood_BS2_nogtp.pcapng",
+        "ipv4_frames": 93308,
+        "header_14": 76916,
+        "share": 0.8243237450165045
+      },
+      {
+        "file": "BS2 GTP removed/Goldeneye_BS2_nogtp.pcapng",
+        "ipv4_frames": 300000,
+        "header_14": 275641,
+        "share": 0.9188033333333333
+      }
+    ],
+    "frames": 766929,
+    "share_header_14": 0.9449936043623334
+  }
+}

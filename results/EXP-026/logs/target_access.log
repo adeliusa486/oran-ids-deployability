@@ -61,3 +61,47 @@
 2026-09-26T02:58:43	EXP-063 build D_B from Zeek conn logs (labels from fields_preserved)
 2026-09-26T02:59:04	EXP-063 build D_B from Zeek conn logs (labels from fields_preserved)
 2026-09-26T02:59:29	load_target_d_b_zeek reason=EXP-063 a_to_bz features=shared
+2026-11-07T12:56:06	load_target_d_b(nrows=None) reason=R1.9 byte check (corrected)
+2026-11-07T12:56:31	load_target_d_b(nrows=None) reason=R1.9 byte check (uncorrected)
+2026-11-07T12:56:55	load_target_d_b_zeek reason=R1.9 byte check (zeek)
+2026-11-07T13:00:59	load_target_d_b(nrows=None) reason=EXP-SMOKE a_to_b_bz_c__shared
+2026-11-07T13:01:33	load_target_d_b_zeek reason=EXP-SMOKE a_to_b_bz_c__shared
+2026-11-07T13:01:35	load_target_d_c(background=True) reason=EXP-SMOKE a_to_b_bz_c__shared
+2026-11-07T13:02:39	load_target_d_b(nrows=None) reason=EXP-067 b_to_a_c__shared (as SOURCE)
+2026-11-07T13:02:55	load_target_d_b(nrows=None) reason=EXP-064 a_to_b_bz_c__shared
+2026-11-07T13:02:56	load_target_d_b(nrows=None) reason=EXP-065 a_to_b_bz_c__robust
+2026-11-07T13:03:27	load_target_d_b_zeek reason=EXP-064 a_to_b_bz_c__shared
+2026-11-07T13:03:28	load_target_d_b_zeek reason=EXP-065 a_to_b_bz_c__robust
+2026-11-07T13:03:29	load_target_d_c(background=True) reason=EXP-064 a_to_b_bz_c__shared
+2026-11-07T13:03:29	load_target_d_c(background=True) reason=EXP-065 a_to_b_bz_c__robust
+2026-11-07T13:03:33	load_target_d_c(background=True) reason=EXP-067 b_to_a_c__shared
+2026-11-07T13:09:50	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T13:20:16	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T13:20:17	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T13:20:18	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T13:27:26	load_target_d_b(nrows=None) reason=EXP-067 b_to_a_c__shared__seeds111-120 (as SOURCE)
+2026-11-07T13:28:04	load_target_d_b(nrows=None) reason=EXP-064 a_to_b_bz_c__shared__seeds111-115
+2026-11-07T13:28:04	load_target_d_b(nrows=None) reason=EXP-064 a_to_b_bz_c__shared__seeds116-120
+2026-11-07T13:28:05	load_target_d_b(nrows=None) reason=EXP-065 a_to_b_bz_c__robust__seeds111-120
+2026-11-07T13:29:20	load_target_d_b_zeek reason=EXP-064 a_to_b_bz_c__shared__seeds116-120
+2026-11-07T13:29:20	load_target_d_b_zeek reason=EXP-064 a_to_b_bz_c__shared__seeds111-115
+2026-11-07T13:29:21	load_target_d_b_zeek reason=EXP-065 a_to_b_bz_c__robust__seeds111-120
+2026-11-07T13:29:25	load_target_d_c(background=True) reason=EXP-064 a_to_b_bz_c__shared__seeds116-120
+2026-11-07T13:29:25	load_target_d_c(background=True) reason=EXP-064 a_to_b_bz_c__shared__seeds111-115
+2026-11-07T13:29:26	load_target_d_c(background=True) reason=EXP-065 a_to_b_bz_c__robust__seeds111-120
+2026-11-07T13:29:35	load_target_d_c(background=True) reason=EXP-067 b_to_a_c__shared__seeds111-120
+2026-11-07T13:40:39	load_target_d_b(nrows=None) reason=EXP-045/074 domain classifier and W1, unlabelled features only, no detector trained
+2026-11-07T14:02:51	load_target_d_b_zeek reason=EXP-045/074 domain classifier and W1, unlabelled features only, no detector trained
+2026-11-07T14:18:42	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T14:21:34	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T14:23:39	load_target_d_b(nrows=None) reason=EXP-069 a_to_b__shared__iw
+2026-11-07T14:25:22	load_target_d_b(nrows=None) reason=EXP-069 a_to_b__shared__dann
+2026-11-07T14:26:11	load_target_d_b(nrows=None) reason=EXP-066 a_to_b__shared__coral
+2026-11-07T14:31:57	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T14:34:57	load_target_d_b(nrows=None) reason=EXP-069 label-efficient arm (labelled target files)
+2026-11-07T14:40:48	load_target_d_b(nrows=None) reason=EXP-069 label-efficient arm (labelled target files)
+2026-11-07T14:42:25	load_target_d_b(nrows=None) reason=EXP-068 in-target references (5G-NIDD as SOURCE and target)
+2026-11-07T14:48:27	load_target_d_b(nrows=None) reason=EXP-071 a_to_b__shared__n150000
+2026-11-07T14:49:17	load_target_d_b(nrows=None) reason=EXP-071 a_to_b__shared__n600000
+2026-11-07T14:50:04	load_target_d_b(nrows=None) reason=EXP-071 a_to_b__shared__n1640182
+2026-11-07T14:53:55	load_target_d_b(nrows=None) reason=EXP-071 a_to_b__shared__n300000

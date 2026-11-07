@@ -1,0 +1,15 @@
+{
+  "rows_corrected": 281529,
+  "attack_flows_in_file_15": 281529,
+  "benign_total": 477737,
+  "share_of_benign_class": 0.5892970400031816,
+  "corrected_to": {
+    "Label": "Malicious",
+    "AttackType": "UDPFlood",
+    "AttackTool": "Hping3"
+  },
+  "combined_csv_sha256": "fa36f80859585f474504ca69eb951a079b35145537976c86b00aae3aab46ee59",
+  "output": "results\\EXP-072\\corrected_labels\\5G-NIDD_Combined_corrected_labels.csv.gz",
+  "output_sha256": "71e704d0fbcb99048912a366efb963199f04be8a2e4c46001f4c8fc320a9e7ba",
+  "how_to_apply": "df = pd.read_csv('Combined.csv'); c = pd.read_csv(this_file); df.loc[c.row_position, ['Label','Attack Type','Attack Tool']] = c[['Label_corrected','AttackType_corrected','AttackTool_corrected']].values"
+}

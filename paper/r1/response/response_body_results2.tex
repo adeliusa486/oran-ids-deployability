@@ -1,0 +1,10 @@
+\begin{concern}{R1.12 The claims reach beyond the detectors tested}
+All six models use fixed hyperparameters, and CORAL is the only adaptation. That is defensible for a measurement study, but it does not support conclusions about O-RAN detection in general, as the title and the reporting requirements in Section X imply. Add a detector built for distribution shift or narrow the claims.
+\end{concern}
+\response We did both.
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+\item \emph{Methods built for shift.} Next to CORAL (feature alignment) we added importance weighting by a domain classifier (density-ratio reweighting) and domain-adversarial training (DANN, representation learning), one method per family, plus a label-efficient arm (R2.6). None of the three methods without target labels beats the plain tree-based models. Importance weighting changes little, because the domain classifier separates the corpora so well that the weights concentrate on \RIwESSmin\% to \RIwESSmax\% of the source flows in effective sample size. CORAL helps only the MLP (\RArmPlainMLPClean{} to \RArmCoralMLPClean) and raises the false positive rate of the tree-based models to \RArmCoralTreeFPRmin{} to \RArmCoralTreeFPRmax. DANN reaches \RArmDannDANNClean. One labeled target capture does more than any of them (\RLeSrcOneNlMin{} to \RLeSrcOneNlMax{} for the nonlinear models).
+\item \emph{Narrower claims.} The title now names 5G flow detectors. The detectors section, the limitations, and the conclusion state that our conclusions concern the untuned shallow models and the three adaptation methods we tested, not O-RAN detection in general, and the reporting recommendations are addressed to studies of 5G flow detectors.
+\end{itemize}
+
+\action \Sec{sec:detectors}, \Sec{sec:res:gap}, \Tab{tab:arms}, \Fig{fig:labeleff}, \Sec{sec:limitations}, \Sec{sec:conclusion}.

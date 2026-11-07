@@ -1,0 +1,53 @@
+file5_bs1: 1,214,969 packets, 733,760 to 10.41.150.68 (115.6 s)
+file15_bs2: 656,389 packets, 421,471 to 10.41.150.68 (67.7 s)
+{
+ "role": "station-2 attacker",
+ "file5_bs1": {
+  "packets": 421471,
+  "first": 1661519028.9972706,
+  "last": 1661519612.445958,
+  "ttl_values": [
+   63
+  ],
+  "ip_len_mode": 28
+ },
+ "file15_bs2": {
+  "packets": 421471,
+  "first": 1661519028.9972706,
+  "last": 1661519612.445958,
+  "ttl_values": [
+   63
+  ],
+  "ip_len_mode": 28
+ },
+ "bs1_packets_found_in_bs2": {
+  "n": 421471,
+  "matched": 421471,
+  "share": 1.0,
+  "offset_median_s": 0.0,
+  "offset_iqr_s": 0.0,
+  "offset_p01_s": 0.0,
+  "offset_p99_s": 0.0
+ }
+}
+{
+ "role": "station-1 attacker",
+ "file5_bs1": {
+  "packets": 312289,
+  "first": 1661518698.7315218,
+  "last": 1661519323.1326911,
+  "ttl_values": [
+   63
+  ],
+  "ip_len_mode": 28
+ },
+ "file15_bs2": {
+  "packets": 0,
+  "first": null,
+  "last": null,
+  "ttl_values": [],
+  "ip_len_mode": null
+ }
+}
+wrote E:\Work\New ORAN paper\oran-ids-deployability\results\EXP-072
+EXIT 0

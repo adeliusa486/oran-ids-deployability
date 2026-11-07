@@ -1,0 +1,216 @@
+%=======================================================================
+%  main.tex -- REVISION 1 (resubmission of Access-2026-49092)
+%  "Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults,
+%   Transfer, and Alert Burden"
+%
+%  BUILD: pdflatex main (x3). The bibliography is inlined (no BibTeX).
+%
+%  Every number in this document is measured. Prose numbers are macros from
+%  numbers_r1.tex and tables are files in tables/, both written by
+%  analysis/make_assets_r1.py from results/EXP-064 ... EXP-075 and the
+%  unchanged experiments of the first submission. Nothing numeric is typed by
+%  hand. Regenerate with
+%     python analysis/consolidate_transfer.py <EXP> <tag>   (per experiment)
+%     python analysis/revision_stats_r1.py
+%     python analysis/make_assets_r1.py
+%=======================================================================
+\input{preamble_r1}
+\input{numbers_r1}
+\input{figstyle}
+
+\newcommand{\authorphoto}[1]{\IfFileExists{#1}{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{#1}}{\rule{0pt}{1.25in}}}
+
+\begin{document}
+
+\history{}
+\doi{}
+
+\title{Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden}
+\author{\uppercase{Adeel Ahmad}\authorrefmark{1}, \uppercase{Arshad Ali}\authorrefmark{1}, \uppercase{Eraj Khan}\authorrefmark{2}, \uppercase{Gahangir Hossain}\authorrefmark{3}, AND \uppercase{Ali Akarma}\authorrefmark{1}}
+\address[1]{Faculty of Computer and Information Systems, Islamic University of Madinah, Al Madinah Al Munawarah, Saudi Arabia}
+\address[2]{Faculty of Computer Information Science, Higher Colleges Of Technology, Al Mizn- Baniyas North- Abu Dhabi, United Arab Emirates (e-mail: ekhan@hct.ac.ae)}
+\address[3]{Anuradha and Vikas Sinha Department of Data Science, University of North Texas, Denton, TX, USA, 76203-5017}
+
+\markboth
+{A. Ahmad et al.: Cross-Corpus Evaluation of 5G Flow Intrusion Detectors}
+{A. Ahmad et al.: Cross-Corpus Evaluation of 5G Flow Intrusion Detectors}
+
+\corresp{Corresponding author: Eraj Khan (e-mail: ekhan@hct.ac.ae).}
+
+\begin{abstract}
+\input{abstract_r1}
+\end{abstract}
+
+\begin{keywords}
+Dataset shift, evaluation methodology, false positive rate, intrusion detection, label quality, network flows, O-RAN, 5G.
+\end{keywords}
+
+\titlepgskip=-21pt
+
+\maketitle
+
+%=======================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Open Radio Access Network (O-RAN) opens the base station to third-party control applications that run in a RAN Intelligent Controller (RIC)~\cite{polese2023understanding,abdalla2022toward,niknam2022intelligent}. A detection application (xApp) in the near-real-time RIC could look for attacks close to where they enter the network~\cite{bonati2021intelligence,polese2023understanding}, for example floods from compromised devices~\cite{antonakakis2017mirai,kolias2017ddos}, and detectors in or beside the O-RAN control loop have been built, each in its own testbed~\cite{wen2024spector,scalingi2024detran}. Most machine-learning detectors for 5G, however, are trained and tested on flow records from one testbed.
+
+Their reported scores are often very high. On 5G-NIDD, one of our corpora, the dataset authors report binary accuracies of 99.85\% to 99.95\% for four of five classifiers on a random split~\cite{samarakoon2022niddarxiv}, and later work reports a weighted $F_1$ of up to 99.95\%~\cite{ilias2024moe5g}. A random split measures how well a detector separates the records of one corpus. Deployment depends on other properties: whether the detector works on traffic from a network that contributed no training data, where intrusion detectors are known to transfer poorly~\cite{layeghy2022generalisability,layeghy2023benchmarking}, and how many false alerts it raises at production flow rates and a realistic attack base rate~\cite{axelsson2000baserate,sommer2010outside}. We ask what a held-out score on one corpus predicts about these two properties, and, unable to observe a deployment, study generalization through transfer to independently collected corpora.
+
+\emph{Scope.} We use three public corpora: NetsLab-5GORAN-IDD, recorded on an O-RAN testbed with flow records and radio telemetry~\cite{abedzadeh2025netslab}; 5G-NIDD, recorded on a 5G test network~\cite{samarakoon2022nidd}; and the flow records of a 5G core testbed~\cite{nugraha2025fivegdatasets}. Only the first is an O-RAN corpus, and only its flow records have counterparts in the other two. Our cross-corpus results therefore concern flow-level detectors on 5G traffic. The radio-telemetry detectors, the O-RAN-specific part, are evaluated within NetsLab-5GORAN-IDD only, and their decision latency is measured separately, in a near-real-time RIC loop with an emulated E2 node. No single detector is evaluated on generalization, alert burden, and latency together, and we make no claim that any detector is deployable in O-RAN.
+
+Transfer between NetsLab-5GORAN-IDD and 5G-NIDD has been measured before~\cite{abraheem2026bidirectional}, and so has inference time inside a near-real-time RIC~\cite{obiuwevwi2026realtime}. We offer neither a new detector nor the finding that transfer hurts. Our contributions are:
+\begin{itemize}
+\item An audit of the 5G-NIDD labels (Section~\ref{sec:res:labels}). In one capture session, the file of one base station contains every packet recorded at the other, and the other station's flood is labeled benign there; these copies are \RCopiesPct\% of the benign class. We show how a published 99.9\% accuracy depends on two record-position fields, and release corrected labels.
+\item A cross-corpus measurement of six flow detectors with matched references (Sections~\ref{sec:res:transfer} and~\ref{sec:res:gap}). After correcting the labels and a byte-accounting difference between flow exporters, we measure how far transfer falls below references trained on the target and tested on the same flows, what the gap consists of, and how much three adaptation methods and a few labeled target captures recover.
+\item Alert burden at a declared base rate, and a two-term deployability test whose terms treat uncertainty the same way and can be inconclusive (Sections~\ref{sec:criteria} and~\ref{sec:res:alerts}).
+\end{itemize}
+We also report how the radio-layer score depends on the split protocol, a result that is not statistically significant (Section~\ref{sec:res:radio}), and the latency of the RIC loop for window-level detectors (Section~\ref{sec:res:latency}).
+
+%=======================================================================
+\section{Background and Related Work}
+\label{sec:related}
+
+\subsection{Detection in the Near-Real-Time RIC}
+
+An xApp talks to E2 nodes through E2 service models (E2SM): E2SM-KPM delivers periodic key performance measurements (KPM), and E2SM-RC exposes control actions~\cite{polese2023understanding}. Platforms such as OpenRAN Gym~\cite{bonati2023openrangym}, SCOPE~\cite{bonati2021scope}, ColO-RAN~\cite{polese2023coloran}, and FlexRIC~\cite{schmidt2021flexric}, with open radio stacks~\cite{nikaein2014oai,gomez2016srslte}, made experimental xApps practical. E2 carries aggregated measurements, not packets, so a flow-level detector needs a data path of its own (Fig.~\ref{fig:arch}). The RIC and its xApps are also a new attack surface~\cite{etsi_wg11_threat,liyanage2023openran,mimran2022security}, and security mechanisms for the O-RAN interfaces have been built and evaluated~\cite{groen2025implementing}. On the detection side, 5G-Spector offers layer-3 attack detection as an O-RAN service~\cite{wen2024spector}, Det-RAN detects attacks from cross-layer data in real time~\cite{scalingi2024detran}, and Fard et al.\ fuse radio telemetry and flow records of NetsLab-5GORAN-IDD~\cite{fard2026crosslayer}. Each is evaluated in the setting it was built for; our question is what such an evaluation predicts about another network.
+
+\subsection{Intrusion Detection Corpora and Their Faults}
+
+Public intrusion corpora are plentiful for IoT traffic~\cite{koroniotis2019botiot,moustafa2021toniot,ferrag2022edgeiiot,neto2023ciciot,sharafaldin2018cicids} and scarce for cellular networks~\cite{samarakoon2022nidd,siriwardhana2025descriptor,abedzadeh2025netslab,nugraha2025fivegdatasets}. Standardized NetFlow feature sets made cross-corpus experiments easier~\cite{sarhan2021netflow,sarhan2022standard}. The labels and flow records of a corpus can themselves be wrong: Engelen et al.\ documented labeling and flow-construction faults in CIC-IDS2017~\cite{engelen2021troubleshooting}, and Flood et al.\ found design flaws across NIDS benchmarks that let a classifier score well without learning the attack~\cite{flood2024smells}.
+
+\subsection{Evaluation Practice, Dataset Shift, and Adaptation}
+
+Reported results tend to overstate what a detector can do, for known reasons: closed-world evaluation~\cite{sommer2010outside}, neglect of the base rate~\cite{axelsson2000baserate}, sampling bias and data leakage~\cite{arp2022dosdonts,kapoor2023leakage}, and temporal or spatial bias in the split~\cite{pendlebury2019tesseract}. The gap between reported and operational effectiveness has been traced across security domains~\cite{apruzzese2023role} and in industrial intrusion detection~\cite{kus2022falsesense}, and cross-dataset generalization has repeatedly proved poor~\cite{dhooge2020interdataset,layeghy2022generalisability,layeghy2023benchmarking}. Closest to our work, Abraheem and Edhirig transfer XGBoost between NetsLab-5GORAN-IDD and 5G-NIDD with 15 harmonized features and report zero-shot balanced accuracies per attack family of 0.50 to 0.56 in our direction~\cite{abraheem2026bidirectional}. We add input-blind baselines, matched in-target references, an audit of the target labels and byte accounting, adaptation, and the operational criterion.
+
+Three families of methods address a shift between a labeled source and an unlabeled target: reweighting source samples by an estimate of the density ratio~\cite{shimodaira2000improving,bickel2009discriminative}, aligning feature statistics, such as the covariance alignment of CORAL~\cite{sun2016coral}, and learning a representation in which the two domains cannot be told apart, as domain-adversarial training does~\cite{ganin2016dann}. We test one method of each family. Classifiers compared under repeated resampling are tested as Nadeau and Bengio recommend~\cite{nadeau2003inference}.
+
+%=======================================================================
+\section{Evaluation Criteria}
+\label{sec:criteria}
+
+Fig.~\ref{fig:arch} shows the setting: a detection xApp in the near-real-time RIC, a radio-telemetry lane fed by E2SM-KPM, and a flow lane fed by a user-plane exporter that E2 does not provide. The adversary controls some user devices and uses them for flooding, scanning, brute-force login, web attacks, or, in one corpus, an attack on the control plane of the core network, the attack categories in our corpora. It does not control the RIC, the E2 interface, or the xApp. The figure also marks which criterion we measured on which lane.
+
+\begin{figure*}[t]
+\centering
+\resizebox{0.97\textwidth}{!}{\input{fig1_architecture_r1}}
+\caption{Reference O-RAN deployment, the two detection lanes, and what we measured on each. Lane A: window features from E2SM-KPM reports. Lane B: flow records from a user-plane exporter; O-RAN defines no path that carries them to an xApp, so the dashed arrow is an assumption. Generalization across corpora (01) and alert burden (02) are measured for flow detectors (lane B) on three 5G corpora; decision latency (03) is measured for window-level detectors (lane A), from indication to control acknowledgment, through FlexRIC with an emulated E2 node on one host. No detector was evaluated on all three. The mitigation actions on the right are not evaluated.}
+\label{fig:arch}
+\end{figure*}
+
+\subsection{Generalization Across Corpora}
+
+Let \DA{} and \DB{} be two independently collected corpora in a shared feature space. We measure a model $f_{\theta}$ trained on \DA{} by how far its score on \DB{} falls below its held-out score on \DA{}. The corpora differ in attack prevalence (Table~\ref{tab:corpora}), and macro-$F_1$ changes with prevalence even for a classifier that ignores its input, so we use balanced accuracy (BA), the mean of the true positive and true negative rates, which prevalence does not affect:
+\begin{equation}
+\Delta_{\mathrm{BA}} = \mathrm{BA}\!\left(f_{\theta};\mathcal{D}_{A}^{\mathrm{test}}\right) - \mathrm{BA}\!\left(f_{\theta};\mathcal{D}_{B}\right).
+\label{eq:gap}
+\end{equation}
+Because the source score is itself optimistic, we also compare transfer with references trained on \DB{} and tested on the same \DB{} flows (Section~\ref{sec:protocols}).
+
+\subsection{Alert Burden Under a Declared Base Rate}
+
+Let $\lambda_{b}$ be the benign flow arrival rate. For a decision threshold $\tau$ with false positive rate $\mathrm{FPR}(\tau)$ and recall $R(\tau)$, false alerts arrive at $A(\tau) = \lambda_{b}\,\mathrm{FPR}(\tau)$, and at an operational attack prevalence $\pi$ the fraction of alerts that are real is
+\begin{equation}
+\mathrm{PPV}(\tau) = \frac{\pi R(\tau)}{\pi R(\tau) + (1-\pi)\,\mathrm{FPR}(\tau)}.
+\label{eq:ppv}
+\end{equation}
+We call this the operational precision; the corpus precision is the precision at the corpus's own prevalence. The corpora give neither $\pi$ nor $\lambda_{b}$, so we declare both (Section~\ref{sec:setup}); $A$ grows linearly with $\lambda_{b}$, so alert counts at another rate follow from the false positive rates we report.
+
+\subsection{A Two-Term Deployability Test}
+\label{sec:crit:test}
+
+We combine the two criteria into a test for flow detectors. Each term has three outcomes, and both use the same corrected 95\% intervals over the splits (Section~\ref{sec:stats}):
+\begin{itemize}
+\item \emph{Generalization} passes if the upper bound of $\Delta_{\mathrm{BA}}$ is at most $\delta$, fails if its lower bound exceeds $\delta$, and is inconclusive otherwise.
+\item \emph{Alert burden} is evaluated at a threshold fixed without target labels: for each split, the highest threshold that keeps recall on the held-out source data at $r_{\min}$ or more. At that threshold on the target, it passes if the intervals of recall, false alerts, and operational precision all lie on the passing side of $r_{\min}$, $A_{\max}$, and $\rho$; it fails if any interval lies entirely on the failing side; and it is inconclusive otherwise.
+\end{itemize}
+A detector passes if both terms pass and fails if either term fails. A threshold searched on the target cannot be chosen in a deployment; we report the best such threshold only as an optimistic bound. No O-RAN specification defines these bounds, so we chose them ourselves: $\delta = 0.10$, $r_{\min}=0.5$, $\rho = 0.1$ at $\pi = 0.002$, and $A_{\max} = 200$ false alerts per hour at $\lambda_b = 240{,}000$ benign flows per hour. The last bound is a false positive rate of at most \RFPRmax. The test is a reporting instrument, not a requirement; Section~\ref{sec:res:alerts} shows how the verdict responds when the bounds change.
+
+\subsection{Latency, Reported Separately}
+
+The decision latency of an xApp decomposes as
+\begin{equation}
+L = t_{\mathrm{ind}} + t_{\mathrm{feat}} + t_{\mathrm{inf}} + t_{\mathrm{act}} + t_{q},
+\label{eq:latency}
+\end{equation}
+the delivery of the indication to the xApp, feature construction, inference, the control action up to its acknowledgment, and queueing inside the xApp. The O-RAN E2 specification allows control loops of 10\,ms to 1\,s~\cite{etsi_e2gap}. We measured all five terms for window-level detectors only, so latency is not part of the test; Section~\ref{sec:res:latency} reports it as a separate measurement.
+
+%=======================================================================
+\section{Data and Methods}
+\label{sec:method}
+
+\subsection{Corpora}
+\label{sec:corpora}
+
+\DA{} is NetsLab-5GORAN-IDD~\cite{abedzadeh2025netslab}, recorded on a physical OpenAirInterface O-RAN testbed, with benign traffic and five attack categories: denial of service (DoS), distributed denial of service (DDoS), probing, brute force, and web attacks. Its flow records were exported by Zeek at the central unit, and its radio telemetry was sampled at 1\,Hz at the distributed unit; the two layers cannot be joined record by record from the published files. For the radio layer we cut the records of each UE into consecutive, non-overlapping windows of 16 records and summarize each window by the mean and standard deviation of 16 KPM fields. Gaps of more than five minutes in the timestamps split the radio layer into \NSessions{} capture sessions; a gap of \SessRunGapMin{} to \SessRunGapMax{}\,s recovers the \SessRunN{} experiment runs described by Fard et al.~\cite{fard2026crosslayer}, and every session is a union of whole runs. All records of a session or run carry the same category label.
+
+\DB{} is 5G-NIDD~\cite{samarakoon2022nidd,siriwardhana2025descriptor}, recorded on a 5G test network with two base stations and exported by Argus, with two attack categories (DoS and probing). Its combined file has no addresses, ports, or timestamps, but it keeps the Argus record counter \texttt{Seq} and the file offset \texttt{Offset}, which restarts at every file boundary, so we recover the 20 capture files, ten per base station (files 1 to 10 from station~1, 11 to 20 from station~2). Both stations went through the same sequence of capture sessions: nine files each hold benign traffic and one attack type, and the tenth carries no attack label. A second release keeps every Argus field, addresses included, and the raw captures are public too.
+
+\DC{}, a second target at a third site, is the flow records of a 5G core testbed (Open5GS in Docker)~\cite{nugraha2025fivegdatasets}: three files, each with one attack (a SYN flood, an ICMP flood, and a PFCP session-deletion attack), \ThNflows{} flows, \ThNattack{} of them attacks. Its benign flows mix user traffic with core-network signaling. Table~\ref{tab:corpora} summarizes the corpora.
+
+\begin{table}[t]
+\caption{Corpora. \DA{} supplies training and in-distribution testing on both layers; \DB{} and \DC{} are transfer targets. \DB{} also has in-target references and is the source for the reverse direction.}
+\label{tab:corpora}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{1.9pt}
+\input{tables/corpora}
+\end{table}
+
+\subsection{Byte Accounting and the Shared Feature Space}
+\label{sec:shared}
+
+Zeek and Argus share no column names, so we define the flow feature space by meaning (Table~\ref{tab:features}): 15 concepts in 18 columns, namely seven base quantities (duration and packet and byte counts), a one-hot protocol with a fixed list of levels, and seven derived quantities computed the same way for every corpus.
+
+The exporters count bytes differently, and the difference must be removed before any comparison. Zeek's \texttt{src\_ip\_bytes} counts IP packets, header included. Argus counts the Ethernet frame. In 5G-NIDD the smallest bytes per packet are \RArgMinTCP{} for TCP and \RArgMinUDP{} for UDP and ICMP, where Zeek, on \DA{} and on our own re-extraction of the 5G-NIDD captures, counts \RZkMinTCP{} and \RZkMinUDP{}. The captures are Ethernet frames, and in \RPcapEthFiles{} captures we checked, the frame length exceeds the IP length by exactly 14 bytes for \RPcapEthPct\% of the frames (most of the rest carry a VLAN tag), so Argus adds the 14-byte Ethernet header to every packet. NFStream, the exporter of \DC{}, adds the same header and, for tunneled packets, 44 bytes of GTP-U encapsulation. We subtract these bytes per packet and direction for \DB{} and \DC{}, so that every byte column holds IP-layer bytes, as Zeek's do. The correction matters most for small packets: a UDP flood packet counts 28 bytes after it and 42 before. All corpora get the same 1\,ms floor on duration and $\log(1+x)$ transform for unbounded quantities; scaling is fitted on source training data alone, and no address, port, or timestamp is a feature. Projecting \DA{} onto the shared columns costs \HarmBAmin{} to \HarmBAmax{} of in-distribution balanced accuracy against all \NFullFeat{} non-port Zeek features.
+
+Before computing any result with it, we fixed a subset of nine columns that we expected to depend less on the exporter, which we call exporter-robust: the protocol, the three mean packet sizes, and the two direction ratios. Where an exporter ends a flow moves duration, rates, and totals; per-packet means and direction ratios move less but are not invariant, since splitting a flow changes them.
+
+\begin{table}[t]
+\caption{Shared flow feature space. Byte columns hold IP-layer bytes: for 5G-NIDD (Argus) and the 5G core testbed (NFStream), 14 bytes of Ethernet header per packet are removed, and for tunneled NFStream packets also 44 bytes of GTP-U encapsulation. The exporter-robust subset is the protocol one-hot, the three mean packet sizes, and the two direction ratios.}
+\label{tab:features}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/features}
+\end{table}
+
+\subsection{Detectors and Adaptation}
+\label{sec:detectors}
+
+Every protocol runs six supervised architectures: logistic regression (LR), a decision tree (DT) of depth 12, a random forest (RF)~\cite{breiman2001random}, XGBoost (XGB)~\cite{chen2016xgboost}, histogram gradient boosting (HGB) from scikit-learn~\cite{pedregosa2011scikit}, and a multilayer perceptron (MLP). Two input-blind baselines, a majority-class predictor and a stratified sampler of the training prior, can change between protocols only through class composition. All supervised models use balanced class weights (sample weights for the MLP, \texttt{scale\_pos\_weight} for XGB). We fixed the hyperparameters in advance, because tuning on held-out source data would reward source-specific structure, which the transfer experiments measure, and tuning on the target would leak target information into training: LR with \texttt{max\_iter} 2000 on standardized inputs; RF with 200 trees and minimum leaf size 2; XGB with 300 trees of depth 6, $\eta=0.1$, subsample 0.8, and the \texttt{hist} method; HGB with 300 iterations of depth 6 and $\eta=0.1$; and an MLP with hidden layers of 128 and 64 units, trained with Adam and early stopping (patience 10) on standardized inputs. These are untuned shallow models; our conclusions concern them, not O-RAN detection in general.
+
+Three adaptation methods, one per family of Section~\ref{sec:related}, read unlabeled target features:
+\begin{itemize}
+\item \emph{Importance weighting} (IW)~\cite{shimodaira2000improving,bickel2009discriminative}: a logistic-regression domain classifier, trained on the source training flows against an equal number of target flows, estimates the density ratio, whose clipped (1st to 99th percentile) and normalized values weight the source flows of each of the six architectures.
+\item \emph{CORAL}~\cite{sun2016coral}: the source flows are re-colored to the covariance of the target (per-domain $z$-scores, identity-regularized covariances) before the six architectures are trained.
+\item \emph{Domain-adversarial training} (DANN)~\cite{ganin2016dann}: a network learns features from which a label head classifies source flows while a domain head, whose gradient is reversed, cannot tell source from target (layers of 64 and 32 units, five passes over the source data, the schedule of Ganin et al.\ for the reversal weight, balanced class weights).
+\end{itemize}
+To ask how much labeled target data is needed, a label-efficient arm adds $k \in \{1, 2, 4, 8\}$ labeled 5G-NIDD capture files to training, \RLeDraws{} random draws per $k$, either as up to \RLeNtgt{} flows next to the \DA{} training data or alone (up to 240,000 flows), and tests on the capture files not drawn.
+
+\subsection{Evaluation Protocols and References}
+\label{sec:protocols}
+
+\emph{Source splits.} On the flow layer the group key is the source address (\NSrcGroups{} groups). For each of 20 split seeds we draw a seeded sample of \NSub{} flows from \DA{} and hold out whole source addresses until at least 20\% of the flows are held out, keeping the attack prevalence of the held-out part close to the overall one. Because a few attacker addresses carry most of the flows (\RCovAddrNinetyMin{} to \RCovAddrNinetyMax{} addresses carry 90\% of each attack category), the held-out part contains \RCovTestGroupsMin{} to \RCovTestGroupsMax{} addresses and \RCovTestFlowsMin\% to \RCovTestFlowsMax\% of the flows. Every attack category appears in training in all 20 splits, with at least \RCovMinTrainShare\% of its flows. Of the \NSrcGroups{} addresses, \RCovAttackers{} send attack flows; the repository lists the attacker addresses per category and the coverage of every split. We test transfer on every flow of each target. The sample size of \NSub{} flows was fixed before the first run, for runtime: the MLP takes several minutes per split; a check with \RSzNlist{} source flows (\RSzSplits{} splits, five architectures) changed clean target balanced accuracy by at most \RSzMaxChangeClean{}, in no consistent direction (Section~\ref{sec:res:gap}). On the radio layer, three protocols each hold out about 20\% of the windows: a random split, a group-disjoint split, and a category-stratified group-disjoint split that keeps groups of every attack category on both sides, with sessions or runs as the group.
+
+\emph{Label views of \DB{}.} Section~\ref{sec:res:labels} shows that \RCopies{} benign-labeled flows of \DB{} are copies of attack traffic. We evaluate on all flows with the published labels, on the flows without the copies (``clean''), and with the copies relabeled as attack (``relabeled''), which keeps the traffic a deployed detector would see.
+
+\emph{In-target references.} To separate the cost of transfer from the difficulty of \DB{}, we train the same architectures on \DB{} and test them on \DB{}, with the copies removed from training (clean) or relabeled as attack (relabeled), always on 240,000 training flows, the size of the transfer training sets. A random split of a \NSub-flow sample (20 seeds) is the optimistic reference. Leave-one-capture-file-out holds out each of the 20 files once, so both UDP-flood files are held out, and its pooled predictions cover every flow of \DB{} exactly once, which makes it comparable with transfer flow for flow. Training on one base station and testing on the other (ten training samples per direction) is the strictest reference. The reverse direction trains on \DB{}, split by capture file, and tests on \DA{} and \DC{}.
+
+Apart from the references, the adaptation methods, the label-efficient arm, and the target-searched thresholds reported as bounds, no transform, threshold, or model choice touches a target, and every access to it is logged.
+
+\subsection{Statistical Analysis}
+\label{sec:stats}
+
+We estimate uncertainty over 20 splits. The splits resample one population of source addresses or radio sessions, so their training and test sets overlap, and a paired $t$-test over split means understates the variance. Our intervals are therefore Nadeau--Bengio corrected~\cite{nadeau2003inference}: the variance over $J$ splits is scaled by $1/J + n_{\mathrm{test}}/n_{\mathrm{train}}$. Because samples within an address or session are correlated, we compute this ratio from groups, not from flows or windows, as the total of held-out groups over the total of training groups across the 20 splits; a mean of per-split ratios would be dominated by the splits that hold out \RCovTestGroupsMax{} addresses. The ratio is \RNbRatioGroups{} for the flow splits (\RNbRatioFlows{} in flows), and \RRadRatioSess{} for both radio groupings. The target is fixed, so an interval covers the variation from resampling the source, not that across capture files or target corpora. We also tried a cluster bootstrap~\cite{field2007bootstrapping} over the capture files of \DB{}, but with 20 purpose-built files of very different content, one of which holds most benign errors, its distribution of balanced accuracy and false positive rate was strongly shifted, and resampling source addresses inside a split often left a single class, because some splits hold out only two to nine addresses; we report it only in the repository. Both terms of the deployability test use the same corrected intervals: the generalization term on the per-split $\Delta_{\mathrm{BA}}$, the alert term on the per-split recall and false positive rate at each split's threshold, from which operational precision and false alerts follow. Holm correction~\cite{holm1979simple} is applied within each family of one metric and one comparison across the six architectures; bracketed intervals in the tables are unadjusted, and significance marks are Holm-adjusted. Operating points come from confusion counts pooled over splits, because a mean of per-split precision rewards splits without a false positive.
+
+\subsection{Experimental Setup}
+\label{sec:setup}
+
+All measurements ran on one workstation (13th Gen Intel Core i9-13900H, 14 cores, 20 threads, 47.6\,GB of memory, Windows 11 Pro) with Python 3.11.9, scikit-learn 1.8.0, XGBoost 3.2.0, NumPy 2.3.5, and ONNX Runtime 1.30.0; the full package list ships with the results. We declare an attack prevalence of $\pi = 0.002$ and a benign rate of $\lambda_{b} = 240{,}000$ flows per hour. Neither comes from an operator; this rate of about 67 flows per second is below the several hundred per second that Jin et al.\ extrapolate from measured radio-bearer arrivals at a heavily loaded base station of a large LTE network~\cite{jin2013softcell}. For the latency loop we built FlexRIC~\cite{schmidt2021flexric} v2.0.0 in WSL2 on the same machine (Section~\ref{sec:res:latency}).
+
+\input{results_r1}
+
+\input{bibliography_r1_sorted}
+
+\input{_bios_from_submission}

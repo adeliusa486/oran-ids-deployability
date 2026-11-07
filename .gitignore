@@ -66,3 +66,18 @@ paper/_verify_*.png
 paper/access/*.aux
 paper/access/*.log
 paper/access/_*
+
+# Revision 1: per-flow score arrays (hundreds of MB); counts and summaries are committed
+results/*/scores/
+results/*/*/scores/
+
+# Revision 1: author photographs (submission only, not public) and LaTeX by-products
+paper/r1/*.jpg
+paper/r1/_*
+paper/r1/response/_*
+paper/r1/*.aux
+paper/r1/*.log
+paper/r1/*.out
+paper/r1/response/*.aux
+paper/r1/response/*.log
+paper/r1/response/*.out
