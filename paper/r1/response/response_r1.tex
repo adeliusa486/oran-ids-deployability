@@ -11,12 +11,11 @@
 \usepackage{times}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,longtable,array}
-\usepackage[dvipsnames]{xcolor}
 \usepackage{enumitem}
-\usepackage[most]{tcolorbox}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xr-hyper}
 \externaldocument[M-]{../main}
+\usepackage{refcount}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 
@@ -24,36 +23,67 @@
 \newcommand{\DB}{\ensuremath{\mathcal{D}_{B}}}
 \newcommand{\DC}{\ensuremath{\mathcal{D}_{C}}}
 \input{../numbers_r1}
-\newcommand{\Sec}[1]{Section~\ref{M-#1}}
-\newcommand{\Tab}[1]{Table~\ref{M-#1}}
-\newcommand{\Fig}[1]{Fig.~\ref{M-#1}}
-\newcommand{\Pg}[1]{p.~\pageref{M-#1}}
+% Every location links to that page of the highlighted manuscript.
+% scripts/merge_response.py appends the highlighted manuscript to this letter
+% and turns these links into jumps inside the one file.
+\newcommand{\HLPDF}{../02_Highlighted_PDF/Ali-et-al-IEEE-Access-R1-Highlighted.pdf}
+\newcommand{\GoPage}[2]{\href[page=#1]{\HLPDF}{#2}}
+\newcommand{\Loc}[2]{\GoPage{\getpagerefnumber{M-#2}}{#1~\ref*{M-#2} (p.~\pageref*{M-#2})}}
+\newcommand{\Sec}[1]{\Loc{Section}{#1}}
+\newcommand{\Tab}[1]{\Loc{Table}{#1}}
+\newcommand{\Fig}[1]{\Loc{Fig.}{#1}}
+\newcommand{\Pg}[1]{\GoPage{\getpagerefnumber{M-#1}}{p.~\pageref*{M-#1}}}
+\newcommand{\Abs}{\GoPage{1}{Abstract (p.~1)}}
 
-\definecolor{rvbg}{HTML}{F2F4F7}
-\definecolor{rvfr}{HTML}{8A9095}
-\newtcolorbox{concern}[1]{colback=rvbg, colframe=rvfr, boxrule=0.4pt, arc=1.5pt,
-  left=5pt, right=5pt, top=3pt, bottom=3pt, fonttitle=\bfseries\small,
-  title={#1}, coltitle=black, colbacktitle=rvbg!70!rvfr!30, before skip=8pt, after skip=4pt}
-\newcommand{\response}{\textbf{Response.}~}
-\newcommand{\action}{\textbf{Action.}~}
+% Main place in the revised manuscript where each concern was addressed;
+% the concern heading links there.
+\newcommand{\SetTarget}[2]{\expandafter\def\csname tgt@#1\endcsname{#2}}
+\SetTarget{R1.1}{sec:intro}      \SetTarget{R1.2}{sec:res:radio}
+\SetTarget{R1.3}{sec:res:radio}  \SetTarget{R1.4}{sec:protocols}
+\SetTarget{R1.5}{sec:protocols}  \SetTarget{R1.6}{sec:res:transfer}
+\SetTarget{R1.7}{sec:crit:test}  \SetTarget{R1.8}{sec:crit:test}
+\SetTarget{R1.9}{sec:shared}     \SetTarget{R1.10}{sec:res:gap}
+\SetTarget{R1.11}{sec:protocols} \SetTarget{R1.12}{sec:res:gap}
+\SetTarget{R1.13}{sec:res:latency} \SetTarget{R1.14}{sec:res:labels}
+\SetTarget{R1.15}{sec:intro}
+\SetTarget{R2.1}{sec:intro}      \SetTarget{R2.2}{sec:res:labels}
+\SetTarget{R2.3}{sec:protocols}  \SetTarget{R2.4}{sec:stats}
+\SetTarget{R2.5}{sec:crit:test}  \SetTarget{R2.6}{sec:res:gap}
+\SetTarget{R2.7}{sec:intro}      \SetTarget{R2.8}{sec:protocols}
+\makeatletter
+\def\@ConcernTitle R#1.#2\@nil{Reviewer \##1, Concern \##2}
+\newcommand{\ConcernTitle}[1]{\@ConcernTitle#1\@nil}
+\makeatother
+% Reviewer comment, quoted in full and in italics under the template's label
+\newenvironment{concern}[1]{\par\medskip\noindent
+  \GoPage{\getpagerefnumber{M-\csname tgt@#1\endcsname}}{\textbf{\ConcernTitle{#1}}}\par
+  \begin{quote}\itshape}{\end{quote}}
+\newcommand{\response}{\par\textbf{Author response:}~}
+\newcommand{\action}{\par\textbf{Author action:}~}
 
 \begin{document}
 
-\begin{center}
-{\Large\bfseries Response to the Reviewers}\\[4pt]
-Manuscript Access-2026-49092, resubmission\\[2pt]
-\emph{Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden}\\
-(first submission: \emph{What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN})\\[2pt]
-A.~Ahmad, A.~Ali, E.~Khan, G.~Hossain, A.~Akarma
-\end{center}
+\textbf{Original Manuscript ID:} Access-2026-49092\\
+\textbf{Original Article Title:} What Held-Out Scores Predict About Deploying Intrusion Detection in O-RAN\\
+\textbf{Revised Article Title:} Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden
 
-Dear Dr.~Masini, dear Reviewers,
+\textbf{To:} IEEE Access Editor\\
+\textbf{Re:} Response to reviewers
 
-thank you for two careful and specific reports. They found one error that changed our results, showed that our title and test promised more than the corpora support, and asked for evidence we had not collected. We have treated every point as a request for evidence where evidence could be obtained, and we ran \emph{new experiments} for most of them. Below, each comment is quoted in a box and followed by our response and the action taken, with its location in the revised manuscript. Section, table, figure, and page numbers refer to the revised manuscript; all changes are highlighted in yellow in the highlighted PDF.
+Dear Editor,
+
+Thank you for allowing a resubmission of our manuscript, with an opportunity to address the reviewers' comments.
+
+We are uploading (a) our point-by-point response to the comments (below) (response to reviewers, under ``Author's Response Files''), (b) an updated manuscript with yellow highlighting indicating changes (as ``Highlighted PDF''), and (c) a clean updated manuscript without highlights (``Main Manuscript'').
+
+The two reports found one error that changed our results, showed that our title and test promised more than the corpora support, and asked for evidence we had not collected. We ran new experiments for most of the points. Below, each reviewer comment is quoted in full, followed by our response and the action taken. For convenience, the revised manuscript, with the changes made in response to the reviewers highlighted in yellow, is appended to this letter. Each concern heading, and each section, table, figure and page we cite, is a link to the corresponding page of the appended manuscript; page numbers refer to the revised manuscript.
+
+Best regards,\\
+Arshad Ali et al.
 
 \section*{Summary of the main changes}
 \begin{enumerate}[leftmargin=*, itemsep=2pt]
-\item \textbf{Reframing (R1.1, R2.1).} The paper is now a cross-corpus study of 5G flow detectors, with a separate latency measurement for window-level detectors. The new title, the abstract, the introduction (scope paragraph), Fig.~\ref{M-fig:arch}, and \Sec{sec:criteria} state that only one corpus is O-RAN and that no detector is evaluated on all criteria. Latency is no longer a term of the test.
+\item \textbf{Reframing (R1.1, R2.1).} The paper is now a cross-corpus study of 5G flow detectors, with a separate latency measurement for window-level detectors. The new title, the abstract, the introduction (scope paragraph), \Fig{fig:arch}, and \Sec{sec:criteria} state that only one corpus is O-RAN and that no detector is evaluated on all criteria. Latency is no longer a term of the test.
 \item \textbf{An error in byte accounting, corrected (R1.9).} The reviewer was right that a 2-byte gap is not a link-layer header. The gap is 14 bytes: Argus counts the Ethernet header of every packet. Our ``40 against 42 bytes'' compared a TCP minimum with a UDP minimum. We now remove the header for 5G-NIDD as for the third corpus and re-ran \emph{every} experiment that puts 5G-NIDD in the shared space (\Sec{sec:shared}).
 \item \textbf{The 5G-NIDD finding, confirmed in the raw captures (R2.2, R1.14).} In the UDP-flood session, station~1's capture file contains every one of the \RPcapBSTwoPkts{} packets of station~2's file, with identical timestamps; in the other nine sessions the two files share no packet (\Sec{sec:res:labels}, \Fig{fig:conflict}). This explains the asymmetry, and the network description explains how it is possible. We release corrected labels, added a relabeled arm, and reported the finding to the dataset authors.
 \item \textbf{References with intervals on matched flows (R1.4--R1.6, R2.3).} New in-target references: 20 random splits, leave-one-capture-file-out (every file held out once, both UDP-flood files included, every flow predicted once), and base-station references with repeated training samples, all with intervals, compared with transfer on the same flows (\Tab{tab:transfer}).
@@ -62,10 +92,46 @@ thank you for two careful and specific reports. They found one error that change
 \item \textbf{Adaptation (R1.12, R2.6).} Importance weighting and domain-adversarial training (DANN) join CORAL, and a label-efficient arm adds $k \in \{1,2,4,8\}$ labeled 5G-NIDD capture files (\Sec{sec:res:gap}). Claims are narrowed to the detectors tested.
 \item \textbf{Radio layer (R1.2, R1.3).} The abstract and conclusion say that the radio effect is not significant; a new experiment groups by the 42 documented runs (\Tab{tab:radio}). Radio operating figures were removed.
 \item \textbf{Latency (R1.13)} is one condensed subsection; the flow-level estimate and the sentence implying that flow detectors failed the latency term were removed.
-\item \textbf{Presentation (R1.15, R2.7, R2.8).} Three contributions instead of seven; a shorter abstract with four results; 10 tables instead of 14 and 7 figures instead of 10; a redrawn Fig.~\ref{M-fig:arch}; every sentence revised; split counts in every caption.
+\item \textbf{Presentation (R1.15, R2.7, R2.8).} Three contributions instead of seven; a shorter abstract with four results; 10 tables instead of 14 and 7 figures instead of 10; a redrawn \Fig{fig:arch}; every sentence revised; split counts in every caption.
 \end{enumerate}
 To keep the paper focused, we removed the calibration and prior-shift analysis, the sequence models, the benign-only novelty detectors, the per-call latency table, and three figures (reliability, radio protocol plot, latency distribution). They remain in the repository.
 
+\section*{Index of responses}
+Each item links to our response below, and each location in the last column links to that page of the appended manuscript.
+
+{\small
+\begin{longtable}{@{}p{1.0cm}p{4.3cm}p{6.2cm}p{5.0cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Reviewer's concern} & \textbf{What we did} & \textbf{Where in the revised paper}\\
+\midrule\endhead
+\hyperref[rv:R1.1]{\textbf{R1.1}} & Scope: no detector on all terms; two corpora not O-RAN & Reframed as a cross-corpus study; new title; Fig.~1 redrawn; latency removed from the test & Title, \Abs, \Sec{sec:intro}, \Fig{fig:arch}, \Sec{sec:crit:test}\\
+\hyperref[rv:R1.2]{\textbf{R1.2}} & Radio result not significant & Stated in abstract and conclusion; new run-grouped experiment (42 runs) & \Sec{sec:res:radio}, \Tab{tab:radio}, \Sec{sec:conclusion}\\
+\hyperref[rv:R1.3]{\textbf{R1.3}} & Radio corpus cannot support operating figures & All radio operating figures removed & \Sec{sec:res:radio}, \Fig{fig:benign}, \Sec{sec:limitations}\\
+\hyperref[rv:R1.4]{\textbf{R1.4}} & In-target references lack uncertainty & New references, 20 splits, with intervals & \Sec{sec:protocols}, \Sec{sec:res:transfer}, \Tab{tab:transfer}\\
+\hyperref[rv:R1.5]{\textbf{R1.5}} & Capture-file reference not comparable & Leave-one-file-out reference on matched flows & \Sec{sec:protocols}, \Tab{tab:transfer}\\
+\hyperref[rv:R1.6]{\textbf{R1.6}} & Clean-label gap mostly not significant & Claims narrowed to what is significant & \Sec{sec:res:transfer}, \Tab{tab:transfer}, \Fig{fig:transfer}\\
+\hyperref[rv:R1.7]{\textbf{R1.7}} & Test treats uncertainty inconsistently & Test redesigned: same intervals for both terms, three outcomes & \Sec{sec:crit:test}, \Sec{sec:stats}, \Tab{tab:test}\\
+\hyperref[rv:R1.8]{\textbf{R1.8}} & Verdict set by our own bounds & Bounds stated as ours, with the FPR they imply & \Abs, \Sec{sec:crit:test}, \Fig{fig:test}\\
+\hyperref[rv:R1.9]{\textbf{R1.9}} & Byte harmonization error & Error confirmed (14-byte Ethernet header), corrected, all experiments re-run & \Sec{sec:shared}, \Tab{tab:features}, \Fig{fig:shift}\\
+\hyperref[rv:R1.10]{\textbf{R1.10}} & Zeek result overstated & Removed from abstract; reported with its limits & \Sec{sec:res:gap}, \Sec{sec:limitations}\\
+\hyperref[rv:R1.11]{\textbf{R1.11}} & Flow-split category coverage & New coverage analysis per category and split & \Sec{sec:protocols}\\
+\hyperref[rv:R1.12]{\textbf{R1.12}} & Claims beyond the detectors tested & Two more adaptation methods; claims narrowed & \Sec{sec:res:gap}, \Tab{tab:arms}, \Fig{fig:labeleff}\\
+\hyperref[rv:R1.13]{\textbf{R1.13}} & Latency results add little & Condensed to one subsection; flow estimate removed & \Sec{sec:res:latency}, \Tab{tab:ric}\\
+\hyperref[rv:R1.14]{\textbf{R1.14}} & 5G-NIDD reading needs confirmation & Authors contacted; packet-level proof; results under three label views & \Sec{sec:res:labels}, \Fig{fig:conflict}\\
+\hyperref[rv:R1.15]{\textbf{R1.15}} & Presentation & Three findings; fewer tables and figures; text revised & Whole paper; \Sec{sec:intro}, \Fig{fig:arch}\\
+\midrule
+\hyperref[rv:R2.1]{\textbf{R2.1}} & Scope and framing & Limitation stated in abstract and test; title qualified & \Abs, \Sec{sec:intro}, \Sec{sec:crit:test}\\
+\hyperref[rv:R2.2]{\textbf{R2.2}} & 5G-NIDD label conflict (a)--(e) & Raw-pcap proof, asymmetry explained, authors contacted, corrected labels, relabeled arm & \Sec{sec:res:labels}, \Fig{fig:conflict}, \Tab{tab:transfer}\\
+\hyperref[rv:R2.3]{\textbf{R2.3}} & Comparability of the references & References on matched flows & \Sec{sec:protocols}, \Tab{tab:transfer}\\
+\hyperref[rv:R2.4]{\textbf{R2.4}} & Statistics on grouped data & Group-count correction; bootstrap tried and documented; captions fixed & \Sec{sec:stats}, \Sec{sec:protocols}\\
+\hyperref[rv:R2.5]{\textbf{R2.5}} & Design of the deployability test & See R1.7 and R1.8 & \Sec{sec:crit:test}, \Tab{tab:test}\\
+\hyperref[rv:R2.6]{\textbf{R2.6}} & Adaptation & Importance weighting, DANN, label-efficient arm & \Sec{sec:res:gap}, \Tab{tab:arms}, \Fig{fig:labeleff}\\
+\hyperref[rv:R2.7]{\textbf{R2.7}} & Simplify the abstract & Rewritten around four results & \Abs\\
+\hyperref[rv:R2.8]{\textbf{R2.8}} & Sample sizes and split counts & Justified; sample-size check; split counts in captions & \Sec{sec:protocols}, all captions\\
+\bottomrule
+\end{longtable}}
+
+\clearpage
 \input{response_body}
 
 \end{document}

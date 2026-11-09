@@ -1,58 +1,65 @@
 %=======================================================================
 \section*{Reviewer 1}
 
-\begin{concern}{R1.1 Scope: no detector is evaluated on all three terms; two corpora are not O-RAN}
-The paper's title and abstract promise an answer on deploying detection in O-RAN, but no detector is evaluated on all three terms of Eq.~(6). The flow detectors get generalization and alert terms. Their latency was not measured, and Section VII-A states that E2 does not carry flow records, so Lane B of Fig.~1 is an assumption. The window detectors get a latency term but have no transfer target. Table 14 therefore takes Bmin from different detectors than the verdict. Two of three corpora are not O-RAN either: 5G-NIDD is a 5G test network and DC is an Open5GS core in Docker. Either evaluate one detector on all three terms, or reframe the paper as a cross corpus study of 5G flow detectors plus a separate latency measurement.
+\phantomsection\label{rv:R1.1}
+\begin{concern}{R1.1}
+The paper's title and abstract promise an answer on deploying detection in O-RAN, but no detector is evaluated on all three terms of Eq. (6). The flow detectors get generalization and alert terms. Their latency was not measured, and Section VII-A states that E2 does not carry flow records, so Lane B of Fig. 1 is an assumption. The window detectors get a latency term but have no transfer target. Table 14 therefore takes Bmin from different detectors than the verdict. Two of three corpora are not O-RAN either: 5G-NIDD is a 5G test network and DC is an Open5GS core in Docker. Either evaluate one detector on all three terms, or reframe the paper as a cross corpus study of 5G flow detectors plus a separate latency measurement.
 \end{concern}
 \response We agree with every part of this comment. Evaluating one detector on all three terms is not possible with the public data: the radio detectors have no second corpus with radio telemetry, and E2 provides no path for flow records, so a flow detector's latency through a RIC would rest on a transport we would have to invent. We therefore took the second option and reframed the paper as a cross-corpus study of 5G flow detectors with a separate latency measurement.
 
 \action
 \begin{itemize}[leftmargin=*, itemsep=1pt]
 \item New title: \emph{Cross-Corpus Evaluation of 5G Flow Intrusion Detectors: Label Faults, Transfer, and Alert Burden}.
-\item The abstract and a new scope paragraph in the introduction (\Sec{sec:intro}, \Pg{sec:intro}) state that only NetsLab-5GORAN-IDD is an O-RAN corpus, that the cross-corpus results concern flow-level detectors on 5G traffic, that radio detectors are evaluated within one corpus, that latency is measured separately for window-level detectors, and that no detector is evaluated on all criteria.
-\item Fig.~\ref{M-fig:arch} was redrawn: lane~B's path into the xApp is drawn dashed and labeled as an assumption (``E2 carries no flow records''), each measurement marker sits on the lane it was measured on (generalization and alert burden on lane~B, latency on lane~A), and the legend says that no detector was evaluated on all three.
+\item The abstract and a new scope paragraph in the introduction (\Sec{sec:intro}) state that only NetsLab-5GORAN-IDD is an O-RAN corpus, that the cross-corpus results concern flow-level detectors on 5G traffic, that radio detectors are evaluated within one corpus, that latency is measured separately for window-level detectors, and that no detector is evaluated on all criteria.
+\item \Fig{fig:arch} was redrawn: lane~B's path into the xApp is drawn dashed and labeled as an assumption (``E2 carries no flow records''), each measurement marker sits on the lane it was measured on (generalization and alert burden on lane~B, latency on lane~A), and the legend says that no detector was evaluated on all three.
 \item The deployability test (\Sec{sec:crit:test}) now has two terms, generalization and alert burden, both measured on the same flow detectors. Latency is reported separately (\Sec{sec:res:latency}) and no longer enters any verdict, so the former Table 14 with $B_{\min}$ from other detectors is gone.
 \end{itemize}
 
-\begin{concern}{R1.2 The radio result is not significant}
-The radio result you lead with is not significant. The random split gain of 0.13 has a corrected interval of $-0.01$ to 0.27 ($p = 0.06$), and no architecture survives Holm correction (Table 3). Say so in the abstract and conclusion, or add power. One option is to group by the 42 documented runs instead of 30 five minute sessions and report how the result depends on that choice.
+\phantomsection\label{rv:R1.2}
+\begin{concern}{R1.2}
+The radio result you lead with is not significant. The random split gain of 0.13 has a corrected interval of -0.01 to 0.27 (p = 0.06), and no architecture survives Holm correction (Table 3). Say so in the abstract and conclusion, or add power. One option is to group by the 42 documented runs instead of 30 five minute sessions and report how the result depends on that choice.
 \end{concern}
 \response We did both. The radio result no longer leads: it is a secondary result, and the abstract and conclusion state that it is not significant. We also ran the suggested experiment (EXP-070): the whole protocol comparison repeated with the 42 runs as groups, with windows rebuilt within each run so that no window straddles two runs. Following Reviewer~2 (R2.4), the corrected intervals now use group counts. Grouped by sessions, the average gain is \RRadSessAvg{} with interval [\RRadSessLo, \RRadSessHi] ($p = \RRadSessP$); grouped by runs, it is \RRadRunAvg{} with interval [\RRadRunLo, \RRadRunHi] ($p = \RRadRunP$). No architecture's gain is significant after Holm correction under either grouping (\RRadSessSigN{} and \RRadRunSigN{} of six). The conclusion therefore does not depend on the grouping. One choice does matter, and we report it: with window counts instead of group counts in the correction (the first submission's choice), the interval of the run-grouped average would be [\RRadRunLoWin, \RRadRunHiWin].
 
 \action Abstract and \Sec{sec:conclusion}: the radio gain is reported as not significant. \Sec{sec:res:radio} and the new \Tab{tab:radio} give both groupings; \Sec{sec:corpora} describes how runs are recovered.
 
-\begin{concern}{R1.3 The radio corpus cannot support operational figures}
-2,808 windows at 76.46\% attacks leaves about 660 benign windows, roughly three hours of data, recorded mostly with one UE six weeks before the attacks. Your own Fig.~3 shows per-session FPR from 0 to 0.98, and the pooled FPR interval spans 0.01 to 0.65. Presenting 50 to 74 false alerts per benign UE-hour in Section VII-A as an operating figure is not justified.
+\phantomsection\label{rv:R1.3}
+\begin{concern}{R1.3}
+The radio corpus cannot support operational figures. 2,808 windows at 76.46\% attacks leaves about 660 benign windows, roughly three hours of data, recorded mostly with one UE six weeks before the attacks. Your own Fig. 3 shows per-session FPR from 0 to 0.98, and the pooled FPR interval spans 0.01 to 0.65. Presenting 50 to 74 false alerts per benign UE-hour in Section VII-A as an operating figure is not justified.
 \end{concern}
-\response We agree. The radio layer holds \RRadBenignWin{} benign windows, about \RRadBenignHours{} hours of data, and its false positive rate depends on which benign session a detector meets.
+\response The reviewer is right. The radio layer holds \RRadBenignWin{} benign windows, about \RRadBenignHours{} hours of data, and its false positive rate depends on which benign session a detector meets.
 
 \action All radio operating figures were removed: the radio rows of the former Table 13, the radio panel of the former precision-versus-threshold figure, and the false alerts per UE-hour in the discussion. \Sec{sec:res:radio} now states why the radio layer supports no operating figure, with the per-session spread (\Fig{fig:benign}) and the bootstrap interval as the evidence, and the limitations say so too (\Sec{sec:limitations}).
 
 \input{response_body_results1}
 
-\begin{concern}{R1.8 The verdict is set by the declared parameters}
-Amax = 200 at $\lambda_b$ = 240,000 flows per hour requires FPR at or below about 0.00083, and neither $\lambda_b$ nor $\pi$ = 0.002 comes from an operator. Fig.~10 helps, but the abstract's ``none passes our deployability test'' must say the bounds are your own.
+\phantomsection\label{rv:R1.8}
+\begin{concern}{R1.8}
+The verdict is set by your declared parameters. Amax = 200 at lambda\_b = 240,000 flows per hour requires FPR at or below about 0.00083, and neither lambda\_b nor pi = 0.002 comes from an operator. Fig. 10 helps, but the abstract's ``none passes our deployability test'' must say the bounds are your own.
 \end{concern}
-\response Agreed.
+\response The bounds are ours, and the paper now says so wherever the verdict appears.
 
 \action The abstract now says ``alert bounds that we set ourselves''. \Sec{sec:crit:test} states that no O-RAN specification defines the bounds, that we chose them, and that $A_{\max}$ at our $\lambda_b$ is a false positive rate of at most \RFPRmax. \Sec{sec:setup} and \Sec{sec:limitations} state that neither $\pi$ nor $\lambda_b$ comes from an operator, and \Sec{sec:res:alerts} with \Fig{fig:test} shows where each detector lies relative to the bounds, so that a reader can apply other bounds.
 
-\begin{concern}{R1.9 Byte harmonization differs between the two targets}
-For DC you strip link-layer and GTP-U bytes. For DB you note that Argus counts whole packets including framing, 42 bytes against Zeek's 40 for a minimum size packet, and leave it uncorrected. A 2 byte gap is not a link-layer header, so explain where it comes from. The exporter robust subset includes the three mean packet sizes, so this offset enters the very columns you use in Section VI-E to argue the shift is compositional. Correct DB the way you corrected DC and rerun.
+\phantomsection\label{rv:R1.9}
+\begin{concern}{R1.9}
+Byte harmonization differs between the two targets. For DC you strip link-layer and GTP-U bytes. For DB you note that Argus counts whole packets including framing, 42 bytes against Zeek's 40 for a minimum size packet, and leave it uncorrected. A 2 byte gap is not a link-layer header, so explain where it comes from. The exporter robust subset includes the three mean packet sizes, so this offset enters the very columns you use in Section VI-E to argue the shift is compositional. Correct DB the way you corrected DC and rerun.
 \end{concern}
 \response The reviewer found an error. A 2-byte gap was never there: our ``40 against 42'' compared the smallest TCP packet in Zeek's accounting (40 bytes, no payload) with the smallest UDP packet in Argus's (42 bytes). Measured by protocol, the smallest bytes per packet in 5G-NIDD as exported by Argus are \RArgMinTCP{} for TCP and \RArgMinUDP{} for UDP and ICMP, whereas Zeek, on NetsLab-5GORAN-IDD and on our own Zeek re-extraction of the same 5G-NIDD captures, counts \RZkMinTCP{} and \RZkMinUDP. The captures are Ethernet frames whose length exceeds the IP length by 14 bytes for \RPcapEthPct\% of the frames we checked (\RPcapEthPctMin\% to \RPcapEthPctMax\% across \RPcapEthFiles{} captures; most of the rest carry a VLAN tag). Argus therefore counts the 14-byte Ethernet header of every packet, exactly like NFStream for the third corpus. The offset was large for small packets: a UDP-flood packet counted 42 bytes instead of 28.
 
 \action We now subtract 14 bytes per packet and direction for 5G-NIDD, as for the third corpus (\Sec{sec:shared}, \Tab{tab:features}; unit tests guard the mapping), and re-ran every experiment that puts 5G-NIDD in the shared space, all with 20 splits: transfer to 5G-NIDD and to the third corpus, the exporter-robust subset, CORAL, the reverse direction, the domain classifier and per-column shift, and the in-target references; the new adaptation experiments use the corrected bytes from the start. The correction changed the diagnostics the reviewer pointed to. The domain classifier separates the corpora on the nine exporter-robust columns with a balanced accuracy of \RDomArgRobust, down from \RDomOldRobust{} before the correction, and \RDomZkRobust{} against our Zeek re-extraction; on all 18 columns it is \RDomArgShared. The robust columns still shift as much as the others ($\bar{W}_1$ of \RWoneArgRobust{} against \RWoneArgNonrobust), and \Fig{fig:shift} shows the shift per column before and after the correction. We also corrected Section~VI-E's wording on what these diagnostics show (\Sec{sec:res:gap}).
 
-\begin{concern}{R1.10 The Zeek result is overstated in the abstract}
-Your Zeek configuration may differ from the undocumented one behind DA. Zeek yields a third as many flows, 76\% of them attacks, and target balanced accuracy fell to 0.43 to 0.56. Section VI-E admits the result cannot separate composition from configuration, yet the abstract states ``A common exporter does not close the transfer gap'' as a finding.
+\phantomsection\label{rv:R1.10}
+\begin{concern}{R1.10}
+The Zeek export result is overstated in the abstract. Your Zeek configuration may differ from the undocumented one behind DA. Zeek yields a third as many flows, 76\% of them attacks, and target balanced accuracy fell to 0.43 to 0.56. Section VI-E admits the result cannot separate composition from configuration, yet the abstract states ``A common exporter does not close the transfer gap'' as a finding.
 \end{concern}
-\response Agreed. The Zeek re-extraction cannot separate traffic composition from exporter configuration, so it is not a finding about the exporter.
+\response The Zeek re-extraction cannot separate traffic composition from exporter configuration, so it is not a finding about the exporter.
 
 \action The sentence was removed from the abstract. \Sec{sec:res:gap} reports the Zeek comparison as what it is, the same trained models scored on two exports of the same captures, and states that it cannot separate composition from configuration; \Sec{sec:limitations} repeats this.
 
-\begin{concern}{R1.11 Flow-split category coverage}
-Flow splits hold out source addresses (318 groups) with 94.63\% attacks. If a category comes from one or a few attacker addresses, a split removes it from training. You checked coverage for radio splits. Do the same for flows and report attacker addresses per category.
+\phantomsection\label{rv:R1.11}
+\begin{concern}{R1.11}
+Flow split category coverage is not reported. Flow splits hold out source addresses (318 groups) with 94.63\% attacks. If a category comes from one or a few attacker addresses, a split removes it from training. You checked coverage for radio splits. Do the same for flows and report attacker addresses per category.
 \end{concern}
 \response We checked (EXP-073). Of the \NSrcGroups{} addresses, \RCovAttackers{} send attack flows, and every attack category comes from many addresses, but its flows are concentrated: \RCovAddrNinetyMin{} to \RCovAddrNinetyMax{} addresses carry 90\% of each category, and the largest attacker \RCovTopShareMin\% to \RCovTopShareMax\%. Every category appears in training in all 20 splits, with at least \RCovMinTrainShare\% of its flows, and in the test part of every split. The concentration has a second consequence that we had not reported: because the split adds whole addresses until 20\% of the flows are held out, the held-out part contains \RCovTestGroupsMin{} to \RCovTestGroupsMax{} addresses and \RCovTestFlowsMin\% to \RCovTestFlowsMax\% of the flows.
 
@@ -60,53 +67,71 @@ Flow splits hold out source addresses (318 groups) with 94.63\% attacks. If a ca
 
 \input{response_body_results2}
 
-\begin{concern}{R1.13 The latency results add little}
-The loop fed synthetic KPM values from an emulated node over loopback on one Windows host under WSL2, without CPU isolation. You yourselves cite uncontrolled power management to explain why the 1 ms period ran faster than the 10 ms period. A window detector decides once every 16 s, so a 5 ms compute tail is not what limits it. The flow estimate of ``close to 10 ms'' rests on 8.5 ms of pandas mapping, exactly the implementation cost Section VI-I says dominates architecture. In addition, ``Only window-level detectors meet the latency term'' in Section X implies flow detectors failed, when they were not measured.
+\phantomsection\label{rv:R1.13}
+\begin{concern}{R1.13}
+The latency results add little. The loop fed synthetic KPM values from an emulated node over loopback on one Windows host under WSL2, without CPU isolation. You yourselves cite uncontrolled power management to explain why the 1 ms period ran faster than the 10 ms period. A window detector decides once every 16 s, so a 5 ms compute tail is not what limits it. The flow estimate of ``close to 10 ms'' rests on 8.5 ms of pandas mapping, exactly the implementation cost Section VI-I says dominates architecture. In addition, ``Only window-level detectors meet the latency term'' in Section X implies flow detectors failed, when they were not measured.
 \end{concern}
-\response We agree with each point. We kept one short subsection because Reviewer~1's own suggested reframing includes ``a separate latency measurement'', and because the measured loop shows that delivery and control, not the model, dominate once a RIC is in the path.
+\response These observations are correct, and we cut the section accordingly. We kept one short subsection because Reviewer~1's own suggested reframing includes ``a separate latency measurement'', and because the measured loop shows that delivery and control, not the model, dominate once a RIC is in the path.
 
 \action The latency section is condensed to one subsection (\Sec{sec:res:latency}) with one table (\Tab{tab:ric}). It states the conditions (synthetic values, emulated node, loopback, one host under WSL2, no CPU isolation), attributes the faster 1\,ms period to uncontrolled power management as a caveat, and says that a 16\,s window, not the compute tail, limits a window-level detector. The flow-level estimate (``close to 10\,ms'') and its pandas timing were removed, as were the per-call latency table and the latency distribution figure. The sentence ``Only window-level detectors meet the latency term'' was removed; the paper now says that flow detectors were not timed in the loop and makes no latency claim for them.
 
-\begin{concern}{R1.14 The 5G-NIDD reading needs confirmation}
-The inference that the benign copies are station 2's flood seen at station 1 rests on addresses alone. Contact the 5G-NIDD authors and report their answer, since this affects every published result on that corpus.
+\phantomsection\label{rv:R1.14}
+\begin{concern}{R1.14}
+The 5G-NIDD reading needs confirmation. The inference that the benign copies are station 2's flood seen at station 1 rests on addresses alone. Contact the 5G-NIDD authors and report their answer, since this affects every published result on that corpus.
 \end{concern}
-\response We contacted the dataset authors on [DATE] with the evidence below and the corrected labels; [their answer / at the time of resubmission we have not received an answer]. Independently of their answer, the reading no longer rests on addresses. In the raw captures (EXP-072), every one of the \RPcapBSTwoPkts{} IPv4 packets of station~2's UDP-flood capture occurs in station~1's capture with the same timestamp to the microsecond, the same addresses, IP identification, and length; both captures start at the same microsecond; and in the other nine sessions the two stations' captures share no packet. The copies are therefore station~2's flood packets, recorded in station~1's file.
+\response We agree that a claim about a public dataset should be checked with its authors. On 7~November~2026 we wrote to the corresponding author of 5G-NIDD at his current institution, asked him to forward the message to his co-authors, and sent the evidence below with the list of corrected rows. At the time of resubmission we had not received an answer. If the authors reply during review, we will report their answer in the paper and in the repository. We did not want the paper to depend on that answer, so we made two changes. First, the reading no longer rests on addresses. In the raw captures (EXP-072), every one of the \RPcapBSTwoPkts{} IPv4 packets of station~2's UDP-flood capture occurs in station~1's capture with the same timestamp to the microsecond, the same addresses, IP identification, and length; both captures start at the same microsecond; and in the other nine sessions the two stations' captures share no packet. The copies are therefore station~2's flood packets, recorded in station~1's file. Second, we change no published label: every 5G-NIDD result is reported three ways (published labels, without the copies, and with the copies relabeled as attack), so a reader can use the published labels if the dataset authors read the files differently. Removing the copies and relabeling them give the same picture (R2.2(e), \Tab{tab:transfer}, \Tab{tab:test}).
 
-\action \Sec{sec:res:labels} and \Fig{fig:conflict}(b) report the packet-level evidence and that we contacted the dataset authors. We still change no published label and report every 5G-NIDD result on the published labels, without the copies, and relabeled.
+\action \Sec{sec:res:labels} and \Fig{fig:conflict}(b) report the packet-level evidence and that we contacted the dataset authors on 7~November~2026 without an answer at the time of resubmission. We still change no published label and report every 5G-NIDD result on the published labels, without the copies, and relabeled.
 
-\begin{concern}{R1.15 Presentation}
-(a) Cut the paper to the two or three findings the data supports. (b) Several sentences are ungrammatical, e.g.\ in Section VI-C: ``in the first, the copies sit in the training data, so that a model trained with them labeled benign misses the floods of station 2 is our inference, not a tested result''. (c) Section VI-E says the robust columns ``lift'' source balanced accuracy, but LR falls from 0.837 to 0.804 (Table 8). (d) Fig.~1 shows cameras, PLCs and vehicles that appear in none of the corpora. (e) The motivating ``several'' papers above 99\% are only [11] and [12].
+\phantomsection\label{rv:R1.15}
+\begin{concern}{R1.15}
+\begin{itemize}[leftmargin=*, itemsep=0pt]
+\item (a) Cut the paper to the two or three findings the data supports.
+\item (b) Several sentences are ungrammatical. One example is in Section VI-C: ``in the first, the copies sit in the training data, so that a model trained with them labeled benign misses the floods of station 2 is our inference, not a tested result''.
+\item (c) Section VI-E says the robust columns ``lift'' source balanced accuracy, but LR falls from 0.837 to 0.804 (Table 8).
+\item (d) Fig. 1 shows cameras, PLCs and vehicles that appear in none of the corpora.
+\item (e) The motivating ``several'' papers above 99\% are only [11] and [12].
+\end{itemize}
 \end{concern}
-\response We agree with all five points.
+\response All five points are fair; we acted on each.
 
 \action
 (a) The paper is built around three findings (\Sec{sec:intro}): the 5G-NIDD label audit, cross-corpus transfer with matched references, and alert burden with the two-term test. The radio protocol comparison and the latency measurement are reported briefly as secondary results. Contributions went from seven to three, tables from 14 to 10, figures from 10 to 7; the calibration and prior-shift section, the sequence models, the novelty detectors, and the per-call latency table were removed, and number-dense sentences were split or moved to tables.
 (b) Every sentence was revised. The quoted sentence was removed together with the experiment it described: the station references now train without the copies or with them relabeled, so the inference it stated is no longer needed: trained that way, the base-station references reach \RRefSoneCleanmin{} to \RRefSoneCleanmax{} from station~1 to station~2.
 (c) The sentence was corrected (\Sec{sec:res:gap}); the robust subset is now described per architecture, without ``lift''.
-(d) Fig.~\ref{M-fig:arch} shows generic benign UEs and an attacker UE, which is what all three corpora contain.
-(e) The introduction now says what [11] and [12] report, without ``several'' (\Sec{sec:intro}).
+(d) \Fig{fig:arch} shows generic benign UEs and an attacker UE, which is what all three corpora contain.
+(e) The introduction now says what [11] and [12] of the first submission report (now [9], [10] and [11]: the 5G-NIDD authors, preprint and published descriptor, and Ilias et al.), without ``several'' (\Sec{sec:intro}).
 
 \section*{Reviewer 2}
 
-\begin{concern}{R2.1 Scope and framing}
-Only D\_A is an O-RAN corpus, and its radio-telemetry lane (the O-RAN-specific part) is evaluated only within that corpus. All cross-corpus results concern generic 5G flow-level detection. As a result, the radio detectors never face Criterion 1, the flow detectors never face Criterion 3, and no single detector is evaluated on all three terms of Eq.~(6). Please: state this limitation prominently in the abstract and in Section VII-B; consider qualifying the title; clarify in Table 14 that B\_min comes from different, window-level detectors.
+\phantomsection\label{rv:R2.1}
+\begin{concern}{R2.1}
+\textbf{Scope and framing.} Only D\_A is an O-RAN corpus, and its radio-telemetry lane (the O-RAN-specific part) is evaluated only within that corpus. All cross-corpus results concern generic 5G flow-level detection. As a result, the radio detectors never face Criterion 1, the flow detectors never face Criterion 3, and no single detector is evaluated on all three terms of Eq. (6). Please: state this limitation prominently in the abstract and in Section VII-B; consider qualifying the title; clarify in Table 14 that B\_min comes from different, window-level detectors.
 \end{concern}
-\response Agreed; see also R1.1.
+\response This is the concern of R1.1, and we followed the same course; see our response there.
 
-\action The abstract and a scope paragraph in the introduction state the limitation; \Sec{sec:crit:test} (formerly VII-B) states that latency was measured for window-level detectors only and is not part of the test; \Sec{sec:limitations} repeats it. The title is qualified to ``5G flow intrusion detectors''. The former Table 14 is gone because latency no longer enters the verdict; the latency of the window-level detectors is reported on its own in \Tab{tab:ric}, and Fig.~\ref{M-fig:arch} marks which detectors each criterion was measured on.
+\action The abstract and a scope paragraph in the introduction state the limitation; \Sec{sec:crit:test} (formerly VII-B) states that latency was measured for window-level detectors only and is not part of the test; \Sec{sec:limitations} repeats it. The title is qualified to ``5G flow intrusion detectors''. The former Table 14 is gone because latency no longer enters the verdict; the latency of the window-level detectors is reported on its own in \Tab{tab:ric}, and \Fig{fig:arch} marks which detectors each criterion was measured on.
 
-\begin{concern}{R2.2 The 5G-NIDD label conflict}
-(a) explain, from the 5G-NIDD network description, how station 1's capture point could observe station 2's flood; (b) explain the asymmetry: why file 15 contains no benign-labelled copies of station 1's flood; (c) confirm in the raw pcaps, using timestamps or packet identifiers, that the copies are the same packets seen twice; (d) report whether the dataset authors were contacted, and consider releasing corrected labels; (e) add an arm in which the copies are relabelled as attack.
+\phantomsection\label{rv:R2.2}
+\begin{concern}{R2.2}
+\textbf{The 5G-NIDD label conflict.} This is the headline result, and it currently rests on address inference. Please:
+\begin{itemize}[leftmargin=*, itemsep=0pt]
+\item (a) explain, from the 5G-NIDD network description, how station 1's capture point could observe station 2's flood (for example, through a shared core or UPF link or a mirrored port);
+\item (b) explain the asymmetry: why file 15 contains no benign-labelled copies of station 1's flood;
+\item (c) confirm in the raw pcaps, using timestamps or packet identifiers, that the copies are the same packets seen twice;
+\item (d) report whether the dataset authors were contacted, and consider releasing corrected labels;
+\item (e) add an arm in which the copies are relabelled as attack. Removing 281,525 benign flows changes the benign composition, while relabelling preserves the traffic a deployed detector would see.
+\end{itemize}
 \end{concern}
 \response We addressed each item with new analyses (EXP-072).
 
 (c) \emph{Raw captures.} Matching packets on timestamp, addresses, IP identification, length, TTL, and a payload digest, all \RPcapBSTwoPkts{} IPv4 packets of station~2's UDP-flood capture occur in station~1's capture, with zero time offset; they make up \RPcapShareBSOne\% of station~1's file, and both captures start at the same microsecond. In the other nine sessions the two stations' captures share no packet and start \RPcapStartMin{} to \RPcapStartMax{}\,s apart.
 
-(a) \emph{Network description.} The 5G-NIDD paper~[11] describes two base stations connected over S1-U to one switch, which also connects the attackers to the victim's network, and a schedule in which both attackers flood the same target with about five minutes of overlap. A recording on a link or port that carries both stations' traffic would contain both floods. The identical microsecond timestamps show that the two files of this session are not independent recordings at two capture points; how station~1's file was produced is not documented, and we say so.
+(a) \emph{Network description.} The 5G-NIDD paper~[9], [10] describes two base stations connected over S1-U to one switch, which also connects the attackers to the victim's network, and a schedule in which both attackers flood the same target with about five minutes of overlap. A recording on a link or port that carries both stations' traffic would contain both floods. The identical microsecond timestamps show that the two files of this session are not independent recordings at two capture points; how station~1's file was produced is not documented, and we say so.
 
 (b) \emph{Asymmetry.} Station~2's capture contains no packet of station~1's attacker, so file~15 cannot contain copies of station~1's flood; the asymmetry is in the files, not in the labeling.
 
-(d) \emph{Dataset authors and corrected labels.} We reported the finding and the evidence to the dataset authors on [DATE] (see R1.14). We release the \RCopies{} corrected rows of Combined.csv (row position, \texttt{Seq}, \texttt{Offset}, addresses, published and corrected labels) with a checksum and a one-line recipe, without changing the published files.
+(d) \emph{Dataset authors and corrected labels.} Yes. We reported the finding, the packet-level evidence, and the corrected rows to the dataset authors on 7~November~2026; at the time of resubmission we had not received an answer (see R1.14). We release the \RCopies{} corrected rows of Combined.csv (row position, \texttt{Seq}, \texttt{Offset}, addresses, published and corrected labels) with a checksum and a one-line recipe, without changing the published files.
 
 (e) \emph{Relabeled arm.} Every 5G-NIDD result is now given on the published labels, without the copies, and with the copies relabeled as attack, for transfer, references, adaptation, the label-efficient arm, and the test. Relabeling keeps every flow and gives the same picture as removing the copies (transfer balanced accuracy \RTrRelabBAmin{} to \RTrRelabBAmax{} against \RTrCleanBAmin{} to \RTrCleanBAmax), and the same test verdicts except for RF, whose alert term becomes inconclusive.
 
@@ -114,8 +139,9 @@ Only D\_A is an O-RAN corpus, and its radio-telemetry lane (the O-RAN-specific p
 
 \input{response_body_results3}
 
-\begin{concern}{R2.4 Statistics on grouped data}
-The Nadeau--Bengio correction factor counts flows or windows, but the splits are group-disjoint and samples within a group are correlated. Please: compute the correction from group counts, or use the cluster bootstrap for $\Delta_{\mathrm{BA}}$ as well; report the number of attacker hosts among the 318 source-address groups, and the attack-category coverage of each held-out source split; state clearly in Tables 3 and 7 that the bracketed intervals are unadjusted.
+\phantomsection\label{rv:R2.4}
+\begin{concern}{R2.4}
+\textbf{Statistics on grouped data.} The Nadeau-Bengio correction factor counts flows or windows, but the splits are group-disjoint and samples within a group are correlated. Please: compute the correction from group counts, or use the cluster bootstrap for Delta\_BA as well; report the number of attacker hosts among the 318 source-address groups, and the attack-category coverage of each held-out source split; state clearly in Tables 3 and 7 that the bracketed intervals are unadjusted. For example, DT in Table 3 has an interval that excludes zero, while the caption says that nothing survives Holm correction.
 \end{concern}
 \response We followed the first suggestion and tried the second.
 
@@ -125,21 +151,27 @@ The Nadeau--Bengio correction factor counts flows or windows, but the splits are
 
 \action \Sec{sec:stats} describes the intervals and the choice of ratio; \Sec{sec:protocols} gives the attacker addresses, coverage, and split composition. Every table caption now says that bracketed intervals are unadjusted and that significance marks are Holm-adjusted (\Tab{tab:transfer}, \Tab{tab:radio}, \Tab{tab:test}). In \Tab{tab:radio}, for example, the unadjusted interval of DT under the run grouping excludes zero while no gain is significant after Holm correction, and the caption explains why.
 
-\begin{concern}{R2.5 Design of the deployability test}
+\phantomsection\label{rv:R2.5}
+\begin{concern}{R2.5}
+\textbf{Design of the deployability test.}
 \end{concern}
 \response We read this item together with R1.7 and R1.8; see our responses there.
 
+\action The test was redesigned as described under \hyperref[rv:R1.7]{Reviewer \#1, Concern \#7} and \hyperref[rv:R1.8]{Reviewer \#1, Concern \#8} (\Sec{sec:crit:test}, \Tab{tab:test}).
+
 \input{response_body_results4}
 
-\begin{concern}{R2.7 Simplify the abstract}
-It is very number-dense; four or five key results in clearer sentences would serve readers better.
+\phantomsection\label{rv:R2.7}
+\begin{concern}{R2.7}
+\textbf{Abstract.} Simplify the abstract. It is very number-dense; four or five key results in clearer sentences would serve readers better.
 \end{concern}
-\response Agreed.
+\response The first abstract tried to carry every result. The new one carries four.
 
 \action The abstract was rewritten around four results, with few numbers, and states the scope and that the bounds are our own.
 
-\begin{concern}{R2.8 Sample sizes and split counts}
-Justify the 300,000-flow subsample of D\_A and the 240,000-flow training samples, and state the split count (20 or 10) in every table caption.
+\phantomsection\label{rv:R2.8}
+\begin{concern}{R2.8}
+\textbf{Sample sizes and split counts.} Justify the 300,000-flow subsample of D\_A and the 240,000-flow training samples, and state the split count (20 or 10) in every table caption.
 \end{concern}
 \response The 300,000-flow sample was fixed before the first run, for runtime: the MLP alone takes several minutes per split, and every experiment runs 20 splits. To check that the choice does not drive the results, we repeated the transfer with \RSzNlist{} source flows (\RSzSplits{} splits, five architectures): clean target balanced accuracy changed by at most \RSzMaxChangeClean{} against 300,000 flows, in no consistent direction, within the variation between splits. The 240,000-flow training samples of the in-target references are the size of the transfer training sets (80\% of 300,000), so references and transfer learn from the same amount of labeled data. All revision-1 experiments use 20 splits, except the base-station references (ten training samples per direction, five for the relabeled variant), the label-efficient arm (four draws per $k$), and the sample-size check (five splits); the latency table states its trained models and report counts.
 
