@@ -78,13 +78,107 @@ def runs(rects):
     return out
 
 
+def _key(s: str) -> str:
+    """Matching key: letters and digits only, lower case (spacing, punctuation,
+    hyphenation and line breaks do not matter)."""
+    s = unicodedata.normalize("NFKC", "".join(FOLD.get(ch, ch) for ch in s))
+    return "".join(ch for ch in s.lower() if ch.isalnum())
+
+
+def passage_marks(doc, passages):
+    """Word rectangles of each passage, found from its first to its last words.
+
+    Words are taken in content-stream order (the order LaTeX wrote them), so a
+    passage never picks up a float placed elsewhere on the page. Running headers
+    and page numbers are skipped."""
+    toks = []                                   # (key, page, rect)
+    for pno, page in enumerate(doc):
+        h = page.rect.height
+        for w in page.get_text("words", sort=False):
+            r = fitz.Rect(w[:4])
+            if r.y1 < 60 or r.y0 > h - 45:      # running header, page number
+                continue
+            k = _key(w[4])
+            if k:
+                toks.append((k, pno, r))
+    stream, owner = [], []
+    for i, (k, _, _) in enumerate(toks):
+        stream.append(k)
+        owner.extend([i] * len(k))
+    text = "".join(stream)
+    marks, problems = [], []
+    for ps in passages:
+        s, e = _key(ps["start"]), _key(ps["end"])
+        i = text.find(s)
+        if i < 0:
+            problems.append(("start not found", ps["start"]))
+            continue
+        if text.find(s, i + 1) >= 0:            # an ambiguous start could mark the wrong place
+            problems.append(("start not unique", ps["start"]))
+            continue
+        j = text.find(e, i)
+        while j >= 0 and j + len(e) < i + len(s):    # end may lie inside the start
+            j = text.find(e, j + 1)
+        if j < 0:
+            problems.append(("end not found after start", ps["end"]))
+            continue
+        first, last = owner[i], owner[j + len(e) - 1]
+        if last - first > 900:
+            problems.append(("passage too long", ps["start"]))
+            continue
+        marks.append((ps, [(toks[t][1], toks[t][2]) for t in range(first, last + 1)]))
+    return marks, problems
+
+
+def main_passages(a) -> int:
+    new = fitz.open(a.new)
+    spec = json.load(open(a.passages, encoding="utf-8"))["passages"]
+    marks, problems = passage_marks(new, spec)
+    if problems:
+        for p in problems:
+            print("PASSAGE ERROR:", p)
+        return 1
+    n_annots, n_words, per_rv = 0, 0, {}
+    covered = set()
+    pages = [new[i] for i in range(len(new))]       # keep page objects alive while annotating
+    for ps, rects in marks:
+        n_words += len(rects)
+        for rv in ps["rv"].split():
+            per_rv[rv] = per_rv.get(rv, 0) + 1
+        for p, r in runs(rects):
+            key = (p, round(r.x0), round(r.y0))
+            if key in covered:
+                continue
+            covered.add(key)
+            annot = pages[p].add_highlight_annot(r)
+            annot.set_colors(stroke=YELLOW)
+            annot.set_info(title="", content="")   # no note, so no comment icon
+            annot.update()
+            n_annots += 1
+    new.save(a.out, garbage=3, deflate=True)
+    total = sum(1 for pg in new for w in pg.get_text("words"))
+    rep = dict(mode="reviewer-requested changes only", passages=len(marks), highlighted_words=n_words,
+               words_in_manuscript=total, share_highlighted=round(n_words / max(total, 1), 3),
+               annotations=n_annots, pages=len(new), passages_per_concern=dict(sorted(per_rv.items())))
+    print(json.dumps(rep, indent=1))
+    if a.report:
+        with open(a.report, "w", encoding="utf-8") as fh:
+            json.dump(rep, fh, indent=1)
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("old")
     ap.add_argument("new")
     ap.add_argument("out")
     ap.add_argument("--report", default=None)
+    ap.add_argument("--passages", default=None,
+                    help="JSON list of passages changed for the reviewers; highlight only these "
+                         "(without it, every new or changed word is highlighted)")
     a = ap.parse_args()
+    if a.passages:
+        return main_passages(a)
     old = fitz.open(a.old)
     new = fitz.open(a.new)
     wo = words(old)
@@ -106,7 +200,8 @@ def main() -> int:
         for r in rects:
             annot = page.add_highlight_annot(r)
             annot.set_colors(stroke=YELLOW)
-            annot.set_info(title="Revision 1", content="changed or new in the revision")
+            # plain highlight: no note text, so viewers draw no comment icon
+            annot.set_info(title="", content="")
             annot.update()
             n_annots += 1
     new.save(a.out, garbage=3, deflate=True)

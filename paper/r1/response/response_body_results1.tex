@@ -1,5 +1,6 @@
-\begin{concern}{R1.4 The in-target references have no uncertainty}
-The in-target references have no uncertainty. Table~5 uses one to three samples per protocol with no intervals, and the station references have $n = 1$. Yet the abstract compares transfer (0.61 to 0.78) against these references (0.842 to 0.982). Run them with the same 20 splits and corrected intervals as the transfer.
+\phantomsection\label{rv:R1.4}
+\begin{concern}{R1.4}
+The in-target references have no uncertainty. Table 5 uses one to three samples per protocol with no intervals, and the station references have n = 1. Yet the abstract compares transfer (0.61 to 0.78) against these references (0.842 to 0.982). Run them with the same 20 splits and corrected intervals as the transfer.
 \end{concern}
 \response We re-ran all references (EXP-068) on the corrected bytes, with training that never sees the flood copies as benign, in three designs, all on 240,000 training flows, the size of the transfer training sets:
 \begin{itemize}[leftmargin=*, itemsep=1pt]
@@ -11,15 +12,17 @@ The abstract now compares transfer with the leave-one-capture-file-out reference
 
 \action \Sec{sec:protocols} (design), \Sec{sec:res:transfer} and \Tab{tab:transfer} (results), abstract.
 
-\begin{concern}{R1.5 The capture-file reference is not comparable}
-Section VI-C says no held-out set contained a UDP flood file, while the transfer is evaluated on all files including both flood files. The 0.982 upper end was never tested on the hardest traffic. Force each flood file into a held-out set.
+\phantomsection\label{rv:R1.5}
+\begin{concern}{R1.5}
+The capture file reference is not comparable. Section VI-C says no held-out set contained a UDP flood file, while the transfer is evaluated on all files including both flood files. The 0.982 upper end was never tested on the hardest traffic. Force each flood file into a held-out set.
 \end{concern}
-\response Agreed. Leave-one-capture-file-out holds out every file once, so both UDP-flood files are held out. Trained without the copies labeled as benign, the reference reaches \RLofoFloodMin{} to \RLofoFloodMax{} on each held-out UDP-flood file: the flood traffic was hard because of the conflicting labels, not because of its content.
+\response Leave-one-capture-file-out holds out every file once, so both UDP-flood files are held out. Trained without the copies labeled as benign, the reference reaches \RLofoFloodMin{} to \RLofoFloodMax{} on each held-out UDP-flood file: the flood traffic was hard because of the conflicting labels, not because of its content.
 
 \action \Sec{sec:protocols}, \Sec{sec:res:transfer}, \Tab{tab:transfer}.
 
-\begin{concern}{R1.6 On clean labels the transfer gap is mostly not significant}
-Without the copies, the loss against held-out source data is significant for one of six architectures. The claim that transfer falls short then rests on the references criticized above, which have no intervals. Weaken the claim or strengthen the evidence.
+\phantomsection\label{rv:R1.6}
+\begin{concern}{R1.6}
+On clean labels the transfer gap is mostly not significant. Without the copies, the loss against held-out source data is significant for one of six architectures. The claim that transfer falls short then rests on the references criticized above, which have no intervals. Weaken the claim or strengthen the evidence.
 \end{concern}
 \response We weakened one claim and strengthened the evidence for the other, and the manuscript now keeps the two apart.
 \begin{itemize}[leftmargin=*, itemsep=1pt]
@@ -29,8 +32,9 @@ Without the copies, the loss against held-out source data is significant for one
 
 \action \Sec{sec:res:transfer}, \Tab{tab:transfer}, \Fig{fig:transfer}, abstract, and conclusion.
 
-\begin{concern}{R1.7 The test treats uncertainty inconsistently}
-The generalization term uses the upper 95\% bound with $\delta = 0.10$, so a detector with zero true loss fails whenever the interval is wide. Section VII-B concedes this on clean flows. The alert term instead takes a threshold searched on the target, which is optimistic. Treat uncertainty the same way for both terms, or report inconclusive terms as inconclusive rather than failed.
+\phantomsection\label{rv:R1.7}
+\begin{concern}{R1.7}
+The test in Eq. (6) treats uncertainty inconsistently. The generalization term uses the upper 95\% bound with delta = 0.10, so a detector with zero true loss fails whenever the interval is wide. Section VII-B concedes this on clean flows. The alert term instead takes a threshold searched on the target, which is optimistic. Treat uncertainty the same way for both terms, or report inconclusive terms as inconclusive rather than failed.
 \end{concern}
 \response We did both, in a redesigned test (\Sec{sec:crit:test}):
 \begin{enumerate}[leftmargin=*, itemsep=1pt]
